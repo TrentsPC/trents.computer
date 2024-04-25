@@ -1,0 +1,10 @@
+body {
+  font-family: "Söhne", Helvetica, Arial, sans-serif;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  height: 100%;
+}

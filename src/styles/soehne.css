@@ -1,0 +1,127 @@
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-200.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-200i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-300.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-300i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-400.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-400i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-500.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-500i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-600.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-600i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-700.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-700i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-800.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-800i.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-900.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Söhne";
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(/fonts/soehne/soehne-900i.otf) format("opentype");
+}

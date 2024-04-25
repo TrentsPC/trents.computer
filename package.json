@@ -1,0 +1,36 @@
+{
+  "name": "trents-pc-site-3",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "wrangle": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "serve": "vite serve ./.vite-inspect",
+    "start": "wrangler dev .output/server/index.mjs --site .output/public --local"
+  },
+  "dependencies": {
+    "@hypergood/css": "^0.0.6",
+    "@kobalte/core": "^0.12.6",
+    "@solidjs/meta": "^0.29.2",
+    "@solidjs/router": "^0.13.2",
+    "@solidjs/start": "^1.0.0-rc.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "csv": "^6.3.8",
+    "figma-squircle": "^0.3.1",
+    "html2canvas": "^1.4.1",
+    "solid-gesture": "^0.0.3",
+    "solid-js": "^1.8.16",
+    "solid-radix-icons": "^1.0.0",
+    "valibot": "^0.30.0",
+    "vinxi": "^0.3.11",
+    "wrangler": "^3.51.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "vite-plugin-inspect": "^0.8.3"
+  }
+}
