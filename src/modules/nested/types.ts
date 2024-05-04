@@ -1,5 +1,5 @@
 export type GetChildrenOpts<ThingId> = {
-  random: (things: ThingId[]) => ThingId;
+  random: (things: InfiniArray<ThingId>) => ThingId;
   randRange: (min: number, max: number) => number;
   repeat: (thing: ThingId, number: number, max?: number) => ThingId[];
   maybe: (thing: ThingId, chance: number) => ThingId | undefined;

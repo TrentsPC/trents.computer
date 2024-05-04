@@ -3,9 +3,9 @@ import { ComponentProps, createSignal, For } from "solid-js";
 import { ChevronLeftIcon, ChevronRightIcon } from "solid-radix-icons";
 import { getChildren, getLeafs } from "~/modules/nested";
 import { Rect, WindowDragArea, WindowOptions } from "~/modules/window";
-import document from "../app-icons/document.png";
-import folder from "../app-icons/folder.png";
 import { MacOSWindow } from "../base-windows/MacOSWindow";
+import document from "../sonoma-icons/document.png";
+import folder from "../sonoma-icons/generic-folder.png";
 
 export function FinderWindow(
   props: ComponentProps<"div"> & {

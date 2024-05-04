@@ -10,13 +10,13 @@ import {
 // import wallpaper from "./wallpapers/macos/sonoma-light.png";
 import wallpaper from "./wallpapers/windows7/harmony.jpg";
 
-import calendar from "./app-icons/calendar.png";
-import finder from "./app-icons/finder.png";
-import safari from "./app-icons/safari.png";
+import calendar from "./sonoma-icons/calendar.png";
+import finder from "./sonoma-icons/finder.png";
+import safari from "./sonoma-icons/safari.png";
 
 import { Dynamic } from "solid-js/web";
 import { Rect } from "../window";
-import trash from "./app-icons/trash-empty.png";
+import trash from "./sonoma-icons/trash-empty.png";
 import { CalendarWindow } from "./sonoma-windows/CalendarWindow";
 import { FinderWindow } from "./sonoma-windows/FinderWindow";
 import { SafariWindow } from "./sonoma-windows/SafariWindow";

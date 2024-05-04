@@ -1,5 +1,5 @@
 {
-  "name": "trents-pc-site-3",
+  "name": "trents.computer",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
