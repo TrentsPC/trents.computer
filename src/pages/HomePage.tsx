@@ -2,6 +2,7 @@ import { Title } from "@solidjs/meta";
 import { A, useSearchParams } from "@solidjs/router";
 import { createSignal, onMount } from "solid-js";
 import { isServer } from "solid-js/web";
+import { SignUpDialog } from "~/components/SignUpDialog";
 import { ChatWidget } from "~/modules/chatbots";
 import { HistoryRacer } from "~/modules/history-racer";
 import { OS, OSRevealer } from "~/modules/os/OSRevealer";
@@ -119,6 +120,7 @@ export function HomePage() {
     <>
       <Title>Trents PC</Title>
       <HistoryRacer />
+      <SignUpDialog />
       <main
         css={{
           minH: "100vh",

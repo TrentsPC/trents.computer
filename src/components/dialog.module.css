@@ -1,0 +1,59 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.trigger {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background-color: hsla(0deg, 0%, 20%, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &[data-state="open"] {
+    animation: fadeIn 300ms;
+  }
+  &[data-state="closed"] {
+    animation: fadeOut 300ms;
+  }
+}
+.content {
+  min-width: 280px;
+  padding: 24px;
+  border-radius: 28px;
+  background-color: white;
+  position: relative;
+}
+.close {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+}
+.title {
+  font-size: 24px;
+  margin-bottom: 16px;
+}

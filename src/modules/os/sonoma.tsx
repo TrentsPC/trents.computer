@@ -13,6 +13,7 @@ import wallpaper from "./wallpapers/windows7/harmony.jpg";
 import calendar from "./sonoma-icons/calendar.png";
 import finder from "./sonoma-icons/finder.png";
 import safari from "./sonoma-icons/safari.png";
+import terminal from "./sonoma-icons/terminal.png";
 
 import { Dynamic } from "solid-js/web";
 import { Rect } from "../window";
@@ -20,6 +21,7 @@ import trash from "./sonoma-icons/trash-empty.png";
 import { CalendarWindow } from "./sonoma-windows/CalendarWindow";
 import { FinderWindow } from "./sonoma-windows/FinderWindow";
 import { SafariWindow } from "./sonoma-windows/SafariWindow";
+import { TerminalWindow } from "./sonoma-windows/TerminalWindow";
 
 type Application = {
   id: string;
@@ -42,6 +44,16 @@ const APPLICATIONS: Application[] = [
     basisHeight: 520,
     minWidth: 640,
     minHeight: 503,
+  },
+  {
+    id: "terminal",
+    name: "Terminal",
+    icon: terminal,
+    component: TerminalWindow,
+    basisWidth: 935,
+    basisHeight: 598,
+    minWidth: 574,
+    minHeight: 224,
   },
   {
     id: "safari",
@@ -136,6 +148,7 @@ export function TrentOS() {
           {/* <DockItem src={maps} /> */}
           {/* <DockItem src={photos} /> */}
           {/* <DockItem src={facetime} /> */}
+          <DockItem id="terminal" />
           <DockItem id="calendar" />
           {/* <DockItem src={contacts} /> */}
           {/* <DockItem src={reminders} /> */}
