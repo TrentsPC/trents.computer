@@ -116,6 +116,8 @@ export function HomePage() {
 
   let durationInfo = () => getDurationInfo(currentEpoch());
 
+  const [feeling, setFeeling] = createSignal("love");
+
   return (
     <>
       <Title>Trents PC</Title>
@@ -177,7 +179,7 @@ export function HomePage() {
           </ul>
         </div>
       </main>
-      <button
+      <div
         css={{
           position: "fixed",
           bottom: 0,
@@ -188,13 +190,16 @@ export function HomePage() {
           align: "left",
           fontScale: 0,
         }}
-        onClick={() =>
-          setCurrentEpoch(
-            currentEpoch() === IBM_EPOCH ? FALAFEL_EPOCH : IBM_EPOCH
-          )
-        }
       >
-        Made with love? by Trent at{" "}
+        Made with{" "}
+        <button
+          onClick={() => {
+            setFeeling(feelings[Math.floor(Math.random() * feelings.length)]);
+          }}
+        >
+          {feeling()}?
+        </button>{" "}
+        by Trent at{" "}
         <a
           href="mailto:trent@trents.computer"
           css={{ textDecoration: "underline" }}
@@ -204,10 +209,18 @@ export function HomePage() {
         <br />
         <Copyright />
         <br />
-        {durationInfo().years}y {durationInfo().months}m {durationInfo().days}d{" "}
-        {durationInfo().hours}h {durationInfo().minutes}m{" "}
-        {durationInfo().seconds}s
-      </button>
+        <button
+          onClick={() =>
+            setCurrentEpoch(
+              currentEpoch() === IBM_EPOCH ? FALAFEL_EPOCH : IBM_EPOCH
+            )
+          }
+        >
+          {durationInfo().years}y {durationInfo().months}m {durationInfo().days}
+          d {durationInfo().hours}h {durationInfo().minutes}m{" "}
+          {durationInfo().seconds}s
+        </button>
+      </div>
       <ChatWidget />
       <OSRevealer alreadySeenOS={(search.os || "").split(",") as OS[]} />
     </>
@@ -234,3 +247,209 @@ function Copyright() {
     now().getMilliseconds().toString().padStart(3, "0");
   return <>© 2021{show() && ` - ${dateStr()}`}</>;
 }
+
+const feelings = [
+  "happiness",
+  // "blessed",
+  "love",
+  "sadness",
+  // "lovely",
+  "thankfulness",
+  "excitement",
+  // "in love",
+  "craziness",
+  "gratefulness",
+  "bliss",
+  // "fantastic",
+  "silliness",
+  "festivity",
+  "wonder",
+  "coolness",
+  "amusement",
+  "relaxation",
+  "positivity",
+  // "chill",
+  "hope",
+  "joy",
+  // "tired",
+  "motivation",
+  "pride",
+  // "alone",
+  "thought",
+  // "OK",
+  "nostalgia",
+  "anger",
+  "sickness",
+  "delight",
+  // "drained",
+  // "emotional",
+  "confidence",
+  // "awesome",
+  // "fresh",
+  "determination",
+  // "exhausted",
+  "annoyance",
+  // "glad",
+  "luck",
+  "heartbreak",
+  // "bored",
+  // "sleepy",
+  // "energized",
+  "hunger",
+  "professionality",
+  "pain",
+  "peace",
+  "disappointment",
+  "optimism",
+  "coldness",
+  "cuteness",
+  // "fabulous",
+  "greatness",
+  // "sorry",
+  // "super",
+  "worry",
+  // "funny",
+  // "bad",
+  // "down",
+  "inspiration",
+  "satisfaction",
+  // "pumped",
+  "calm",
+  "confusion",
+  // "goofy",
+  // "missing",
+  "goodness",
+  "sarcasm",
+  // "lonely",
+  "strength",
+  // "concerned",
+  // "special",
+  // "depressed",
+  // "jolly",
+  "curiosity",
+  // "low",
+  // "welcome",
+  // "broken",
+  // "beautiful",
+  "amazement",
+  "irritation",
+  "stress",
+  // "incomplete",
+  // "hyper",
+  // "mischievous",
+  // "amazed",
+  // "pissed off",
+  // "fed up",
+  // "puzzled",
+  // "furious",
+  // "pissed",
+  // "refreshed",
+  // "accomplished",
+  "surprise",
+  "perplexity",
+  "frustration",
+  // "meh",
+  // "pretty",
+  // "better",
+  "guilt",
+  "safety",
+  "freedom",
+  // "lost",
+  // "old",
+  "laziness",
+  // "worse",
+  // "horrible",
+  "comfort",
+  "stupidity",
+  // "ashamed",
+  // "terrible",
+  // "asleep",
+  // "well",
+  // "alive",
+  // "shy",
+  // "rough",
+  // "weird",
+  // "human",
+  // "hurt",
+  // "awful",
+  "normality",
+  // "warm",
+  "insecurity",
+  "weakness",
+  "kindness",
+  // "fine",
+  // "dumb",
+  // "nice",
+  "importance",
+  // "crappy",
+  "discomfort",
+  // "worthless",
+  // "ready",
+  // "different",
+  "helplessness",
+  // "awkward",
+  "alcohol",
+  // "overwhelmed",
+  "hopelessness",
+  // "whole",
+  // "miserable",
+  "madness",
+  // "deep",
+  // "yucky",
+  // "nervous",
+  // "blue",
+  // "wanted",
+  "honor",
+  // "light",
+  "a hangover",
+  "security",
+  "no clothes on",
+  // "dirty",
+  // "unimportant",
+  "might",
+  "fear",
+  "jealousy",
+  // "sore",
+  // "unwanted",
+  "appreciation",
+  // "full",
+  "business",
+  // "small",
+  // "unloved",
+  "uselessness",
+  "qualifications",
+  // "blah",
+  "impatience",
+  "privilege",
+  // "trapped",
+  // "thirsty",
+  // "nauseous",
+  // "upset",
+  // "offended",
+  // "numb",
+  "perfection",
+  // "challenged",
+  // "threatened",
+  // "relieved",
+  // "stuck",
+  // "strange",
+  // "embarrassed",
+  // "rested",
+  // "smart",
+  // "cheated",
+  // "betrayed",
+  // "anxious",
+  // "aggravated",
+  "evil",
+  // "ignored",
+  "regret",
+  "health",
+  "generosity",
+  "money",
+  "fear",
+  // "broke",
+  // "invisible",
+  "defeat",
+  // "homesick",
+  "connections",
+];

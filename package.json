@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@hypergood/css": "^0.0.6",
-    "@kobalte/core": "^0.12.6",
+    "@kobalte/core": "^0.13.1",
     "@solidjs/meta": "^0.29.2",
-    "@solidjs/router": "^0.13.2",
+    "@solidjs/router": "^0.13.3",
     "@solidjs/start": "^1.0.0-rc.0",
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
@@ -25,7 +25,7 @@
     "solid-radix-icons": "^1.0.0",
     "valibot": "^0.30.0",
     "vinxi": "^0.3.11",
-    "wrangler": "^3.51.2"
+    "wrangler": "^3.53.1"
   },
   "engines": {
     "node": ">=18"
