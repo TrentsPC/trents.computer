@@ -4,6 +4,7 @@ import { createSignal, onMount } from "solid-js";
 import { isServer } from "solid-js/web";
 import { SignUpDialog } from "~/components/SignUpDialog";
 import { ChatWidget } from "~/modules/chatbots";
+import { Clicker } from "~/modules/clicker";
 import { HistoryRacer } from "~/modules/history-racer";
 import { OS, OSRevealer } from "~/modules/os/OSRevealer";
 import { colors, fonts } from "~/theme.styles";
@@ -122,6 +123,7 @@ export function HomePage() {
     <>
       <Title>Trents PC</Title>
       <HistoryRacer />
+      <Clicker />
       <SignUpDialog />
       <main
         css={{
@@ -132,6 +134,7 @@ export function HomePage() {
           justify: "center",
         }}
       >
+        <div css={{ flex: "45 0 0px" }} />
         <div
           css={{
             w: "max-content",
@@ -178,6 +181,7 @@ export function HomePage() {
             </li>
           </ul>
         </div>
+        <div css={{ flex: "55 0 0px" }} />
       </main>
       <div
         css={{
@@ -188,7 +192,7 @@ export function HomePage() {
           color: colors.secondaryLabel,
           padding: 16,
           align: "left",
-          fontScale: 0,
+          fontScale: -1,
         }}
       >
         Made with{" "}
