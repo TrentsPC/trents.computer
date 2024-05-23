@@ -6,7 +6,7 @@ import {
   onMount,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { colors } from "~/theme.styles";
+import { colors } from "~/jesus.styles";
 
 function parseHashData(hash: string) {
   let hashData = hash.slice(1).split("/").map(Number);
@@ -95,7 +95,9 @@ export function Slide<T>(props: { children?: JSX.Element; animations?: T[] }) {
         justify: "center",
         items: "center",
         align: "center",
-        bg: colors.slate3,
+      }}
+      style={{
+        background: colors.slate3,
         color: colors.slateA12,
       }}
     >

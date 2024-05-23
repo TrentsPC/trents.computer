@@ -1,5 +1,5 @@
 import { JSX } from "solid-js";
-import { colors } from "~/theme.styles";
+import { colors } from "~/jesus.styles";
 import { useSquircle } from "~/utils/squircle";
 
 export type FullDate = {
@@ -70,7 +70,6 @@ export function SlideHeader(props: SlideHeaderProps) {
         <div
           ref={useSquircle()}
           css={{
-            bg: colors.slate6,
             position: "absolute",
             top: "1vw",
             left: "1vw",
@@ -79,6 +78,7 @@ export function SlideHeader(props: SlideHeaderProps) {
             r: "1vw",
           }}
           style={{
+            "background-color": colors.slate6,
             width: `${(days() / MAX_DATE_DAYS) * 98}vw`,
           }}
         />
@@ -86,7 +86,6 @@ export function SlideHeader(props: SlideHeaderProps) {
       <div
         ref={useSquircle()}
         css={{
-          bg: colors.slate7,
           position: "absolute",
           top: "1vw",
           left: "1vw",
@@ -95,13 +94,14 @@ export function SlideHeader(props: SlideHeaderProps) {
           r: "1vw",
         }}
         style={{
+          background: colors.slate7,
           left: `${(minDays() / MAX_DATE_DAYS) * 98 + 1}vw`,
           width: `${((days() - minDays()) / MAX_DATE_DAYS) * 98}vw`,
         }}
       />
       <div css={{ zIndex: 1 }}>
         {props.breadcrumbs && (
-          <span css={{ color: colors.slateA11 }}>
+          <span style={{ color: colors.slateA11 }}>
             {props.breadcrumbs.join(" – ")}
             {" – "}
           </span>

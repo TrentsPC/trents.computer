@@ -1,5 +1,5 @@
 import { JSX } from "solid-js";
-import { colors } from "~/theme.styles";
+import { colors } from "~/jesus.styles";
 
 const SIDE_LENGTH = 50;
 const HEIGHT = (Math.sqrt(3) * SIDE_LENGTH) / 2;

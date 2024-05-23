@@ -13,6 +13,8 @@ const IBM_EPOCH = new Date("2023-03-04T00:00:00+13:00").getTime();
 
 const FALAFEL_EPOCH = new Date("2023-04-01T23:00:00+13:00").getTime();
 
+const BREAK_EPOCH = 1715509620000; // 10:27pm 2024-05-12 nz time
+
 const [now, setNow] = createSignal<Date>(new Date());
 function updateDate() {
   setNow(new Date());
@@ -23,9 +25,13 @@ function updateDate() {
 !isServer && updateDate();
 
 function getDurationInfo(timestamp: number) {
+  // timestamp = BREAK_EPOCH;
   let currentDate = now() || new Date();
   let oldDate = new Date(timestamp);
   let workingDate = new Date(oldDate);
+
+  currentDate = new Date(BREAK_EPOCH + (BREAK_EPOCH - timestamp));
+  workingDate = new Date();
 
   let years = getYearsBetween(workingDate, currentDate);
   workingDate.setFullYear(workingDate.getFullYear() + years);
