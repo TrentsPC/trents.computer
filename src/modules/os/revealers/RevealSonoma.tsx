@@ -4,9 +4,9 @@ export function RevealSonoma() {
   return (
     <div
       css={{
-        position: "fixed",
-        bottom: 0,
-        right: 0,
+        // position: "fixed",
+        // bottom: 0,
+        // right: 0,
         padding: 20,
         d: "flex",
         gap: 8,

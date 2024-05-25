@@ -21,9 +21,9 @@ export function RevealWin98() {
   return (
     <div
       css={{
-        position: "fixed",
-        bottom: 0,
-        right: 0,
+        // position: "fixed",
+        // bottom: 0,
+        // right: 0,
         padding: 4,
         d: "flex",
       }}

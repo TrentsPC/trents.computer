@@ -1,11 +1,11 @@
-import { JSX, onMount } from "solid-js";
+import { ComponentProps, JSX, onMount } from "solid-js";
 import { createSquircle } from "~/utils/squircle";
 
+import { Title } from "@solidjs/meta";
+import codeClub from "~/assets/code-club-logo.svg";
+import stJohn from "~/assets/st-john.png";
 import tuia from "~/assets/tuia-ios.png";
 import webstack from "~/assets/webstack-macos.png";
-import stJohn from "~/assets/st-john.png";
-import codeClub from "~/assets/code-club-logo.svg";
-import { Title } from "@solidjs/meta";
 import { colors } from "~/theme.styles";
 
 export default function Page() {
@@ -25,11 +25,12 @@ export default function Page() {
       <Title>CV</Title>
       <div
         css={{
-          r: 5,
+          r: 14,
           bg: "white",
           w: 96 * 8.3,
           // h: 96 * 11.7,
-          boxShadow: `0 0 1.5px rgba(0, 0, 0, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3)`,
+          // boxShadow: `0 0 1.5px rgba(0, 0, 0, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3)`,
+          filter: `drop-shadow(0px 36px 50px rgba(0, 0, 0, 0.4)) drop-shadow(0px 0px 1.5px rgba(0, 0, 0, 0.25))`,
           margin: 64,
           padding: 32,
 
@@ -47,8 +48,8 @@ export default function Page() {
         <div css={{ flex: 1, pr: 32 }}>
           <h1 css={{ fontWeight: 700, fontScale: 8, align: "center" }}>
             Trent
-            <br />
-            Mitchell-Borley
+            {/* <br />
+            Mitchell-Borley */}
           </h1>
           <p
             css={{
@@ -109,18 +110,15 @@ export default function Page() {
               </p>
             </div>
             <div>
-              <Squircle>{/* <HypergoodPixel /> */}</Squircle>
+              <Squircle>
+                <Pixel />
+              </Squircle>
               <h3 css={{ fontWeight: 600, mb: 4 }}>Hypergood CSS</h3>
               <p css={{ mb: 4 }}>
                 Frustrated by the current state of bundle-time CSS frameworks, I
                 made another one. Focused on conciseness, readability, and
                 creating the smallest possible CSS bundle. This CV was built
                 with it.
-              </p>
-              <p>
-                <a href="https://hypergood.app/cv" css={{ color: colors.link }}>
-                  hypergood.app/cv
-                </a>
               </p>
             </div>
           </div>
@@ -232,5 +230,20 @@ function Squircle(props: { children?: JSX.Element }) {
         {props.children}
       </div>
     </div>
+  );
+}
+
+function Pixel(props: ComponentProps<"span">) {
+  return (
+    <span
+      {...props}
+      css={{
+        display: "block",
+        backgroundColor: "var(--color-brand)",
+        w: 24,
+        h: 24,
+        clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
+      }}
+    />
   );
 }
