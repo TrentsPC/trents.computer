@@ -173,6 +173,9 @@ export function HomePage() {
             <li>
               <A href="/sokoban">Sokoban</A>
             </li>
+            <li>
+              <A href="/font-explorer">Font Explorer</A>
+            </li>
             {/* <li>
               <A href="/calendar">Calendar</A>
             </li> */}
