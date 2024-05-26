@@ -78,7 +78,7 @@ export default function Inner(props: RouteSectionProps) {
             h: "100%",
             borderRadius: 12,
             padding: 16,
-            backgroundColor: colors.slate2,
+            backgroundColor: colors.gray2,
           }}
         >
           <Ul>

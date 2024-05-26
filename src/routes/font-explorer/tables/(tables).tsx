@@ -232,11 +232,11 @@ function TableGrid(props: { numTables: number }) {
               }}
               css={{
                 display: "block",
-                background: colors.slate2,
+                background: colors.gray2,
                 padding: 16,
                 borderRadius: 12,
                 "&:hover": {
-                  background: colors.slate3,
+                  background: colors.gray3,
                 },
               }}
             >
@@ -244,8 +244,8 @@ function TableGrid(props: { numTables: number }) {
                 <span
                   css={{
                     display: "inline-block",
-                    background: colors.slate4,
-                    color: colors.slate11,
+                    background: colors.gray4,
+                    color: colors.gray11,
                     fontScale: 0,
                     px: 3,
                     borderRadius: 3,

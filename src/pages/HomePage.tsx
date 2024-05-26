@@ -9,9 +9,24 @@ export function HomePage() {
   return (
     <>
       <Title>Trents PC</Title>
+      <div
+        css={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 48,
+          zIndex: 1,
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+          backdropFilter: "saturate(180%) blur(20px)",
+          display: "flex",
+        }}
+      >
+        <Clicker />
+        <div css={{ flex: 1 }} />
+        <SignUpDialog />
+      </div>
       <HistoryRacer />
-      <Clicker />
-      <SignUpDialog />
       <main
         css={{
           minH: "90vh",

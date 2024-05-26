@@ -120,7 +120,7 @@ export function FooterText() {
     <div
       css={{
         fontFamily: fonts.mono,
-        color: colors.secondaryLabel,
+        color: colors.tertiaryLabel,
         align: "left",
         fontScale: -2,
       }}
