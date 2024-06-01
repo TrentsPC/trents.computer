@@ -22,7 +22,7 @@ export function HomePageGrid() {
   return (
     <div
       css={{
-        width: "100lvw",
+        width: "100%",
         height: "100lvh",
         minH: "100lvh",
         maxH: "100lvh",
