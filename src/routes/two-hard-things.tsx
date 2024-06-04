@@ -53,6 +53,12 @@ export default function Page() {
 
       <NameBox
         names={{
+          "Horizontal Rule": ["bootstrap"],
+          Divider: ["material"],
+        }}
+      />
+      <NameBox
+        names={{
           "Form Control": ["bootstrap"],
           Field: ["catalyst"],
         }}
@@ -77,16 +83,19 @@ export default function Page() {
       <NameBox
         names={{
           Check: ["bootstrap"],
+          Checkbox: ["material"],
         }}
       />
       <NameBox
         names={{
           Radio: ["bootstrap"],
+          "Radio Button": ["material"],
         }}
       />
       <NameBox
         names={{
           Range: ["bootstrap"],
+          Slider: ["material"],
         }}
       />
       <NameBox
@@ -102,7 +111,7 @@ export default function Page() {
       />
       <NameBox
         names={{
-          Badge: ["bootstrap"],
+          Badge: ["bootstrap", "material"],
         }}
       />
       <NameBox
@@ -112,7 +121,13 @@ export default function Page() {
       />
       <NameBox
         names={{
-          Button: ["bootstrap"],
+          Button: ["bootstrap", "material"],
+        }}
+      />
+      <NameBox
+        names={{
+          "Button Group": ["bootstrap"],
+          "Segmented Button": ["material"],
         }}
       />
       <NameBox
@@ -122,7 +137,7 @@ export default function Page() {
       />
       <NameBox
         names={{
-          Carousel: ["bootstrap"],
+          Carousel: ["bootstrap", "material"],
         }}
       />
       <NameBox
@@ -133,6 +148,7 @@ export default function Page() {
       <NameBox
         names={{
           Dropdown: ["bootstrap"],
+          Menu: ["material"],
         }}
       />
       <NameBox
@@ -144,6 +160,7 @@ export default function Page() {
       <NameBox
         names={{
           Navbar: ["bootstrap"],
+          "Navigation Bar": ["material"],
         }}
       />
       <NameBox
@@ -153,7 +170,7 @@ export default function Page() {
       />
       <NameBox
         names={{
-          Tabs: ["bootstrap"],
+          Tabs: ["bootstrap", "material"],
         }}
       />
       <NameBox
@@ -176,6 +193,7 @@ export default function Page() {
       <NameBox
         names={{
           Progress: ["bootstrap"],
+          "Progress Indicator": ["material"],
         }}
       />
       <NameBox
@@ -192,7 +210,7 @@ export default function Page() {
       />
       <NameBox
         names={{
-          Tooltip: ["bootstrap"],
+          Tooltip: ["bootstrap", "material"],
         }}
       />
       <NameBox
@@ -216,6 +234,7 @@ export default function Page() {
       <NameBox
         names={{
           "Text Input": ["github"],
+          "Text Field": ["material"],
         }}
       />
       <NameBox
