@@ -1,5 +1,4 @@
 import { Title } from "@solidjs/meta";
-import { SignUpDialog } from "~/components/SignUpDialog";
 import { Clicker } from "~/modules/clicker";
 import { HistoryRacer } from "~/modules/history-racer";
 import { colors, fonts } from "~/theme.styles";
@@ -23,7 +22,7 @@ export function HomePage() {
         }}
       >
         <div css={{ flex: 1 }} />
-        <SignUpDialog />
+        {/* <SignUpDialog /> */}
       </div>
       <HistoryRacer />
       <main
