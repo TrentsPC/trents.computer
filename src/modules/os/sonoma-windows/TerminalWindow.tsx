@@ -1,10 +1,10 @@
-import { ComponentProps, createSignal, For } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Rect, WindowDragArea, WindowOptions } from "~/modules/window";
+import { FrameDragArea } from "~/modules/desktop-environment";
 import "~/modules/zork";
 import { zork } from "~/modules/zork/zMachine";
 import { fonts } from "~/theme.styles";
-import { MacOSWindow } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
 
 type Message = { text: string; options: any; side: "left" | "right" };
 
@@ -28,13 +28,7 @@ zork.hudListen(({ location }) => {
 });
 zork.perform("LOOK");
 
-export function TerminalWindow(
-  props: ComponentProps<"div"> & {
-    initialRect?: Rect;
-    options?: WindowOptions;
-    onClose?: () => void;
-  }
-) {
+export function TerminalWindow(props: MacOSWindowProps) {
   return (
     <MacOSWindow {...props} trafficLights={8}>
       <div
@@ -48,7 +42,7 @@ export function TerminalWindow(
           boxShadow: "inset 0 0 1.5px rgba(255, 255, 255, 0.1)",
         }}
       >
-        <WindowDragArea
+        <FrameDragArea
           css={{
             h: 8 + 12 + 8,
             backgroundColor: "#FAFAFA",
@@ -62,7 +56,7 @@ export function TerminalWindow(
           }}
         >
           Terminal
-        </WindowDragArea>
+        </FrameDragArea>
         <div
           css={{
             fontFamily: fonts.mono,

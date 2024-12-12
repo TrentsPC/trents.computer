@@ -1,31 +1,29 @@
 import { css } from "@hypergood/css";
-import { ComponentProps, splitProps } from "solid-js";
-import { Rect, Window, WindowDragArea, WindowOptions } from "~/modules/window";
+import { ComponentProps } from "solid-js";
+import { FrameDragArea, ResizableFrame } from "~/modules/desktop-environment";
 import icon from "../win98-icons/internet-explorer-document-16x16.png";
 
-export function Win98Window(
-  props: ComponentProps<"div"> & {
-    initialRect?: Rect;
-    options?: WindowOptions;
-    trafficLights?: number;
-    onClose?: () => void;
-  }
-) {
-  const [, other] = splitProps(props, [
-    "initialRect",
-    "options",
-    "onClose",
-    "style",
-    "children",
-  ]);
+export type Win98WindowProps = ComponentProps<"div"> & {
+  minWidth?: number;
+  minHeight?: number;
+  initialWidth: number;
+  initialHeight: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  onClose?: () => void;
+};
+
+export function Win98Window(props: Win98WindowProps) {
   return (
-    <Window
-      initialRect={props.initialRect}
-      options={props.options}
-      style={props.style}
+    <ResizableFrame
+      initialWidth={props.initialWidth}
+      initialHeight={props.initialHeight}
+      minWidth={props.minWidth}
+      minHeight={props.minHeight}
+      maxWidth={props.maxWidth}
+      maxHeight={props.maxHeight}
     >
       <div
-        {...other}
         css={{
           fontFamily: "ms_sans_serif",
           d: "flex",
@@ -38,7 +36,7 @@ export function Win98Window(
           backgroundColor: "#c0c0c0",
         }}
       >
-        <WindowDragArea
+        <FrameDragArea
           css={{
             height: 18 * 2,
             mb: 1 * 2,
@@ -82,10 +80,9 @@ export function Win98Window(
               <path d="M 2 1 L 4 1 L 4 2 L 5 2 L 5 3 L 7 3 L 7 2 L 8 2 L 8 1 L 10 1 L 10 2 L 9 2 L 9 3 L 8 3 L 8 4 L 7 4 L 7 5 L 8 5 L 8 6 L 9 6 L 9 7 L 10 7 L 10 8 L 8 8 L 8 7 L 7 7 L 7 6 L 5 6 L 5 7 L 4 7 L 4 8 L 2 8 L 2 7 L 3 7 L 3 6 L 4 6 L 4 5 L 5 5 L 5 4 L 4 4 L 4 3 L 3 3 L 3 2 L 2 2 Z" />
             </svg>
           </button>
-        </WindowDragArea>
+        </FrameDragArea>
 
         <div
-          {...other}
           css={{
             flex: 1,
             padding: 2 * 2,
@@ -96,7 +93,7 @@ export function Win98Window(
           {props.children}
         </div>
       </div>
-    </Window>
+    </ResizableFrame>
   );
 }
 

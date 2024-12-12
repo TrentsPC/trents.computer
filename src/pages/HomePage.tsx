@@ -11,7 +11,7 @@ export function HomePage() {
       <Title>Trents PC</Title>
       <div
         css={{
-          position: "fixed",
+          // position: "fixed",
           top: 0,
           left: 0,
           right: 0,
@@ -22,7 +22,6 @@ export function HomePage() {
           display: "flex",
         }}
       >
-        <Clicker />
         <div css={{ flex: 1 }} />
         <SignUpDialog />
       </div>
@@ -55,7 +54,9 @@ export function HomePage() {
             },
           }}
         >
-          <h1># Trents.Computer</h1>
+          <h1>
+            <Clicker />
+          </h1>
           <br />
           <p>
             Trent was released in late 2002 and software has been better ever

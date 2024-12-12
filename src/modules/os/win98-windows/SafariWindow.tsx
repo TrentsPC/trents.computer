@@ -1,14 +1,6 @@
-import { ComponentProps } from "solid-js";
-import { Rect, WindowOptions } from "~/modules/window";
-import { Win98Window } from "../base-windows/Win98Window";
+import { Win98Window, Win98WindowProps } from "../base-windows/Win98Window";
 
-export function InternetExplorerWindow(
-  props: ComponentProps<"div"> & {
-    initialRect?: Rect;
-    options?: WindowOptions;
-    onClose?: () => void;
-  }
-) {
+export function InternetExplorerWindow(props: Win98WindowProps) {
   return (
     <Win98Window {...props}>
       <div

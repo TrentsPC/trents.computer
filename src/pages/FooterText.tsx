@@ -142,7 +142,7 @@ export function FooterText() {
       </a>
       <br />
       <Copyright />
-      <br />
+      {/* <br />
       <button
         onClick={() =>
           setCurrentEpoch(
@@ -153,7 +153,7 @@ export function FooterText() {
         {durationInfo().years}y {durationInfo().months}m {durationInfo().days}d{" "}
         {durationInfo().hours}h {durationInfo().minutes}m{" "}
         {durationInfo().seconds}s
-      </button>
+      </button> */}
     </div>
   );
 }

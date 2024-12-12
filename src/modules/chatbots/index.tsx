@@ -1,21 +1,24 @@
+import { For, createSignal } from "solid-js";
+import { createStore } from "solid-js/store";
 import {
   ArrowLeftIcon,
   ChatBubbleIcon,
   ChevronRightIcon,
 } from "solid-radix-icons";
-import { Bot } from "./types";
-import { createStore } from "solid-js/store";
-import { For, createSignal } from "solid-js";
 import { StateLayer } from "~/components/ui/StateLayer";
 import { colors, fonts } from "~/theme.styles";
+import { Bot } from "./types";
 
-type Message = {
+export type { Bot };
+
+export type Message = {
   from: "user" | "bot";
   text: string;
   timestamp: number;
 };
 
-type Group = {
+export type Group = {
+  id: string;
   name: string;
   messages: Message[];
   getBot: () => Promise<Bot>;
@@ -23,21 +26,26 @@ type Group = {
 
 const [conversations, setConversations] = createStore<Group[]>([
   {
+    id: "clarence",
     name: "Clarence",
     messages: [],
     getBot: () => import("./bots/clarence-clarity").then((m) => m.bot),
   },
   {
+    id: "georgia",
     name: "Georgia",
     messages: [],
     getBot: () => import("./bots/jockstrap").then((m) => m.bot),
   },
   {
+    id: "patricia",
     name: "Patricia",
     messages: [],
     getBot: () => import("./bots/patricia-taxxon").then((m) => m.bot),
   },
 ]);
+
+export const useChatbots = () => [conversations, setConversations] as const;
 
 export function ChatWidget() {
   const [selectedIndex, setSelectedIndex] = createSignal(-1);

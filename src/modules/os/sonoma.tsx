@@ -1,37 +1,39 @@
 import { styled } from "@hypergood/css";
 import {
+  Component,
   ComponentProps,
   createSignal,
   For,
   JSX,
+  lazy,
   splitProps,
-  ValidComponent,
+  Suspense,
 } from "solid-js";
 // import wallpaper from "./wallpapers/macos/sonoma-light.png";
 import wallpaper from "./wallpapers/windows7/harmony.jpg";
 
 import calendar from "./sonoma-icons/calendar.png";
 import finder from "./sonoma-icons/finder.png";
+import messages from "./sonoma-icons/messages.png";
 import safari from "./sonoma-icons/safari.png";
+import simulator from "./sonoma-icons/simulator.png";
 import terminal from "./sonoma-icons/terminal.png";
 
 import { Dynamic } from "solid-js/web";
-import { Rect } from "../window";
+import { Desktop } from "../desktop-environment/desktop";
+import type { MacOSWindowProps } from "./base-windows/MacOSWindow";
 import trash from "./sonoma-icons/trash-empty.png";
-import { CalendarWindow } from "./sonoma-windows/CalendarWindow";
-import { FinderWindow } from "./sonoma-windows/FinderWindow";
-import { SafariWindow } from "./sonoma-windows/SafariWindow";
-import { TerminalWindow } from "./sonoma-windows/TerminalWindow";
 
 type Application = {
   id: string;
   name: string;
   icon: string;
-  component: ValidComponent;
+  // Equivalent to SwiftUI `App`, could contain Window, WindowGroup, MenuBarExtra, etc.
+  component: Component<MacOSWindowProps>;
   minWidth?: number;
   minHeight?: number;
-  basisWidth?: number;
-  basisHeight?: number;
+  basisWidth: number;
+  basisHeight: number;
 };
 
 const APPLICATIONS: Application[] = [
@@ -39,17 +41,39 @@ const APPLICATIONS: Application[] = [
     id: "finder",
     name: "Finder",
     icon: finder,
-    component: FinderWindow,
+    component: lazy(() =>
+      import("./sonoma-windows/FinderWindow").then((m) => ({
+        default: m.FinderWindow,
+      }))
+    ),
     basisWidth: 830,
     basisHeight: 520,
     minWidth: 640,
     minHeight: 503,
   },
   {
+    id: "messages",
+    name: "Messages",
+    icon: messages,
+    component: lazy(() =>
+      import("./sonoma-windows/MessagesWindow").then((m) => ({
+        default: m.MessagesWindow,
+      }))
+    ),
+    basisWidth: 1024,
+    basisHeight: 820,
+    minWidth: 660,
+    minHeight: 320,
+  },
+  {
     id: "terminal",
     name: "Terminal",
     icon: terminal,
-    component: TerminalWindow,
+    component: lazy(() =>
+      import("./sonoma-windows/TerminalWindow").then((m) => ({
+        default: m.TerminalWindow,
+      }))
+    ),
     basisWidth: 935,
     basisHeight: 598,
     minWidth: 574,
@@ -59,7 +83,11 @@ const APPLICATIONS: Application[] = [
     id: "safari",
     name: "Safari",
     icon: safari,
-    component: SafariWindow,
+    component: lazy(() =>
+      import("./sonoma-windows/SafariWindow").then((m) => ({
+        default: m.SafariWindow,
+      }))
+    ),
     basisWidth: 935,
     basisHeight: 598,
     minWidth: 574,
@@ -69,7 +97,25 @@ const APPLICATIONS: Application[] = [
     id: "calendar",
     name: "Calendar",
     icon: calendar,
-    component: CalendarWindow,
+    component: lazy(() =>
+      import("./sonoma-windows/CalendarWindow").then((m) => ({
+        default: m.CalendarWindow,
+      }))
+    ),
+    basisWidth: 935,
+    basisHeight: 598,
+    minWidth: 640,
+    minHeight: 503,
+  },
+  {
+    id: "simulator",
+    name: "Simulator",
+    icon: simulator,
+    component: lazy(() =>
+      import("./sonoma-windows/SimulatorWindow").then((m) => ({
+        default: m.SimulatorWindow,
+      }))
+    ),
     basisWidth: 935,
     basisHeight: 598,
     minWidth: 640,
@@ -136,20 +182,66 @@ export function TrentOS() {
           maxH: "100%",
           objectFit: "cover",
           objectPosition: "center",
+          pointerEvents: "none",
         }}
       />
+      {/* Windows */}
+      <Desktop
+        insets={{
+          top: 66,
+          right: 0,
+          bottom: 0,
+          left: 0,
+        }}
+      >
+        <For each={openWindows()}>
+          {(window, i) => {
+            const app = APPLICATIONS.find((a) => a.id === window.id);
+            if (!app) {
+              return null;
+            }
+            return (
+              <Suspense fallback={null}>
+                <Dynamic
+                  component={app.component}
+                  style={{
+                    "z-index": i() * 100 + 100,
+                  }}
+                  initialHeight={app.basisHeight}
+                  initialWidth={app.basisWidth}
+                  minWidth={app.minWidth}
+                  minHeight={app.minHeight}
+                  onMouseDown={() => {
+                    bringToFront(window.id);
+                  }}
+                  onClose={() => {
+                    removeWindow(window.id);
+                  }}
+                  // onMinimize={() => {
+                  //   removeWindow(window.id);
+                  // }}
+                  // onMaximize={() => {
+                  //   // removeWindow(window.id);
+                  // }}
+                />
+              </Suspense>
+            );
+          }}
+        </For>
+      </Desktop>
       <Dock>
         <DockGroup>
           <DockItem id="finder" />
           {/* <DockItem src={launchpad} /> */}
           <DockItem id="safari" />
-          {/* <DockItem src={messages} onClick={() => addWindow("messages")} /> */}
+          <DockItem id="messages" />
           {/* <DockItem src={mail} /> */}
           {/* <DockItem src={maps} /> */}
           {/* <DockItem src={photos} /> */}
           {/* <DockItem src={facetime} /> */}
           <DockItem id="terminal" />
-          <DockItem id="calendar" />
+          <DockItem id="simulator" />
+          {/* <DockItem id="calendar" /> */}
           {/* <DockItem src={contacts} /> */}
           {/* <DockItem src={reminders} /> */}
           {/* <DockItem src={notes} /> */}
@@ -172,42 +264,6 @@ export function TrentOS() {
           <Trash />
         </DockGroup>
       </Dock>
-      {/* Windows */}
-
-      <For each={openWindows()}>
-        {(window, i) => {
-          const app = APPLICATIONS.find((a) => a.id === window.id);
-          if (!app) {
-            return null;
-          }
-          return (
-            <Dynamic
-              component={app.component}
-              style={{
-                "z-index": i() * 100 + 100,
-              }}
-              options={{
-                collisionPaddingTop: 71,
-                minWidth: app.minWidth || 0,
-                minHeight: app.minHeight || 0,
-              }}
-              initialRect={getInitialRect({ top: 71, bottom: 0 })}
-              onMouseDown={() => {
-                bringToFront(window.id);
-              }}
-              onClose={() => {
-                removeWindow(window.id);
-              }}
-              onMinimize={() => {
-                removeWindow(window.id);
-              }}
-              onMaximize={() => {
-                // removeWindow(window.id);
-              }}
-            />
-          );
-        }}
-      </For>
     </div>
   );
 }
@@ -220,11 +276,13 @@ function Dock(props: { children?: JSX.Element }) {
         position: "fixed",
         top: 5,
         px: 5,
-        height: 65,
+        height: 60,
         left: "50%",
         width: "max-content",
         transform: "translateX(-50%)",
         backdropFilter: "blur(68px)",
+        borderRadius: 16,
+        zIndex: 2147483647,
       }}
     >
       {props.children}
@@ -237,7 +295,7 @@ function Dock(props: { children?: JSX.Element }) {
           bottom: 0,
 
           zIndex: -1,
-          r: 16,
+          borderRadius: 16,
 
           bg: "rgba(246, 246, 246, 0.36)",
           // border: "1px solid rgba(26, 26, 26, 0.46)",
@@ -277,7 +335,7 @@ function DockSeparator() {
 
 const DockGroup = styled("div", {
   d: "flex",
-  pt: 5,
+  py: 5,
   gap: 2,
 });
 
@@ -297,6 +355,13 @@ function DockItem(props: ComponentProps<"button"> & { id: string }) {
       onClick={() => addWindow(app.id)}
       {...otherProps}
     >
+      {/* <div
+        css={{ w: 50, h: 10, d: "flex", items: "center", justify: "center" }}
+      >
+        {openWindows().some((a) => a.id === app.id) && (
+          <div css={{ bg: "rgba(0,0,0,0.5)", w: 4, h: 4, borderRadius: 2 }} />
+        )}
+      </div> */}
       <img
         css={{
           w: 50,
@@ -304,13 +369,6 @@ function DockItem(props: ComponentProps<"button"> & { id: string }) {
         }}
         src={app.icon}
       />
-      <div
-        css={{ w: 50, h: 10, d: "flex", items: "center", justify: "center" }}
-      >
-        {openWindows().some((a) => a.id === app.id) && (
-          <div css={{ bg: "rgba(0,0,0,0.5)", w: 4, h: 4, borderRadius: 2 }} />
-        )}
-      </div>
     </button>
   );
 }
@@ -335,18 +393,4 @@ function Trash(props: ComponentProps<"button">) {
       />
     </button>
   );
-}
-
-function getInitialRect(opts: { top: number; bottom: number }): Rect {
-  const viewportH = window.innerHeight;
-  const viewportW = window.innerWidth;
-  const width = viewportW * 0.8;
-  const space = viewportH - opts.top - opts.bottom;
-  const height = space * 0.8;
-  return {
-    x: viewportW * 0.1,
-    y: opts.top + space * 0.1,
-    width: width,
-    height: height,
-  };
 }

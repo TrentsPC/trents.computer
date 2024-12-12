@@ -1,19 +1,13 @@
 import { styled } from "@hypergood/css";
 import { ComponentProps, createSignal, For } from "solid-js";
 import { ChevronLeftIcon, ChevronRightIcon } from "solid-radix-icons";
+import { FrameDragArea } from "~/modules/desktop-environment";
 import { getChildren, getLeafs } from "~/modules/nested";
-import { Rect, WindowDragArea, WindowOptions } from "~/modules/window";
-import { MacOSWindow } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
 import document from "../sonoma-icons/document.png";
 import folder from "../sonoma-icons/generic-folder.png";
 
-export function FinderWindow(
-  props: ComponentProps<"div"> & {
-    initialRect?: Rect;
-    options?: WindowOptions;
-    onClose?: () => void;
-  }
-) {
+export function FinderWindow(props: MacOSWindowProps) {
   const [historyStack, setHistoryStack] = createSignal<
     Array<{
       id: string;
@@ -54,7 +48,7 @@ export function FinderWindow(
               "linear-gradient(to left, #0000000D, #00000000 5px)",
           }}
         >
-          <WindowDragArea css={{ w: "100%", h: 20 + 12 + 20 }} />
+          <FrameDragArea css={{ w: "100%", h: 20 + 12 + 20 }} />
           <SidebarList>
             <SidebarGroup>
               <SectionHeader>Favourites</SectionHeader>
@@ -68,7 +62,7 @@ export function FinderWindow(
         </div>
         <div css={{ backgroundColor: "rgba(0, 0, 0, 0.18)" }} />
         <div css={{ flex: "1 0 0px", backgroundColor: "#fff" }}>
-          <WindowDragArea
+          <FrameDragArea
             css={{
               w: "100%",
               h: 20 + 12 + 20,
@@ -90,7 +84,7 @@ export function FinderWindow(
               <ChevronRightIcon />
             </button>
             <span>{currentHistory().name}</span>
-          </WindowDragArea>
+          </FrameDragArea>
           <div css={{ d: "flex", flexWrap: "wrap", p: 10 }}>
             <For each={getChildren(currentHistory().id, currentHistory().path)}>
               {(thing, i) => (

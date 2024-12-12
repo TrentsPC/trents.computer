@@ -1,20 +1,22 @@
-import { createSignal, For, ValidComponent } from "solid-js";
+import { Component, createSignal, For } from "solid-js";
 import "./win98-fonts/ms-sans-serif.css";
 import ie from "./win98-icons/internet-explorer.png";
 
 import { Dynamic } from "solid-js/web";
+import { Desktop } from "../desktop-environment";
 import { Rect } from "../window";
+import { Win98WindowProps } from "./base-windows/Win98Window";
 import { InternetExplorerWindow } from "./win98-windows/SafariWindow";
 
 type Application = {
   id: string;
   name: string;
   // icon: string;
-  component: ValidComponent;
+  component: Component<Win98WindowProps>;
   minWidth?: number;
   minHeight?: number;
-  basisWidth?: number;
-  basisHeight?: number;
+  basisWidth: number;
+  basisHeight: number;
 };
 
 const APPLICATIONS: Application[] = [
@@ -115,40 +117,41 @@ export function TrentOS() {
       ></div>
       {/* Windows */}
 
-      <For each={openWindows()}>
-        {(window, i) => {
-          const app = APPLICATIONS.find((a) => a.id === window.id);
-          if (!app) {
-            return null;
-          }
-          return (
-            <Dynamic
-              component={app.component}
-              style={{
-                "z-index": i() * 100 + 100,
-              }}
-              options={{
-                collisionPaddingBottom: 56,
-                minWidth: app.minWidth || 0,
-                minHeight: app.minHeight || 0,
-              }}
-              initialRect={getInitialRect({ top: 0, bottom: 56 })}
-              onMouseDown={() => {
-                bringToFront(window.id);
-              }}
-              onClose={() => {
-                removeWindow(window.id);
-              }}
-              onMinimize={() => {
-                removeWindow(window.id);
-              }}
-              onMaximize={() => {
-                // removeWindow(window.id);
-              }}
-            />
-          );
+      <Desktop
+        insets={{
+          top: 0,
+          right: 0,
+          bottom: 56,
+          left: 0,
         }}
-      </For>
+      >
+        <For each={openWindows()}>
+          {(window, i) => {
+            const app = APPLICATIONS.find((a) => a.id === window.id);
+            if (!app) {
+              return null;
+            }
+            return (
+              <Dynamic
+                component={app.component}
+                style={{
+                  "z-index": i() * 100 + 100,
+                }}
+                initialHeight={app.basisHeight}
+                initialWidth={app.basisWidth}
+                minWidth={app.minWidth}
+                minHeight={app.minHeight}
+                onMouseDown={() => {
+                  bringToFront(window.id);
+                }}
+                onClose={() => {
+                  removeWindow(window.id);
+                }}
+              />
+            );
+          }}
+        </For>
+      </Desktop>
     </div>
   );
 }

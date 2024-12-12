@@ -48,8 +48,8 @@ try {
   );
 } catch {}
 
+const [hasClicked, setHasClicked] = createSignal(false);
 export function Clicker() {
-  const [hasClicked, setHasClicked] = createSignal(false);
   const [data, setData] = createStore(initialClickerData);
 
   function earn(pixels: number) {
@@ -97,36 +97,28 @@ export function Clicker() {
 
   return (
     <>
-      <div
+      <button
         css={{
-          fontFamily: fonts.sans,
-          position: "fixed",
-          height: 48,
+          width: "1em",
+          height: "1em",
+          display: "inline-flex",
           items: "center",
-          display: "flex",
-          fontScale: 0,
+          justify: "center",
         }}
+        onClick={click}
       >
-        <button
-          css={{
-            width: 48,
-            height: 48,
-            display: "flex",
-            items: "center",
-            justify: "center",
-          }}
-          onClick={click}
-        >
-          <Pixel />
-        </button>
-        {hasClicked() ? (
-          <>
-            {formatNumber(data.pixels)} (per second: {formatPPS(pps())})
-          </>
-        ) : (
-          "Trents.Computer"
-        )}
-      </div>
+        <Pixel />
+      </button>
+      {hasClicked() ? (
+        <>
+          {" "}
+          {formatNumber(data.pixels)}
+          <br />
+          (per second: {formatPPS(pps())})
+        </>
+      ) : (
+        " Trents.Computer"
+      )}
       {hasClicked() && <BuildingList data={data} setData={setData} />}
     </>
   );
@@ -232,8 +224,8 @@ function Pixel(props: ComponentProps<"span">) {
       css={{
         display: "block",
         backgroundColor: "var(--color-brand)",
-        w: 24,
-        h: 24,
+        w: "1em",
+        h: "1em",
         clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
       }}
     />
@@ -271,9 +263,21 @@ function BuildingList(props: {
         padding: 16,
         backdropFilter: "blur(10px)",
         zIndex: 2000,
+        fontFamily: fonts.systemSans,
+        fontWeight: 400,
       }}
     >
-      {/* <h2>Shop</h2> */}
+      <div css={{ display: "flex", items: "center" }}>
+        <h2>Shop</h2>
+        <div css={{ flex: "1 0 0px" }} />
+        <button
+          onClick={() => {
+            setHasClicked(false);
+          }}
+        >
+          Close
+        </button>
+      </div>
       <ul css={{ width: 344, spaceY: 8 }}>
         <li>
           <Building

@@ -1,14 +1,7 @@
-import { ComponentProps } from "solid-js";
-import { Rect, WindowDragArea, WindowOptions } from "~/modules/window";
-import { MacOSWindow } from "../base-windows/MacOSWindow";
+import { FrameDragArea } from "~/modules/desktop-environment";
+import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
 
-export function SafariWindow(
-  props: ComponentProps<"div"> & {
-    initialRect?: Rect;
-    options?: WindowOptions;
-    onClose?: () => void;
-  }
-) {
+export function SafariWindow(props: MacOSWindowProps) {
   return (
     <MacOSWindow {...props}>
       <div
@@ -20,7 +13,7 @@ export function SafariWindow(
           w: "100%",
         }}
       >
-        <WindowDragArea css={{ h: 20 + 12 + 20, d: "flex" }}>
+        <FrameDragArea css={{ h: 20 + 12 + 20, d: "flex" }}>
           <div css={{ w: 12 * 3 + 8 * 2 + 20 }} />
           <div css={{ flex: 1, d: "flex", justify: "center", items: "center" }}>
             <div css={{ flex: "1 0 0px" }} />
@@ -41,7 +34,7 @@ export function SafariWindow(
             <div css={{ flex: "1 0 0px" }} />
           </div>
           <div css={{ w: 12 * 3 + 8 * 2 + 20 }} />
-        </WindowDragArea>
+        </FrameDragArea>
         <iframe
           src={window.origin + "?os=sonoma#" + new Date().toISOString()}
           css={{ flex: "1 0 0px" }}
