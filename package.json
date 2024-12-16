@@ -15,6 +15,7 @@
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.13.5",
     "@solidjs/start": "^1.0.1",
+    "@tanstack/solid-query": "^5.62.7",
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "csv": "^6.3.9",

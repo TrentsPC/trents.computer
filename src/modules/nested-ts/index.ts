@@ -21,4 +21,4 @@ declare module "./types" {
 
 const everything = Object.values(everythingAsObject).flat() as Thing<string>[];
 
-export default everything;
+export { everything };

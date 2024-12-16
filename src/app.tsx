@@ -1,21 +1,24 @@
 // @refresh reload
 import { MetaProvider, Title } from "@solidjs/meta";
 import { Router } from "@solidjs/router";
-import { Suspense } from "solid-js";
 import { FileRoutes } from "@solidjs/start/router";
-import "./styles/reset.css";
-import "./styles/soehne.css";
-import "./styles/soehne-mono.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { Suspense } from "solid-js";
 import "./styles/app.css";
+import "./styles/reset.css";
+import "./styles/soehne-mono.css";
+import "./styles/soehne.css";
 
 export default function App() {
   return (
     <Router
       root={(props) => (
-        <MetaProvider>
-          <Title>Trents PC</Title>
-          <Suspense>{props.children}</Suspense>
-        </MetaProvider>
+        <QueryClientProvider client={new QueryClient()}>
+          <MetaProvider>
+            <Title>Trents PC</Title>
+            <Suspense>{props.children}</Suspense>
+          </MetaProvider>
+        </QueryClientProvider>
       )}
     >
       <FileRoutes />
