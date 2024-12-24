@@ -13,7 +13,4 @@ export const GridItem = styled("a", {
   // fontScale: 1,
   // borderRadius: 30,
   borderRadius: 13.5,
-  "@sm": {
-    borderRadius: 28,
-  },
 });
