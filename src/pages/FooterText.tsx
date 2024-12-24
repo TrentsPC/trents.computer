@@ -3,9 +3,7 @@ import { isServer } from "solid-js/web";
 import { colors, fonts } from "~/theme.styles";
 
 const IBM_EPOCH = new Date("2023-03-04T00:00:00+13:00").getTime();
-
 const FALAFEL_EPOCH = new Date("2023-04-01T23:00:00+13:00").getTime();
-
 const BREAK_EPOCH = 1715509620000; // 10:27pm 2024-05-12 nz time
 
 const [now, setNow] = createSignal<Date>(new Date());
@@ -17,103 +15,7 @@ function updateDate() {
 }
 !isServer && updateDate();
 
-function getDurationInfo(timestamp: number) {
-  // timestamp = BREAK_EPOCH;
-  let currentDate = now() || new Date();
-  let oldDate = new Date(timestamp);
-  let workingDate = new Date(oldDate);
-
-  currentDate = new Date(BREAK_EPOCH + (BREAK_EPOCH - timestamp));
-  workingDate = new Date();
-
-  let years = getYearsBetween(workingDate, currentDate);
-  workingDate.setFullYear(workingDate.getFullYear() + years);
-  let months = getMonthsBetween(workingDate, currentDate);
-  workingDate.setMonth(workingDate.getMonth() + months);
-  let days = getDaysBetween(workingDate, currentDate);
-  workingDate.setDate(workingDate.getDate() + days);
-  let hours = getHoursBetween(workingDate, currentDate);
-  workingDate.setHours(workingDate.getHours() + hours);
-  let minutes = getMinutesBetween(workingDate, currentDate);
-  workingDate.setMinutes(workingDate.getMinutes() + minutes);
-  let seconds = getSecondsBetween(workingDate, currentDate);
-  workingDate.setSeconds(workingDate.getSeconds() + seconds);
-
-  return {
-    years,
-    months,
-    days,
-    hours,
-    minutes,
-    seconds,
-  };
-}
-
-function getYearsBetween(a: Date, b: Date) {
-  let workingDate = new Date(a);
-  let years = -1;
-  while (workingDate.getTime() < b.getTime()) {
-    workingDate.setFullYear(workingDate.getFullYear() + 1);
-    years++;
-  }
-  return years;
-}
-
-function getMonthsBetween(a: Date, b: Date) {
-  let workingDate = new Date(a);
-  let months = -1;
-  while (workingDate.getTime() < b.getTime()) {
-    workingDate.setMonth(workingDate.getMonth() + 1);
-    months++;
-  }
-  return months;
-}
-
-function getDaysBetween(a: Date, b: Date) {
-  let workingDate = new Date(a);
-  let days = -1;
-  while (workingDate.getTime() < b.getTime()) {
-    workingDate.setDate(workingDate.getDate() + 1);
-    days++;
-  }
-  return days;
-}
-
-function getHoursBetween(a: Date, b: Date) {
-  let workingDate = new Date(a);
-  let hours = -1;
-  while (workingDate.getTime() < b.getTime()) {
-    workingDate.setHours(workingDate.getHours() + 1);
-    hours++;
-  }
-  return hours;
-}
-
-function getMinutesBetween(a: Date, b: Date) {
-  let workingDate = new Date(a);
-  let minutes = -1;
-  while (workingDate.getTime() < b.getTime()) {
-    workingDate.setMinutes(workingDate.getMinutes() + 1);
-    minutes++;
-  }
-  return minutes;
-}
-
-function getSecondsBetween(a: Date, b: Date) {
-  let workingDate = new Date(a);
-  let seconds = -1;
-  while (workingDate.getTime() < b.getTime()) {
-    workingDate.setSeconds(workingDate.getSeconds() + 1);
-    seconds++;
-  }
-  return seconds;
-}
-
 export function FooterText() {
-  const [currentEpoch, setCurrentEpoch] = createSignal(IBM_EPOCH);
-
-  let durationInfo = () => getDurationInfo(currentEpoch());
-
   const [feeling, setFeeling] = createSignal("love");
 
   return (
@@ -142,18 +44,6 @@ export function FooterText() {
       </a>
       <br />
       <Copyright />
-      {/* <br />
-      <button
-        onClick={() =>
-          setCurrentEpoch(
-            currentEpoch() === IBM_EPOCH ? FALAFEL_EPOCH : IBM_EPOCH
-          )
-        }
-      >
-        {durationInfo().years}y {durationInfo().months}m {durationInfo().days}d{" "}
-        {durationInfo().hours}h {durationInfo().minutes}m{" "}
-        {durationInfo().seconds}s
-      </button> */}
     </div>
   );
 }

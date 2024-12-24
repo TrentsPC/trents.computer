@@ -2,39 +2,24 @@ import { styled } from "@hypergood/css";
 import { useSearchParams } from "@solidjs/router";
 import { onMount } from "solid-js";
 import { ExternalLinkIcon } from "solid-radix-icons";
-import linkedin from "~/assets/linkedin.png";
-import image from "~/assets/profile-image.png";
-import { OS, OSRevealer } from "~/modules/os/OSRevealer";
 import { useSquircle } from "~/utils/squircle";
-import { FooterText } from "./FooterText";
-import applemusic from "./home-images/applemusic.svg";
-import discord from "./home-images/discord.svg";
-import minecraft from "./home-images/minecraft.png";
-import vrchat from "./home-images/vrchat.svg";
-import wikipedia from "./home-images/wikipedia.svg";
+import { GridItem } from "./home-grid/components";
+import { FooterTextItem } from "./home-grid/FooterTextItem";
+import { MinimizeItem } from "./home-grid/MinimizeItem";
+import { SocialLinksItem } from "./home-grid/SocialLinksItem";
 
 const FACE = "face";
-const APPLEMUSIC = "apple-music";
-const DISCORD = "discord";
-const BLUESKY = "bluesky";
 const BOGGLE = "boggle";
 const CHADGDP = "chadgdp";
 const CSS = "css";
 const CV = "cv";
-const GITHUB = "github";
 const GIVENWELL = "givenwell";
 const GOODWORDS = "goodwords";
-const LETTERBOXD = "letterboxd";
-const LINKEDIN = "linkedin";
-const MINECRAFT = "minecraft";
 const SECRET = "secret";
 const SOKOBAN = "sokoban";
 const SPRING = "spring";
 const TICTACTOE = "ttt";
-const TWITTER = "twitter";
 const NAMING = "naming";
-const VRCHAT = "vrchat";
-const WIKIPEDIA = "wikipedia";
 const RECURSION = "recursion";
 const FONTEXPLORER = "font-explorer";
 
@@ -47,14 +32,13 @@ function fillTemplate(template: string, items: string[]) {
 }
 
 const mobileGridAreaTemplate = `
-  "0 1 2"
-  "3 4 5"
-  "6 7 8"
-  "9 10 11"
-  "12 13 14"
-  "15 16 17"
-  "18 19 20"
-  "21 22 23"
+
+  "0 1"
+  "2 3"
+  "4 5"
+  "6 7"
+  "8 9"
+  "10 11"
 `;
 
 const mobileGridAreaItems = [
@@ -65,24 +49,13 @@ const mobileGridAreaItems = [
   GIVENWELL,
   GOODWORDS,
   SECRET,
-  FACE,
+  // FACE,
   SOKOBAN,
   SPRING,
   TICTACTOE,
   NAMING,
-  RECURSION,
+  // RECURSION,
   FONTEXPLORER,
-
-  APPLEMUSIC,
-  BLUESKY,
-  DISCORD,
-  GITHUB,
-  LETTERBOXD,
-  LINKEDIN,
-  MINECRAFT,
-  TWITTER,
-  VRCHAT,
-  WIKIPEDIA,
 ];
 
 const mobileGridArea = fillTemplate(
@@ -92,12 +65,10 @@ const mobileGridArea = fillTemplate(
 
 const gridArea10_16 = fillTemplate(
   `
-  " 0  1  2  3"
-  " 4  5  6  7"
-  " 8  9 10 11"
-  "12 13 14 15"
-  "16 17 18 19"
-  "20 21 22 23"
+  " 0  1  2"
+  " 3  4  5"
+  " 6  7  8"
+  " 9 10 11"
 `,
   [
     BOGGLE,
@@ -110,31 +81,19 @@ const gridArea10_16 = fillTemplate(
     SOKOBAN,
     SPRING,
     TICTACTOE,
-    FACE,
+    // FACE,
     NAMING,
-    RECURSION,
+    // RECURSION,
     FONTEXPLORER,
-
-    APPLEMUSIC,
-    BLUESKY,
-    DISCORD,
-    GITHUB,
-    LETTERBOXD,
-    LINKEDIN,
-    MINECRAFT,
-    TWITTER,
-    VRCHAT,
-    WIKIPEDIA,
   ]
 );
 
 const gridArea3_4 = fillTemplate(
   `
-  " 0  1  2  3  4"
-  " 5  6  7  8  9"
-  "10 11 12 13 14"
-  "15 16 17 18 19"
-  "20 21 22 23 23"
+  " 0  1  2"
+  " 3  4  5"
+  " 6  7  8"
+  " 9 10 11"
 `,
   [
     BOGGLE,
@@ -147,45 +106,17 @@ const gridArea3_4 = fillTemplate(
     SOKOBAN,
     SPRING,
     TICTACTOE,
-    FACE,
+    // FACE,
     NAMING,
-    RECURSION,
+    // RECURSION,
     FONTEXPLORER,
-
-    APPLEMUSIC,
-    BLUESKY,
-    DISCORD,
-    GITHUB,
-    LETTERBOXD,
-    LINKEDIN,
-    MINECRAFT,
-    TWITTER,
-    VRCHAT,
-    WIKIPEDIA,
   ]
 );
 
 const gridAreaTemplate1_1 = `
-  " 0  0  0  0  0  1  1  1  1  1  1  1  1  2  2  2  2  2  2  2"
-  " 0  0  0  0  0  1  1  1  1  1  1  1  1  2  2  2  2  2  2  2"
-  " 0  0  0  0  0  1  1  1  1  1  1  1  1  2  2  2  2  2  2  2"
-  " 0  0  0  0  0  1  1  1  1  1  1  1  1  2  2  2  2  2  2  2"
-  " 0  0  0  0  0  3  3  4  4  4  5  5  6  6  6  7  7  7  7  7"
-  " 0  0  0  0  0  3  3  4  4  4  5  5  6  6  6  7  7  7  7  7"
-  " 0  0  0  0  0  3  3  4  4  4  5  5  6  6  6  7  7  7  7  7"
-  " 8  8  8  8  8  3  3  4  4  4  9  9  9  9  9  7  7  7  7  7"
-  " 8  8  8  8  8 10 10 10 11 11 12 12 12 12 12 13 13 13 14 14"
-  " 8  8  8  8  8 10 10 10 11 11 12 12 12 12 12 13 13 13 14 14"
-  " 8  8  8  8  8 15 15 15 11 11 12 12 12 12 12 13 13 13 14 14"
-  " 8  8  8  8  8 15 15 15 11 11 12 12 12 12 12 13 13 13 14 14"
-  "16 16 16 16 16 15 15 15 17 17 17 17 18 18 18 19 19 19 19 19"
-  "16 16 16 16 16 15 15 15 17 17 17 17 18 18 18 19 19 19 19 19"
-  "16 16 16 16 16 15 15 15 17 17 17 17 18 18 18 19 19 19 19 19"
-  "16 16 16 16 16 15 15 15 17 17 17 17 18 18 18 19 19 19 19 19"
-  "20 20 20 20 21 21 21 21 21 21 22 22 22 22 23 23 23 23 23 23"
-  "20 20 20 20 21 21 21 21 21 21 22 22 22 22 23 23 23 23 23 23"
-  "20 20 20 20 21 21 21 21 21 21 22 22 22 22 23 23 23 23 23 23"
-  "20 20 20 20 21 21 21 21 21 21 22 22 22 22 23 23 23 23 23 23"
+  " 0  1  2  3"
+  " 4  5  6  7"
+  " 8  9 10 11"
 `;
 
 const gridAreaItems1_1 = [
@@ -199,43 +130,19 @@ const gridAreaItems1_1 = [
   SOKOBAN,
   SPRING,
   TICTACTOE,
-  FACE,
+  // FACE,
   NAMING,
-  RECURSION,
+  // RECURSION,
   FONTEXPLORER,
-
-  APPLEMUSIC,
-  BLUESKY,
-  DISCORD,
-  GITHUB,
-  LETTERBOXD,
-  LINKEDIN,
-  MINECRAFT,
-  TWITTER,
-  VRCHAT,
-  WIKIPEDIA,
 ];
 
 const gridArea1_1 = fillTemplate(gridAreaTemplate1_1, gridAreaItems1_1);
 
 const gridArea4_3 = fillTemplate(
   `
-  " 0  0  1  1  1  2  2  2  2  3  3  3  4  4  4  4  4  5  5  5"
-  " 0  0  1  1  1  2  2  2  2  3  3  3  4  4  4  4  4  5  5  5"
-  " 0  0  1  1  1  2  2  2  2  3  3  3  4  4  4  4  4  5  5  5"
-  " 0  0  1  1  1  2  2  2  2  3  3  3  4  4  4  4  4  5  5  5"
-  " 6  6  6  6  6  7  7  7  7  7  8  8  8  9  9  9  9 10 10 10"
-  " 6  6  6  6  6  7  7  7  7  7  8  8  8  9  9  9  9 10 10 10"
-  " 6  6  6  6  6  7  7  7  7  7  8  8  8  9  9  9  9 10 10 10"
-  " 6  6  6  6  6  7  7  7  7  7  8  8  8  9  9  9  9 10 10 10"
-  " 6  6  6  6  6 11 11 11 11 11 12 12 12 12 12 13 13 13 14 14"
-  " 6  6  6  6  6 11 11 11 11 11 12 12 12 12 12 13 13 13 14 14"
-  "15 15 15 16 16 17 17 18 18 18 12 12 12 12 12 19 19 19 19 19"
-  "15 15 15 16 16 17 17 18 18 18 12 12 12 12 12 19 19 19 19 19"
-  "15 15 15 16 16 17 17 18 18 18 21 21 21 22 22 23 23 23 23 23"
-  "15 15 15 16 16 20 20 18 18 18 21 21 21 22 22 23 23 23 23 23"
-  "15 15 15 16 16 20 20 18 18 18 21 21 21 22 22 23 23 23 23 23"
-  "15 15 15 16 16 20 20 18 18 18 21 21 21 22 22 23 23 23 23 23"
+  " 0  1  2  3"
+  " 4  5  6  7"
+  " 8  9 10 11"
 `,
   [
     BOGGLE,
@@ -248,21 +155,10 @@ const gridArea4_3 = fillTemplate(
     SOKOBAN,
     SPRING,
     TICTACTOE,
-    FACE,
+    // FACE,
     NAMING,
-    RECURSION,
+    // RECURSION,
     FONTEXPLORER,
-
-    APPLEMUSIC,
-    BLUESKY,
-    DISCORD,
-    GITHUB,
-    LETTERBOXD,
-    LINKEDIN,
-    MINECRAFT,
-    TWITTER,
-    VRCHAT,
-    WIKIPEDIA,
   ]
 );
 
@@ -285,6 +181,7 @@ export function HomePageGrid() {
         maxH: "100lvh",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "#E9E9E9",
       }}
     >
       <div css={{ minH: 12 }} />
@@ -298,7 +195,7 @@ export function HomePageGrid() {
           "--grid-areas-4-3": gridArea4_3,
         }}
       >
-        <GridItem
+        {/* <GridItem
           component="div"
           css={{
             position: "relative",
@@ -319,31 +216,8 @@ export function HomePageGrid() {
             src={image}
             alt=""
           />
-        </GridItem>
+        </GridItem> */}
 
-        <GridItem
-          style={{
-            "grid-area": APPLEMUSIC,
-            "background-image": "linear-gradient(to top, #FA233B, #FB5C74)",
-          }}
-          href="https://music.apple.com/profile/TrentsPC"
-        >
-          <img src={applemusic} css={{ size: 60 }} />
-        </GridItem>
-        <GridItem
-          css={{
-            backgroundColor: "#161E27",
-            ":hover": {
-              backgroundColor: "#161E27",
-            },
-          }}
-          style={{
-            "grid-area": BLUESKY,
-          }}
-          href="https://bsky.app/profile/trents.computer"
-        >
-          <BlueskyLogoIcon />
-        </GridItem>
         <GridItem
           style={{
             "grid-area": BOGGLE,
@@ -368,30 +242,6 @@ export function HomePageGrid() {
           Curriculum Vitae
         </GridItem>
         <GridItem
-          component="button"
-          style={{
-            "grid-area": DISCORD,
-            background: "#5865F2",
-          }}
-          onClick={() => {
-            window.navigator.clipboard.writeText("trents_pc").then(() => {
-              alert("Copied!");
-            });
-          }}
-        >
-          <img src={discord} width={60} height={60} />
-        </GridItem>
-        <GridItem
-          css={{
-            backgroundColor: "#24292E",
-            ":hover": { backgroundColor: "#24292E" },
-          }}
-          style={{ "grid-area": GITHUB }}
-          href="https://github.com/TrentsPC"
-        >
-          <GithubLogoIcon />
-        </GridItem>
-        <GridItem
           css={{
             backgroundColor: "#F8F4EF",
             ":hover": {
@@ -405,30 +255,6 @@ export function HomePageGrid() {
         </GridItem>
         <GridItem style={{ "grid-area": GOODWORDS }} href="/words">
           Good Words
-        </GridItem>
-        <GridItem
-          style={{ "grid-area": LETTERBOXD, "background-color": "#212830" }}
-          href="https://letterboxd.com/TrentsPC/"
-        >
-          <LetterboxdLogoIcon />
-        </GridItem>
-        <GridItem
-          css={{
-            backgroundColor: "#F4F2EE",
-            ":hover": {
-              backgroundColor: "#F4F2EE",
-            },
-          }}
-          style={{ "grid-area": LINKEDIN }}
-          href="https://www.linkedin.com/in/trents-pc/"
-        >
-          <img src={linkedin} width={635 / 9} height="60" />
-        </GridItem>
-        <GridItem
-          style={{ "grid-area": MINECRAFT, "background-color": "#3D3938" }}
-          href="https://crafty.gg/@Amoroc"
-        >
-          <img src={minecraft} width={60} height={60} />
         </GridItem>
         <GridItem style={{ "grid-area": SECRET }} href="/secret-word">
           Secret Word
@@ -446,51 +272,42 @@ export function HomePageGrid() {
         <GridItem style={{ "grid-area": TICTACTOE }} href="/tic-tac-toe">
           Tic-tac-toc
         </GridItem>
-        <GridItem
-          css={{
-            gridArea: "twitter",
-            backgroundColor: "#15202B",
-            ":hover": {
-              backgroundColor: "#15202B",
-            },
-          }}
-          style={{ "grid-area": TWITTER }}
-          href="https://twitter.com/TrentsPC"
-        >
-          <TwitterLogoIcon />
-        </GridItem>
         <GridItem style={{ "grid-area": NAMING }} href="/two-hard-things">
           Two Hard Things
         </GridItem>
-        <GridItem
-          style={{ "grid-area": VRCHAT, background: "#07242B" }}
-          href="https://vrchat.com/home/user/usr_ad4a7923-ad94-467b-bfd8-0a86f8e23d80"
-        >
-          <img src={vrchat} width={60} height={60} />
-        </GridItem>
-        <GridItem
-          style={{ "grid-area": WIKIPEDIA, background: "#F8F9FA" }}
-          href="https://en.wikipedia.org/wiki/User_talk:TrentsPC"
-        >
-          <img src={wikipedia} width={60} height={60} />
-        </GridItem>
-        <GridItem style={{ "grid-area": RECURSION }} href="/#">
+        {/* <GridItem style={{ "grid-area": RECURSION }} href="/#">
           Trents.Computer
-        </GridItem>
+        </GridItem> */}
         <GridItem style={{ "grid-area": FONTEXPLORER }} href="/font-explorer">
           Font Explorer
         </GridItem>
       </Grid>
-      <div
-        css={{ flexShrink: 0, display: "flex", items: "center", height: 52 }}
-      >
-        <div css={{ px: 16 }}>
-          <FooterText />
+      <div css={{ p: 12 }}>
+        <div
+          css={{
+            display: "grid",
+            flexShrink: 0,
+            gap: 12,
+            gridTemplateColumns: "1fr auto",
+            "@md": {
+              height: 52,
+              gridTemplateColumns: "auto 1fr auto",
+            },
+          }}
+        >
+          <FooterTextItem css={{ order: 1, "@md": { order: 0 } }} />
+
+          <SocialLinksItem
+            css={{
+              flex: "1 0 0px",
+              order: 0,
+              colSpan: 2,
+              "@md": { order: 1, colSpan: 1 },
+            }}
+          />
+
+          <MinimizeItem css={{ order: 2 }} />
         </div>
-
-        <div css={{ flex: "1 0 0px" }} />
-
-        <OSRevealer alreadySeenOS={(search.os || "").split(",") as OS[]} />
       </div>
     </div>
   );
@@ -531,24 +348,6 @@ const Grid = styled("div", {
     "@media (min-aspect-ratio: 21/9)": {},
     "@media (min-aspect-ratio: 32/9)": {},
     "@media (min-aspect-ratio: 64/9)": {},
-  },
-});
-
-const GridItem = styled("a", {
-  padding: 12,
-  backgroundColor: "#E9E9E9",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  align: "center",
-  overflow: "hidden",
-  fontScale: -1,
-  // borderRadius: 15,
-  // fontScale: 1,
-  // borderRadius: 30,
-  borderRadius: 13.5,
-  "@sm": {
-    borderRadius: 28,
   },
 });
 
@@ -718,5 +517,3 @@ function TwitterLogoIcon() {
     </svg>
   );
 }
-
-// Discord, https://crafty.gg/@Amoroc

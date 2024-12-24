@@ -1,13 +1,12 @@
 import {
-  For,
-  Show,
   createEffect,
   createMemo,
   createSignal,
   onCleanup,
   onMount,
+  Show,
 } from "solid-js";
-import { Sokoban, parseLevelSet } from "~/modules/sokoban";
+import { parseLevelSet, Sokoban } from "~/modules/sokoban";
 import { MICROBAN1 } from "~/modules/sokoban/levelsets/microban";
 import { MICROBAN2 } from "~/modules/sokoban/levelsets/microban-2";
 import { MICROBAN3 } from "~/modules/sokoban/levelsets/microban-3";
@@ -27,6 +26,16 @@ const LEVEL_SETS = {
 type LevelSet = keyof typeof LEVEL_SETS;
 
 export default function Page() {
+  const [mounted, setMounted] = createSignal(false);
+  onMount(() => setMounted(true));
+  return (
+    <Show when={mounted()}>
+      <PageInner />
+    </Show>
+  );
+}
+
+function PageInner() {
   const sokoban = new Sokoban();
 
   const [levelSet, setLevelSet] = createSignal<LevelSet>("Microban");
