@@ -1,35 +1,75 @@
 import { styled } from "@hypergood/css";
+import { createQuery, queryOptions } from "@tanstack/solid-query";
 import { ComponentProps, createSignal, For } from "solid-js";
 import { ChevronLeftIcon, ChevronRightIcon } from "solid-radix-icons";
 import { FrameDragArea } from "~/modules/desktop-environment";
-import { getChildren, getLeafs } from "~/modules/nested";
+import { everything } from "~/modules/nested-ts";
 import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
-import document from "../sonoma-icons/document.png";
-import folder from "../sonoma-icons/generic-folder.png";
+import document from "./document.png";
+import folder from "./folder.png";
+
+type Path = number[];
+
+const listThingChildrenQuery = (thingId: string, path: Path) =>
+  queryOptions({
+    queryKey: ["nested", "children", { thingId, path }],
+    staleTime: Infinity,
+    queryFn: async () => {
+      const thing = everything.find((t) => t.id === thingId);
+      if (!thing) {
+        return [];
+      }
+      const childrenIds = thing
+        .getChildren()
+        .flat()
+        .filter(Boolean) as string[];
+
+      const children = childrenIds
+        .map((id) => {
+          const thing = everything.find((t) => t.id === id);
+
+          if (!thing) {
+            return undefined;
+          }
+
+          return {
+            id,
+            name: thing.getName(),
+          };
+        })
+        .filter(Boolean);
+
+      return children as Array<{ id: string; name: string }>;
+    },
+  });
 
 export function FinderWindow(props: MacOSWindowProps) {
   const [historyStack, setHistoryStack] = createSignal<
     Array<{
       id: string;
       name: string;
-      path: string;
+      path: Path;
     }>
   >([
     {
       id: "universe",
       name: "Universe",
-      path: "0",
+      path: [0],
     },
   ]);
   const currentHistory = () => historyStack()[historyStack().length - 1];
 
-  function pushState(state: { id: string; name: string; path: string }) {
+  function pushState(state: { id: string; name: string; path: Path }) {
     setHistoryStack((stack) => [...stack, state]);
   }
   function popState() {
     setHistoryStack((stack) => stack.slice(0, -1));
   }
   const canGoBack = () => historyStack().length > 1;
+
+  const childrenQuery = createQuery(() =>
+    listThingChildrenQuery(currentHistory().id, currentHistory().path)
+  );
 
   return (
     <MacOSWindow {...props}>
@@ -86,57 +126,59 @@ export function FinderWindow(props: MacOSWindowProps) {
             <span>{currentHistory().name}</span>
           </FrameDragArea>
           <div css={{ d: "flex", flexWrap: "wrap", p: 10 }}>
-            <For each={getChildren(currentHistory().id, currentHistory().path)}>
+            <For each={childrenQuery.data}>
               {(thing, i) => (
-                <button
-                  css={{
-                    w: 220 / 2,
-                    h: 224 / 2,
-                    color: "rgba(0, 0, 0, 0.85)",
-                    fontSize: 12,
-                    lineHeight: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}
+                <ThingButton
+                  thing={thing}
+                  path={currentHistory().path}
                   onClick={() => {
                     pushState({
                       id: thing.id,
                       name: thing.name,
-                      path: `${currentHistory().path}.${i()}`,
+                      path: [...currentHistory().path, i()],
                     });
                   }}
-                >
-                  <img src={folder} css={{ w: 64 }} />
-                  {thing.name}
-                </button>
-              )}
-            </For>
-            <For each={getLeafs(currentHistory().id, currentHistory().path)}>
-              {(thing, i) => (
-                <button
-                  css={{
-                    w: 220 / 2,
-                    h: 224 / 2,
-                    color: "rgba(0, 0, 0, 0.85)",
-                    fontSize: 12,
-                    lineHeight: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}
-                >
-                  <img src={document} css={{ w: 64 }} />
-                  {thing}
-                </button>
+                />
               )}
             </For>
           </div>
         </div>
       </div>
     </MacOSWindow>
+  );
+}
+
+function ThingButton(props: {
+  onClick: () => void;
+  thing: { id: string; name: string };
+  path: Path;
+}) {
+  const query = createQuery(() =>
+    listThingChildrenQuery(props.thing.id, props.path)
+  );
+  const hasChildren = () => !!query.data && query.data?.length > 0;
+  const icon = () => (hasChildren() ? folder : document);
+
+  return (
+    <button
+      css={{
+        w: 220 / 2,
+        h: 224 / 2,
+        color: "rgba(0, 0, 0, 0.85)",
+        fontSize: 12,
+        lineHeight: "16px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+      }}
+      onClick={() => {
+        hasChildren() && props.onClick();
+      }}
+    >
+      <img src={icon()} css={{ w: 64 }} />
+      {props.thing.name}
+    </button>
   );
 }
 

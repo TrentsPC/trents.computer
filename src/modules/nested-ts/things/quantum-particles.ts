@@ -1,10 +1,10 @@
-import { collectThings, createThing } from "../utils";
+import { collectThings, createThing, repeatThings } from "../utils";
 
 const qwubble = createThing({
   id: "qwubble",
   getName: () => "Qwubble",
 });
-qwubble.getChildren = () => ["multiverse"];
+qwubble.getChildren = () => repeatThings("multiverse", 1, 5);
 
 const upQuark = createThing({
   id: "up_quark",

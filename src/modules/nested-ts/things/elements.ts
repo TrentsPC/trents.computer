@@ -1,4 +1,4 @@
-import { createThing, repeat } from "../utils";
+import { createThing, repeatThings } from "../utils";
 
 const proton = createThing({
   id: "proton",
@@ -38,9 +38,9 @@ const helium = createThing({
   getName: () => "Helium",
 });
 helium.getChildren = () => [
-  ...repeat("proton", 2),
-  ...repeat("neutron", 2),
-  ...repeat("electron", 2),
+  ...repeatThings("proton", 2),
+  ...repeatThings("neutron", 2),
+  ...repeatThings("electron", 2),
 ];
 
 const lithium = createThing({
@@ -48,9 +48,9 @@ const lithium = createThing({
   getName: () => "Lithium",
 });
 lithium.getChildren = () => [
-  ...repeat("proton", 3),
-  ...repeat("neutron", 3, 4),
-  ...repeat("electron", 3),
+  ...repeatThings("proton", 3),
+  ...repeatThings("neutron", 3, 4),
+  ...repeatThings("electron", 3),
 ];
 
 const beryllium = createThing({
@@ -58,9 +58,9 @@ const beryllium = createThing({
   getName: () => "Beryllium",
 });
 beryllium.getChildren = () => [
-  ...repeat("proton", 4),
-  ...repeat("neutron", 4, 5),
-  ...repeat("electron", 4),
+  ...repeatThings("proton", 4),
+  ...repeatThings("neutron", 4, 5),
+  ...repeatThings("electron", 4),
 ];
 
 const boron = createThing({
@@ -68,9 +68,9 @@ const boron = createThing({
   getName: () => "Boron",
 });
 boron.getChildren = () => [
-  ...repeat("proton", 5),
-  ...repeat("neutron", 5, 6),
-  ...repeat("electron", 5),
+  ...repeatThings("proton", 5),
+  ...repeatThings("neutron", 5, 6),
+  ...repeatThings("electron", 5),
 ];
 
 const carbon = createThing({
@@ -78,9 +78,9 @@ const carbon = createThing({
   getName: () => "Carbon",
 });
 carbon.getChildren = () => [
-  ...repeat("proton", 6),
-  ...repeat("neutron", 6),
-  ...repeat("electron", 6),
+  ...repeatThings("proton", 6),
+  ...repeatThings("neutron", 6),
+  ...repeatThings("electron", 6),
 ];
 
 const nitrogen = createThing({
@@ -88,9 +88,9 @@ const nitrogen = createThing({
   getName: () => "Nitrogen",
 });
 nitrogen.getChildren = () => [
-  ...repeat("proton", 7),
-  ...repeat("neutron", 7),
-  ...repeat("electron", 7),
+  ...repeatThings("proton", 7),
+  ...repeatThings("neutron", 7),
+  ...repeatThings("electron", 7),
 ];
 
 const oxygen = createThing({
@@ -98,9 +98,9 @@ const oxygen = createThing({
   getName: () => "Oxygen",
 });
 oxygen.getChildren = () => [
-  ...repeat("proton", 8),
-  ...repeat("neutron", 8),
-  ...repeat("electron", 8),
+  ...repeatThings("proton", 8),
+  ...repeatThings("neutron", 8),
+  ...repeatThings("electron", 8),
 ];
 
 const fluorine = createThing({
@@ -108,9 +108,9 @@ const fluorine = createThing({
   getName: () => "Fluorine",
 });
 fluorine.getChildren = () => [
-  ...repeat("proton", 9),
-  ...repeat("neutron", 10),
-  ...repeat("electron", 9),
+  ...repeatThings("proton", 9),
+  ...repeatThings("neutron", 10),
+  ...repeatThings("electron", 9),
 ];
 
 const neon = createThing({
@@ -118,9 +118,9 @@ const neon = createThing({
   getName: () => "Neon",
 });
 neon.getChildren = () => [
-  ...repeat("proton", 10),
-  ...repeat("neutron", 10),
-  ...repeat("electron", 10),
+  ...repeatThings("proton", 10),
+  ...repeatThings("neutron", 10),
+  ...repeatThings("electron", 10),
 ];
 
 const sodium = createThing({
@@ -128,9 +128,9 @@ const sodium = createThing({
   getName: () => "Sodium",
 });
 sodium.getChildren = () => [
-  ...repeat("proton", 11),
-  ...repeat("neutron", 12),
-  ...repeat("electron", 11),
+  ...repeatThings("proton", 11),
+  ...repeatThings("neutron", 12),
+  ...repeatThings("electron", 11),
 ];
 
 const magnesium = createThing({
@@ -138,9 +138,9 @@ const magnesium = createThing({
   getName: () => "Magnesium",
 });
 magnesium.getChildren = () => [
-  ...repeat("proton", 12),
-  ...repeat("neutron", 12, 13),
-  ...repeat("electron", 12),
+  ...repeatThings("proton", 12),
+  ...repeatThings("neutron", 12, 13),
+  ...repeatThings("electron", 12),
 ];
 
 const aluminium = createThing({
@@ -148,9 +148,9 @@ const aluminium = createThing({
   getName: () => "Aluminium",
 });
 aluminium.getChildren = () => [
-  ...repeat("proton", 13),
-  ...repeat("neutron", 13, 15),
-  ...repeat("electron", 13),
+  ...repeatThings("proton", 13),
+  ...repeatThings("neutron", 13, 15),
+  ...repeatThings("electron", 13),
 ];
 
 const silicon = createThing({
@@ -158,9 +158,9 @@ const silicon = createThing({
   getName: () => "Silicon",
 });
 silicon.getChildren = () => [
-  ...repeat("proton", 14),
-  ...repeat("neutron", 14),
-  ...repeat("electron", 14),
+  ...repeatThings("proton", 14),
+  ...repeatThings("neutron", 14),
+  ...repeatThings("electron", 14),
 ];
 
 const phosphorus = createThing({
@@ -168,9 +168,9 @@ const phosphorus = createThing({
   getName: () => "Phosphorus",
 });
 phosphorus.getChildren = () => [
-  ...repeat("proton", 15),
-  ...repeat("neutron", 16),
-  ...repeat("electron", 15),
+  ...repeatThings("proton", 15),
+  ...repeatThings("neutron", 16),
+  ...repeatThings("electron", 15),
 ];
 
 const sulfur = createThing({
@@ -178,9 +178,9 @@ const sulfur = createThing({
   getName: () => "Sulfur",
 });
 sulfur.getChildren = () => [
-  ...repeat("proton", 16),
-  ...repeat("neutron", 16),
-  ...repeat("electron", 16),
+  ...repeatThings("proton", 16),
+  ...repeatThings("neutron", 16),
+  ...repeatThings("electron", 16),
 ];
 
 const chlorine = createThing({
@@ -188,9 +188,9 @@ const chlorine = createThing({
   getName: () => "Chlorine",
 });
 chlorine.getChildren = () => [
-  ...repeat("proton", 17),
-  ...repeat("neutron", 18, 19),
-  ...repeat("electron", 17),
+  ...repeatThings("proton", 17),
+  ...repeatThings("neutron", 18, 19),
+  ...repeatThings("electron", 17),
 ];
 
 const argon = createThing({
@@ -198,9 +198,9 @@ const argon = createThing({
   getName: () => "Argon",
 });
 argon.getChildren = () => [
-  ...repeat("proton", 18),
-  ...repeat("neutron", 22),
-  ...repeat("electron", 18),
+  ...repeatThings("proton", 18),
+  ...repeatThings("neutron", 22),
+  ...repeatThings("electron", 18),
 ];
 
 const potassium = createThing({
@@ -208,9 +208,9 @@ const potassium = createThing({
   getName: () => "Potassium",
 });
 potassium.getChildren = () => [
-  ...repeat("proton", 19),
-  ...repeat("neutron", 20),
-  ...repeat("electron", 19),
+  ...repeatThings("proton", 19),
+  ...repeatThings("neutron", 20),
+  ...repeatThings("electron", 19),
 ];
 
 const calcium = createThing({
@@ -218,9 +218,9 @@ const calcium = createThing({
   getName: () => "Calcium",
 });
 calcium.getChildren = () => [
-  ...repeat("proton", 20),
-  ...repeat("neutron", 20),
-  ...repeat("electron", 20),
+  ...repeatThings("proton", 20),
+  ...repeatThings("neutron", 20),
+  ...repeatThings("electron", 20),
 ];
 
 const scandium = createThing({
@@ -228,9 +228,9 @@ const scandium = createThing({
   getName: () => "Scandium",
 });
 scandium.getChildren = () => [
-  ...repeat("proton", 21),
-  ...repeat("neutron", 24),
-  ...repeat("electron", 21),
+  ...repeatThings("proton", 21),
+  ...repeatThings("neutron", 24),
+  ...repeatThings("electron", 21),
 ];
 
 const titanium = createThing({
@@ -238,9 +238,9 @@ const titanium = createThing({
   getName: () => "Titanium",
 });
 titanium.getChildren = () => [
-  ...repeat("proton", 22),
-  ...repeat("neutron", 26),
-  ...repeat("electron", 22),
+  ...repeatThings("proton", 22),
+  ...repeatThings("neutron", 26),
+  ...repeatThings("electron", 22),
 ];
 
 const vanadium = createThing({
@@ -248,9 +248,9 @@ const vanadium = createThing({
   getName: () => "Vanadium",
 });
 vanadium.getChildren = () => [
-  ...repeat("proton", 23),
-  ...repeat("neutron", 28),
-  ...repeat("electron", 23),
+  ...repeatThings("proton", 23),
+  ...repeatThings("neutron", 28),
+  ...repeatThings("electron", 23),
 ];
 
 const chromium = createThing({
@@ -258,9 +258,9 @@ const chromium = createThing({
   getName: () => "Chromium",
 });
 chromium.getChildren = () => [
-  ...repeat("proton", 24),
-  ...repeat("neutron", 28),
-  ...repeat("electron", 24),
+  ...repeatThings("proton", 24),
+  ...repeatThings("neutron", 28),
+  ...repeatThings("electron", 24),
 ];
 
 const manganese = createThing({
@@ -268,9 +268,9 @@ const manganese = createThing({
   getName: () => "Manganese",
 });
 manganese.getChildren = () => [
-  ...repeat("proton", 25),
-  ...repeat("neutron", 30),
-  ...repeat("electron", 25),
+  ...repeatThings("proton", 25),
+  ...repeatThings("neutron", 30),
+  ...repeatThings("electron", 25),
 ];
 
 const iron = createThing({
@@ -278,9 +278,9 @@ const iron = createThing({
   getName: () => "Iron",
 });
 iron.getChildren = () => [
-  ...repeat("proton", 26),
-  ...repeat("neutron", 30),
-  ...repeat("electron", 26),
+  ...repeatThings("proton", 26),
+  ...repeatThings("neutron", 30),
+  ...repeatThings("electron", 26),
 ];
 
 const cobalt = createThing({
@@ -288,9 +288,9 @@ const cobalt = createThing({
   getName: () => "Cobalt",
 });
 cobalt.getChildren = () => [
-  ...repeat("proton", 27),
-  ...repeat("neutron", 32),
-  ...repeat("electron", 27),
+  ...repeatThings("proton", 27),
+  ...repeatThings("neutron", 32),
+  ...repeatThings("electron", 27),
 ];
 
 const nickel = createThing({
@@ -298,9 +298,9 @@ const nickel = createThing({
   getName: () => "Nickel",
 });
 nickel.getChildren = () => [
-  ...repeat("proton", 28),
-  ...repeat("neutron", 31),
-  ...repeat("electron", 28),
+  ...repeatThings("proton", 28),
+  ...repeatThings("neutron", 31),
+  ...repeatThings("electron", 28),
 ];
 
 const copper = createThing({
@@ -308,9 +308,9 @@ const copper = createThing({
   getName: () => "Copper",
 });
 copper.getChildren = () => [
-  ...repeat("proton", 29),
-  ...repeat("neutron", 35),
-  ...repeat("electron", 29),
+  ...repeatThings("proton", 29),
+  ...repeatThings("neutron", 35),
+  ...repeatThings("electron", 29),
 ];
 
 const zinc = createThing({
@@ -318,9 +318,9 @@ const zinc = createThing({
   getName: () => "Zinc",
 });
 zinc.getChildren = () => [
-  ...repeat("proton", 30),
-  ...repeat("neutron", 35),
-  ...repeat("electron", 30),
+  ...repeatThings("proton", 30),
+  ...repeatThings("neutron", 35),
+  ...repeatThings("electron", 30),
 ];
 
 export const elements = [

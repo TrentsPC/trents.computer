@@ -1,88 +1,117 @@
+import { styled } from "@hypergood/css";
 import { createQuery, queryOptions } from "@tanstack/solid-query";
 import { createSignal, For } from "solid-js";
 import { everything } from "~/modules/nested-ts";
+import document from "./document.png";
+import folder from "./folder.png";
 
 type Path = number[];
 
-const listDirectoriesQuery = (thingId: string, path: Path) =>
+const listThingChildrenQuery = (thingId: string, path: Path) =>
   queryOptions({
-    queryKey: ["nested", "directories", { thingId, path }],
+    queryKey: ["nested", "children", { thingId, path }],
+    staleTime: Infinity,
     queryFn: async () => {
       const thing = everything.find((t) => t.id === thingId);
       if (!thing) {
         return [];
       }
-      const childrenIds = thing.getChildren().filter(Boolean) as string[];
+      const childrenIds = thing
+        .getChildren()
+        .flat()
+        .filter(Boolean) as string[];
 
-      return childrenIds.map((id) => {
-        const thing = everything.find((t) => t.id === id)!;
+      const children = childrenIds
+        .map((id) => {
+          const thing = everything.find((t) => t.id === id);
 
-        return {
-          id,
-          name: thing.getName(),
-        };
-      });
+          if (!thing) {
+            return undefined;
+          }
+
+          return {
+            id,
+            name: thing.getName(),
+          };
+        })
+        .filter(Boolean);
+
+      return children as Array<{ id: string; name: string }>;
     },
   });
 
 export default function Nested() {
   return (
-    <div>
-      <h1>Nested</h1>
-      <div css={{ display: "flex" }}>
-        <Column path={[]} thingId="carbon" />
-      </div>
+    <div css={{ p: 10 }}>
+      <ListItem thing={{ id: "universe", name: "Universe" }} path={[]} />
     </div>
   );
 }
 
-function Column(props: { path: Path; thingId: string }) {
-  const [selectedIndex, setSelectedIndex] = createSignal<number | undefined>(
-    undefined
-  );
-  const query = createQuery(() =>
-    listDirectoriesQuery(props.thingId, props.path)
-  );
+function ListItem(props: { thing: { id: string; name: string }; path: Path }) {
+  const [open, setOpen] = createSignal(false);
 
-  const selectedThingId = () =>
-    selectedIndex() != null ? query.data?.[selectedIndex()!]?.id : undefined;
+  const query = createQuery(() =>
+    listThingChildrenQuery(props.thing.id, props.path)
+  );
   return (
     <>
-      <div
-        css={{ px: 10, borderRight: "1px solid rgba(0, 0, 0, 0.1)", minW: 150 }}
-      >
-        <For each={query.data}>
-          {(thing, index) => (
-            <div
-              onClick={() => setSelectedIndex(index())}
-              css={{
-                cursor: "pointer",
-                height: 20,
-                fontSize: 13,
-                lineHeight: "16px",
-                px: 15,
-                borderRadius: 5,
-                display: "flex",
-                alignItems: "center",
-                "&:nth-child(even)": { background: "rgba(0, 0, 0, 0.05)" },
-              }}
-              style={{
-                background: selectedIndex() === index() ? "#2962D9" : undefined,
-                color: selectedIndex() === index() ? "white" : "black",
-              }}
-            >
-              {thing.name}
-            </div>
-          )}
-        </For>
-      </div>
-
-      {selectedThingId() && (
-        <Column
-          path={[...props.path, selectedIndex()!]}
-          thingId={selectedThingId()!}
-        />
+      <ThingButton
+        selected={open()}
+        onClick={() => setOpen(!open())}
+        thing={props.thing}
+        path={props.path}
+      />
+      {open() && (
+        <ListRoot>
+          <For each={query.data}>
+            {(thing, index) => (
+              <ListItem thing={thing} path={[...props.path, index()]} />
+            )}
+          </For>
+        </ListRoot>
       )}
     </>
   );
 }
+
+function ThingButton(props: {
+  selected: boolean;
+  onClick: () => void;
+  thing: { id: string; name: string };
+  path: Path;
+}) {
+  const query = createQuery(() =>
+    listThingChildrenQuery(props.thing.id, props.path)
+  );
+  const hasChildren = () => !!query.data && query.data?.length > 0;
+  const icon = () => (hasChildren() ? folder : document);
+  return (
+    <div
+      onClick={props.onClick}
+      css={{
+        cursor: "pointer",
+        height: 20,
+        fontSize: 13,
+        lineHeight: "16px",
+        px: 15,
+        borderRadius: 5,
+        display: "flex",
+        alignItems: "center",
+        "&:nth-child(even)": { background: "rgba(0, 0, 0, 0.05)" },
+      }}
+      style={{
+        background: props.selected ? "#2962D9" : undefined,
+        color: props.selected ? "white" : "black",
+      }}
+    >
+      <img css={{ width: 18, height: 18, mr: 4 }} src={icon()} />
+
+      <span css={{ whiteSpace: "nowrap" }}>{props.thing.name}</span>
+    </div>
+  );
+}
+
+const ListRoot = styled("ul", {
+  pl: 20,
+});

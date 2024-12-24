@@ -1,12 +1,16 @@
-import { bootstrapThings } from "./things/bootstrap";
+import { basicMaterials } from "./things/basic-materials";
 import { elements } from "./things/elements";
+import { life } from "./things/life";
 import { quantumParticles } from "./things/quantum-particles";
+import { universeThings } from "./things/universe";
 import { Thing } from "./types";
 
 const everythingAsObject = {
-  bootstrapThings,
   elements,
+  life,
+  basicMaterials,
   quantumParticles,
+  universeThings,
 };
 
 type EverythingAsObject = typeof everythingAsObject;

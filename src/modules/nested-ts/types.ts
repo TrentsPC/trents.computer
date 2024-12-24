@@ -11,7 +11,9 @@ export type RegisteredThingIds = Nested extends {
 export type Thing<ThingId extends string> = {
   id: ThingId;
   getName: () => string;
-  getChildren: () => Array<RegisteredThingIds | null | undefined>;
+  getChildren: () => Array<
+    RegisteredThingIds[] | RegisteredThingIds | null | undefined
+  >;
 };
 
 export type InferThingIds<Things extends Thing<string>[]> =
