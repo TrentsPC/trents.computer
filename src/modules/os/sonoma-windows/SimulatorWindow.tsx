@@ -1,4 +1,3 @@
-import { For } from "solid-js";
 import { Frame, FrameDragArea } from "~/modules/desktop-environment";
 import "~/modules/zork";
 import { useSquircle } from "~/utils/squircle";
@@ -36,43 +35,13 @@ export function SimulatorWindow(props: MacOSWindowProps) {
           height: DEVICE_HEIGHT + "px",
         }}
       >
-        <div
+        <iframe
           css={{
-            display: "grid",
-            gridCols: 4,
-            width: (60 + 30) * 4,
-            mx: "auto",
+            border: "none",
+            width: "100%",
+            height: "100%",
           }}
-        >
-          <For each={[1, 2, 3, 4, 5, 6, 7, 8]}>
-            {(i) => (
-              <div>
-                <div
-                  ref={useSquircle()}
-                  css={{
-                    height: 60,
-                    width: 60,
-                    borderRadius: 60 * 0.225,
-                    justifySelf: "center",
-                    backgroundColor: "white",
-                  }}
-                ></div>
-                <div css={{ height: 38 }}></div>
-              </div>
-            )}
-          </For>
-        </div>
-        <div
-          ref={useSquircle()}
-          css={{
-            backgroundColor: "white",
-            position: "absolute",
-            bottom: 12,
-            left: 12,
-            right: 12,
-            height: 98,
-            borderRadius: 55 - 12,
-          }}
+          src="/os/ios"
         />
       </div>
     </Frame>
