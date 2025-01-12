@@ -16,7 +16,7 @@ export default function SSR() {
 
   return (
     <Show when={mounted()}>
-      <ChapterView slug={params.chapterSlug || "Smutty_Sex_Romp"} />
+      <ChapterView slug={params.chapterSlug || "404"} />
     </Show>
   );
 }

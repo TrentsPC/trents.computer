@@ -2,7 +2,8 @@ import { styled } from "@hypergood/css";
 import { createQuery, queryOptions } from "@tanstack/solid-query";
 import { Show } from "solid-js";
 import initSqlJs, { Database } from "sql.js";
-import dbUrl from "./ssr-db.sqlite?url";
+// import dbUrl from "./ssr-db.sqlite?url";
+const dbUrl = "";
 
 const dbQuery = queryOptions({
   queryKey: ["ssr-db"],
