@@ -11,7 +11,7 @@ import managemyhealth from "./managemyhealth.webp";
 import minecraft from "./minecraft.png";
 import reddit from "./reddit.webp";
 import soundcloud from "./soundcloud.webp";
-import steam from "./steam.webp";
+import steam from "./steam.png";
 import wikipedia from "./wikipedia.webp";
 
 type SocialLink = {

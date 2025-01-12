@@ -1,4 +1,4 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import { isServer } from "solid-js/web";
 import { colors, fonts } from "~/theme.styles";
 
@@ -25,16 +25,17 @@ export function FooterText() {
         color: colors.tertiaryLabel,
         align: "left",
         fontScale: -2,
+        whiteSpace: "nowrap",
       }}
     >
       Made with{" "}
-      <button
+      <span
         onClick={() => {
           setFeeling(feelings[Math.floor(Math.random() * feelings.length)]);
         }}
       >
-        {feeling()}?
-      </button>{" "}
+        <span textContent={feeling()}></span>?
+      </span>{" "}
       by Trent at{" "}
       <a
         href="mailto:trent@trents.computer"
@@ -66,7 +67,15 @@ function Copyright() {
     timeFormatter.format(now()) +
     "." +
     now().getMilliseconds().toString().padStart(3, "0");
-  return <>© 2021{show() && ` - ${dateStr()}`}</>;
+  return (
+    <span>
+      © 2021
+      <Show when={show()} fallback={""}>
+        {" "}
+        - {dateStr()}
+      </Show>
+    </span>
+  );
 }
 
 const feelings = [
