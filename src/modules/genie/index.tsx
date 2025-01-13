@@ -39,7 +39,29 @@ export async function genieMinimise() {
 }
 
 const getCanvas = async () => {
-  return await html2canvas(document.body);
+  const canvas = await html2canvas(document.body);
+  const scrollY = window.scrollY;
+  const dpr = window.devicePixelRatio;
+  const screenScrollY = scrollY * dpr;
+  console.log(canvas.width, canvas.height, dpr, window.innerHeight);
+
+  const croppedCanvas = document.createElement("canvas");
+  croppedCanvas.width = window.innerWidth * dpr;
+  croppedCanvas.height = window.innerHeight * dpr;
+  const ctx = croppedCanvas.getContext("2d")!;
+  ctx.drawImage(
+    canvas,
+    0,
+    screenScrollY,
+    window.innerWidth * dpr,
+    window.innerHeight * dpr,
+    0,
+    0,
+    window.innerWidth * dpr,
+    window.innerHeight * dpr
+  );
+
+  return croppedCanvas;
 };
 
 function drawImage(

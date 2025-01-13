@@ -14,7 +14,15 @@ export function SimulatorWindow(props: MacOSWindowProps) {
   return (
     <Frame initialHeight={height} initialWidth={width}>
       <FrameDragArea
-        css={{ display: "flex", backgroundColor: "black", borderRadius: 10 }}
+        css={{
+          display: "flex",
+          backgroundColor: "#202020",
+          borderRadius: 10,
+          color: "rgba(255, 255, 255, 0.85)",
+          boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.1)",
+          filter:
+            "drop-shadow(0px 36px 50px rgba(0, 0, 0, 0.4)) drop-shadow(0px 0px 1.5px rgba(0, 0, 0, 0.4))",
+        }}
       >
         <div css={{ padding: 20 }}>
           <TrafficLights onClose={props.onClose} />
@@ -24,25 +32,32 @@ export function SimulatorWindow(props: MacOSWindowProps) {
       <div css={{ height: 20 }} />
 
       <div
-        ref={useSquircle()}
         css={{
-          backgroundColor: "black",
-          borderRadius: 55,
-          position: "relative",
-        }}
-        style={{
-          width: DEVICE_WIDTH + "px",
-          height: DEVICE_HEIGHT + "px",
+          filter:
+            "drop-shadow(0px 36px 50px rgba(0, 0, 0, 0.4)) drop-shadow(0px 0px 1.5px rgba(0, 0, 0, 0.4))",
         }}
       >
-        <iframe
+        <div
+          ref={useSquircle()}
           css={{
-            border: "none",
-            width: "100%",
-            height: "100%",
+            backgroundColor: "black",
+            borderRadius: 55,
+            position: "relative",
           }}
-          src="/os/ios"
-        />
+          style={{
+            width: DEVICE_WIDTH + "px",
+            height: DEVICE_HEIGHT + "px",
+          }}
+        >
+          <iframe
+            css={{
+              border: "none",
+              width: "100%",
+              height: "100%",
+            }}
+            src="/os/ios"
+          />
+        </div>
       </div>
     </Frame>
   );
