@@ -1,7 +1,25 @@
 import { styled } from "@hypergood/css";
-import { createSignal, Match, Switch } from "solid-js";
 import {
+  Component,
+  createEffect,
+  createSignal,
+  For,
+  onCleanup,
+  Show,
+} from "solid-js";
+import { Dynamic } from "solid-js/web";
+import {
+  getDefaultSegment,
+  getPossibleNextSegments,
+  getSegmentName,
+} from "~/modules/iso-8601";
+import { describeDTRoot } from "~/modules/iso-8601/describers";
+import { formatDTNode } from "~/modules/iso-8601/formatters";
+import {
+  DTCentury,
   DTDayOfMonth,
+  DTDecade,
+  DTGroupingOfYear,
   DTHour,
   DTMonthOfYear,
   DTNode,
@@ -12,20 +30,67 @@ import {
 export default function Iso() {
   const [value, setValue] = createSignal<DTRoot>({
     type: "root",
-    value: undefined,
+    next: undefined,
   });
   return (
     <div>
       Let's make an ISO 8601 compliant date-time!
-      <div css={{ fontSize: 32 }}>{formatDTRoot(value())}</div>
-      <pre>
-        <code>{JSON.stringify(value(), null, 2)}</code>
-      </pre>
+      <Display value={value()} />
       <div
-        css={{ display: "grid", gridAutoFlow: "column", gap: 10, gridRows: 2 }}
+        css={{
+          display: "grid",
+          gridAutoFlow: "column",
+          gridTemplateRows: "auto 1fr",
+          gridAutoColumns: 300,
+          backgroundColor: "#f6f6f6",
+          // columnGap: 1,
+        }}
       >
         <RootEditor value={value()} onValueChange={setValue} />
       </div>
+    </div>
+  );
+}
+
+function Display(props: { value: DTRoot }) {
+  return (
+    <div css={{ minH: 200 }}>
+      <BigText>{formatDTNode(props.value)}</BigText>
+      <div css={{ fontSize: 13, lineHeight: "20px", align: "center" }}>
+        {describeDTRoot(props.value)}
+      </div>
+    </div>
+  );
+}
+
+function BigText(props: { children: string }) {
+  let ref: HTMLDivElement = undefined!;
+  createEffect(() => {
+    function calculateSize() {
+      props.children;
+      const currentFontSize = parseInt(window.getComputedStyle(ref).fontSize);
+      const currentWidth = ref.offsetWidth;
+      const containerWidth = ref.parentElement!.offsetWidth;
+      const scale = containerWidth / currentWidth;
+      const newFontSize = currentFontSize * scale;
+
+      const maxFontSize = 250;
+
+      if (isFinite(newFontSize)) {
+        ref.style.fontSize = `${Math.min(newFontSize, maxFontSize)}px`;
+      }
+    }
+    window.addEventListener("resize", calculateSize);
+    calculateSize();
+    onCleanup(() => {
+      window.removeEventListener("resize", calculateSize);
+    });
+  });
+  return (
+    <div css={{ align: "center", overflow: "hidden", lineHeight: 1 }}>
+      <span ref={ref} css={{ whiteSpace: "nowrap" }}>
+        {props.children}
+      </span>
     </div>
   );
 }
@@ -37,61 +102,228 @@ function RootEditor(props: {
   return (
     <>
       <Column>
-        Type:
-        <select
-          value={props.value.value?.type || ""}
-          onChange={(e) => {
-            const nextValue = e.currentTarget.value;
-            if (nextValue === "year") {
-              const year = getDefaultYear();
-              props.onValueChange({
-                type: "root",
-                value: year,
-              });
-              return;
-            }
-            if (nextValue === "hour") {
-              const hour = getDefaultHour();
-              props.onValueChange({
-                type: "root",
-                value: hour,
-              });
-              return;
-            }
+        Starting Segment:
+        <NextSegmentSelector
+          thisSegment={props.value.type as DTNode["type"]}
+          nextSegment={(props.value.next?.type || "") as DTNode["type"]}
+          onSelect={(node) => {
+            props.onValueChange({
+              ...props.value,
+              next: node as any,
+            });
           }}
-        >
-          <option disabled selected>
-            Select a type
-          </option>
-          <option value="hour">Time</option>
-          <option value="year">Date-Time</option>
-        </select>
+        />
       </Column>
-      <Switch>
-        <Match when={props.value.value?.type === "year"}>
-          <YearEditor
-            value={props.value.value as DTYear}
-            onValueChange={(value) => {
-              props.onValueChange({
-                ...props.value,
-                value,
-              });
-            }}
-          />
-        </Match>
-        <Match when={props.value.value?.type === "hour"}>
-          <HourEditor
-            value={props.value.value as DTHour}
-            onValueChange={(value) => {
-              props.onValueChange({
-                ...props.value,
-                value,
-              });
-            }}
-          />
-        </Match>
-      </Switch>
+      <NodeEditor
+        value={props.value.next}
+        onValueChange={(next) =>
+          props.onValueChange({
+            ...props.value,
+            next,
+          })
+        }
+      />
     </>
+  );
+}
+
+function NextSegmentSelector(props: {
+  thisSegment: DTNode["type"];
+  nextSegment: DTNode["type"];
+  onSelect: (node: DTNode) => void;
+}) {
+  const nextSegments = () => getPossibleNextSegments(props.thisSegment);
+  return (
+    <Show
+      when={nextSegments().length > 0}
+      fallback={<div>No more segments</div>}
+    >
+      <select
+        value={props.nextSegment}
+        onChange={(e) => {
+          const nextSegment = e.currentTarget.value;
+          const segment = getDefaultSegment(nextSegment as any);
+          props.onSelect(segment);
+        }}
+      >
+        <option disabled selected>
+          Select a segment
+        </option>
+        <option value="">None</option>
+        <For each={nextSegments()}>
+          {(segmentType) => (
+            <option value={segmentType}>{getSegmentName(segmentType)}</option>
+          )}
+        </For>
+      </select>
+    </Show>
+  );
+}
+
+function NextSegmentEditor(props: {
+  thisSegment: DTNode;
+  onNextSegmentChange: (node: DTNode | undefined) => void;
+}) {
+  return (
+    <>
+      <Column>
+        Next piece:
+        <NextSegmentSelector
+          thisSegment={props.thisSegment.type}
+          nextSegment={(props.thisSegment.next?.type || "") as DTNode["type"]}
+          onSelect={(node) => {
+            props.onNextSegmentChange(node);
+          }}
+        />
+      </Column>
+      <NodeEditor
+        value={props.thisSegment.next as DTMonthOfYear}
+        onValueChange={(value) => {
+          props.onNextSegmentChange(value);
+        }}
+      />
+      {/* <Switch>
+        <Match when={props.thisSegment.next?.type === "monthOfYear"}>
+          <MonthOfYearEditor
+            value={props.thisSegment.next as DTMonthOfYear}
+            onValueChange={(value) => {
+              props.onNextSegmentChange(value);
+            }}
+          />
+        </Match>
+      </Switch> */}
+    </>
+  );
+}
+
+type NodeEditorProps<Node extends DTNode = any> = {
+  value: Node;
+  onValueChange: (value: Node) => void;
+};
+
+const allTheNodeEditors: Record<DTNode["type"], Component<NodeEditorProps>> = {
+  root: () => null,
+  century: CenturyEditor,
+  decade: DecadeEditor,
+  year: YearEditor,
+  monthOfYear: MonthOfYearEditor,
+  groupingOfYear: GroupingOfYearEditor,
+  dayOfMonth: DayOfMonthEditor,
+  dayOfYear: () => null,
+  weekOfYear: () => null,
+  hour: HourEditor,
+};
+
+function NodeEditor(props: NodeEditorProps) {
+  const Editor = () => allTheNodeEditors[props.value?.type as DTNode["type"]];
+  return <Dynamic component={Editor()} {...props} />;
+}
+
+function CenturyEditor(props: NodeEditorProps<DTCentury>) {
+  return (
+    <Column>
+      Century:
+      <input
+        type="number"
+        value={props.value.value.value}
+        onChange={(e) => {
+          const nextValue = e.currentTarget.value;
+          props.onValueChange({
+            ...props.value,
+            value: {
+              ...props.value.value,
+              value: Number(nextValue),
+            },
+          });
+        }}
+      />
+      <div>
+        <input
+          type="checkbox"
+          checked={props.value.value.approximate}
+          onChange={(e) =>
+            props.onValueChange({
+              ...props.value,
+              value: {
+                ...props.value.value,
+                approximate: e.currentTarget.checked,
+              },
+            })
+          }
+        />
+        Approximate?
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          checked={props.value.value.uncertain}
+          onChange={(e) =>
+            props.onValueChange({
+              ...props.value,
+              value: {
+                ...props.value.value,
+                uncertain: e.currentTarget.checked,
+              },
+            })
+          }
+        />
+        Dubious?
+      </div>
+    </Column>
+  );
+}
+
+function DecadeEditor(props: NodeEditorProps<DTDecade>) {
+  return (
+    <Column>
+      Decade:
+      <input
+        type="number"
+        value={props.value.value.value}
+        onChange={(e) => {
+          const nextValue = e.currentTarget.value;
+          props.onValueChange({
+            ...props.value,
+            value: {
+              ...props.value.value,
+              value: Number(nextValue),
+            },
+          });
+        }}
+      />
+      <div>
+        <input
+          type="checkbox"
+          checked={props.value.value.approximate}
+          onChange={(e) =>
+            props.onValueChange({
+              ...props.value,
+              value: {
+                ...props.value.value,
+                approximate: e.currentTarget.checked,
+              },
+            })
+          }
+        />
+        Approximate?
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          checked={props.value.value.uncertain}
+          onChange={(e) =>
+            props.onValueChange({
+              ...props.value,
+              value: {
+                ...props.value.value,
+                uncertain: e.currentTarget.checked,
+              },
+            })
+          }
+        />
+        Dubious?
+      </div>
+    </Column>
   );
 }
 
@@ -113,6 +345,38 @@ function YearEditor(props: {
               value: {
                 ...props.value.value,
                 value: Number(nextValue),
+              },
+            });
+          }}
+        />
+        <br />
+        Significant Digits:
+        <input
+          type="number"
+          value={props.value.value.significantDigits}
+          onChange={(e) => {
+            const nextValue = e.currentTarget.value;
+            props.onValueChange({
+              ...props.value,
+              value: {
+                ...props.value.value,
+                significantDigits: Number(nextValue),
+              },
+            });
+          }}
+        />
+        <br />
+        Unspecified Digits:
+        <input
+          type="number"
+          value={props.value.value.unspecifiedDigits}
+          onChange={(e) => {
+            const nextValue = e.currentTarget.value;
+            props.onValueChange({
+              ...props.value,
+              value: {
+                ...props.value.value,
+                unspecifiedDigits: Number(nextValue),
               },
             });
           }}
@@ -150,50 +414,15 @@ function YearEditor(props: {
           Dubious?
         </div>
       </Column>
-      <Column>
-        Next piece:
-        <select
-          value={props.value.next?.type || ""}
-          onChange={(e) => {
-            const nextValue = e.currentTarget.value;
-            if (nextValue === "monthOfYear") {
-              const year = getDefaultMonthOfYear();
-              props.onValueChange({
-                ...props.value,
-                next: year,
-              });
-              return;
-            }
-            // if (nextValue === "hour") {
-            //   const hour = getDefaultHour();
-            //   props.onValueChange({
-            //     type: "root",
-            //     value: hour,
-            //   });
-            //   return;
-            // }
-          }}
-        >
-          <option disabled selected>
-            Select a type
-          </option>
-          <option value="">None</option>
-          <option value="monthOfYear">Month</option>
-        </select>
-      </Column>
-      <Switch>
-        <Match when={props.value.next?.type === "monthOfYear"}>
-          <MonthOfYearEditor
-            value={props.value.next as DTMonthOfYear}
-            onValueChange={(value) => {
-              props.onValueChange({
-                ...props.value,
-                next: value,
-              });
-            }}
-          />
-        </Match>
-      </Switch>
+      <NextSegmentEditor
+        thisSegment={props.value}
+        onNextSegmentChange={(node) => {
+          props.onValueChange({
+            ...props.value,
+            next: node as any,
+          });
+        }}
+      />
     </>
   );
 }
@@ -205,7 +434,7 @@ function MonthOfYearEditor(props: {
   return (
     <>
       <Column>
-        Year:
+        Month:
         <input
           type="number"
           value={props.value.value.value}
@@ -221,50 +450,69 @@ function MonthOfYearEditor(props: {
           }}
         />
       </Column>
+      <NextSegmentEditor
+        thisSegment={props.value}
+        onNextSegmentChange={(node) => {
+          props.onValueChange({
+            ...props.value,
+            next: node as any,
+          });
+        }}
+      />
+    </>
+  );
+}
+
+function GroupingOfYearEditor(props: {
+  value: DTGroupingOfYear;
+  onValueChange: (value: DTGroupingOfYear) => void;
+}) {
+  return (
+    <>
       <Column>
-        Next piece:
+        Grouping:
         <select
-          value={props.value.next?.type || ""}
+          value={props.value.value}
           onChange={(e) => {
             const nextValue = e.currentTarget.value;
-            if (nextValue === "dayOfMonth") {
-              const year = getDefaultDayOfMonth();
-              props.onValueChange({
-                ...props.value,
-                next: year,
-              });
-              return;
-            }
-            // if (nextValue === "hour") {
-            //   const hour = getDefaultHour();
-            //   props.onValueChange({
-            //     type: "root",
-            //     value: hour,
-            //   });
-            //   return;
-            // }
+            props.onValueChange({
+              ...props.value,
+              value: Number(nextValue),
+            });
           }}
         >
-          <option disabled selected>
-            Select a type
-          </option>
-          <option value="">None</option>
-          <option value="dayOfMonth">Day</option>
+          <option value="21">Spring (independent of location)</option>
+          <option value="22">Summer (independent of location)</option>
+          <option value="23">Autumn (independent of location)</option>
+          <option value="24">Winter (independent of location)</option>
+          <option value="25">Spring — Northern Hemisphere</option>
+          <option value="26">Summer — Northern Hemisphere</option>
+          <option value="27">Autumn — Northern Hemisphere</option>
+          <option value="28">Winter — Northern Hemisphere</option>
+          <option value="29">Spring — Southern Hemisphere</option>
+          <option value="30">Summer — Southern Hemisphere</option>
+          <option value="31">Autumn — Southern Hemisphere</option>
+          <option value="32">Winter — Southern Hemisphere</option>
+          <option value="33">Quarter 1 (3 months in duration)</option>
+          <option value="34">Quarter 2 (3 months in duration)</option>
+          <option value="35">Quarter 3 (3 months in duration)</option>
+          <option value="36">Quarter 4 (3 months in duration)</option>
+          <option value="37">Quadrimester 1 (4 months in duration)</option>
+          <option value="38">Quadrimester 2 (4 months in duration)</option>
+          <option value="39">Quadrimester 3 (4 months in duration)</option>
+          <option value="40">Semestral 1 (6 months in duration)</option>
+          <option value="41">Semestral 2 (6 months in duration)</option>
         </select>
       </Column>
-      <Switch>
-        <Match when={props.value.next?.type === "dayOfMonth"}>
-          <DayOfMonthEditor
-            value={props.value.next as DTDayOfMonth}
-            onValueChange={(value) => {
-              props.onValueChange({
-                ...props.value,
-                next: value,
-              });
-            }}
-          />
-        </Match>
-      </Switch>
+      {/* <NextSegmentEditor
+        thisSegment={props.value}
+        onNextSegmentChange={(node) => {
+          props.onValueChange({
+            ...props.value,
+            next: node as any,
+          });
+        }}
+      /> */}
     </>
   );
 }
@@ -323,102 +571,8 @@ function HourEditor(props: {
   );
 }
 
-function getDefaultYear(): DTYear {
-  return {
-    type: "year",
-    value: {
-      value: 2025,
-      significantDigits: 0,
-      approximate: false,
-      uncertain: false,
-      unspecifiedDigits: 0,
-    },
-  };
-}
-
-function getDefaultMonthOfYear(): DTMonthOfYear {
-  return {
-    type: "monthOfYear",
-    value: {
-      value: 1,
-      significantDigits: 0,
-      approximate: false,
-      uncertain: false,
-      unspecifiedDigits: 0,
-    },
-  };
-}
-
-function getDefaultDayOfMonth(): DTDayOfMonth {
-  return {
-    type: "dayOfMonth",
-    value: {
-      value: 1,
-      significantDigits: 0,
-      approximate: false,
-      uncertain: false,
-      unspecifiedDigits: 0,
-    },
-  };
-}
-
-function getDefaultHour(): DTHour {
-  return {
-    type: "hour",
-    value: {
-      value: 0,
-      significantDigits: 0,
-      approximate: false,
-      uncertain: false,
-      unspecifiedDigits: 0,
-    },
-  };
-}
-
 const Column = styled("div", {
   width: 300,
-  // borderRight: "1px solid #ccc",
-  padding: 10,
+  borderLeft: "1px solid rgba(0, 0, 0, 0.18)",
+  px: 10,
 });
-
-function formatDTNode(node: DTNode): string {
-  switch (node.type) {
-    case "root":
-      return formatDTRoot(node);
-    case "year":
-      return formatDTYear(node);
-    case "monthOfYear":
-      return formatDTMonthOfYear(node);
-  }
-  return "";
-}
-
-function formatDTRoot(node: DTRoot): string {
-  return node.value ? formatDTNode(node.value) : "";
-}
-
-function formatDTYear(node: DTYear): string {
-  const next = node.next ? "-" + formatDTNode(node.next) : "";
-  let value = node.value.value.toFixed();
-  if (node.value.approximate && node.value.uncertain) {
-    value = `%${value}`;
-  } else {
-    if (node.value.approximate) value = `~${value}`;
-    if (node.value.uncertain) value = `?${value}`;
-  }
-
-  return `${value}${next}`;
-}
-
-function formatDTMonthOfYear(node: DTMonthOfYear): string {
-  const next = node.next ? "-" + formatDTNode(node.next) : "";
-  let value = node.value.value.toFixed();
-  if (node.value.approximate && node.value.uncertain) {
-    value = `%${value}`;
-  } else {
-    if (node.value.approximate) value = `~${value}`;
-    if (node.value.uncertain) value = `?${value}`;
-  }
-
-  return `${value}${next}`;
-}

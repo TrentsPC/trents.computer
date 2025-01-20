@@ -8,7 +8,19 @@ export type DTComponent = {
 
 export type DTRoot = {
   type: "root";
-  value: DTYear | DTHour | undefined;
+  next?: DTCentury | DTDecade | DTYear | DTHour | undefined;
+};
+
+export type DTCentury = {
+  type: "century";
+  value: DTComponent;
+  next?: undefined;
+};
+
+export type DTDecade = {
+  type: "decade";
+  value: DTComponent;
+  next?: undefined;
 };
 
 export type DTYear = {
@@ -26,6 +38,7 @@ export type DTMonthOfYear = {
 export type DTGroupingOfYear = {
   type: "groupingOfYear";
   value: number;
+  next?: undefined;
 };
 
 export type DTDayOfMonth = {
@@ -49,10 +62,13 @@ export type DTWeekOfYear = {
 export type DTHour = {
   type: "hour";
   value: DTComponent;
+  next?: undefined;
 };
 
 export type DTNode =
   | DTRoot
+  | DTCentury
+  | DTDecade
   | DTYear
   | DTMonthOfYear
   | DTGroupingOfYear
