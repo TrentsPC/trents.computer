@@ -1,21 +1,30 @@
-import { Logger, createLogger } from "./logger";
-import { AddressBus } from "./address-bus";
-import { Registers, createRegisters } from "./registers";
+import { Accessor } from "solid-js";
+import type { GameBoy } from "./gameBoy";
 import { createInstructions } from "./instructions";
+import { Log, Logger } from "./logger";
+import { createRegisters } from "./registers";
+
+export type CPU = {
+  step: () => boolean | void;
+  logs: Accessor<Log[]>;
+};
 
 export function createCPU({
-  memory,
+  gameBoy,
   logger,
 }: {
-  memory: AddressBus;
+  gameBoy: GameBoy;
   logger: Logger;
-}) {
+}): CPU {
   const registers = createRegisters();
 
-  const instructions = createInstructions({ registers, memory });
+  const instructions = createInstructions({
+    registers,
+    memory: gameBoy.addressBus,
+  });
 
   function step(): boolean | void {
-    const opcode = memory.read(registers.pc.get());
+    const opcode = gameBoy.addressBus.readByte(registers.pc.get());
     const instruction = instructions[opcode];
     if (!instruction) {
       console.log(
@@ -27,7 +36,7 @@ export function createCPU({
     }
     const args = [];
     for (let i = 1; i < instruction.length; i++) {
-      args.push(memory.read(registers.pc.get() + i));
+      args.push(gameBoy.addressBus.readByte(registers.pc.get() + i));
     }
     logger.log(
       registers.pc.get().toString(16).padStart(4, "0") +

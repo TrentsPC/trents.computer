@@ -1,10 +1,13 @@
-export function createAddressBus() {
-  const memory = new Uint8Array(0xffff);
+import type { GameBoy } from "./gameBoy";
+import { uint16, uint8 } from "./types";
 
-  function loadCartridge(rom: ArrayBuffer) {
-    const array = new Uint8Array(rom);
-    memory.set(array.slice(0x0000, 0x8000), 0x0000);
-  }
+export type AddressBus = {
+  readByte: (address: uint16) => uint8;
+  writeByte: (address: uint16, value: uint8) => void;
+};
+
+export function createAddressBus(gameBoy: GameBoy): AddressBus {
+  const memory = new Uint8Array(0xffff);
 
   function read(address: number) {
     // 0xff44 = LCD Y-Coordinate
@@ -20,7 +23,5 @@ export function createAddressBus() {
     // console.log(`Wrote ${value.toString(16)} to ${address.toString(16)}`);
   }
 
-  return { loadCartridge, read: read, write: write };
+  return { readByte: read, writeByte: write };
 }
-
-export type AddressBus = ReturnType<typeof createAddressBus>;
