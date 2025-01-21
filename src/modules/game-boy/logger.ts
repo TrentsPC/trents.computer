@@ -16,6 +16,7 @@ export function createLogger() {
             },
           ];
         }
+        logs = logs.slice(-100);
         return [
           ...logs,
           {

@@ -6,6 +6,7 @@ import type { GameBoy } from "./gameBoy";
 export type VRAM = {
   readByte: (address: number) => number;
   writeByte: (address: number, value: number) => void;
+  _getArray: () => Uint8Array;
 };
 
 export function createVRAM(gameBoy: GameBoy): VRAM {
@@ -19,5 +20,5 @@ export function createVRAM(gameBoy: GameBoy): VRAM {
     memory[address] = value;
   }
 
-  return { readByte: read, writeByte: write };
+  return { readByte: read, writeByte: write, _getArray: () => memory };
 }

@@ -1,5 +1,5 @@
-import { For, createEffect } from "solid-js";
-import { createGameBoy } from "./gameBoy";
+import { For } from "solid-js";
+import { createGameBoy, GameBoy } from "./gameBoy";
 import { Log } from "./logger";
 
 const SCALE_FACTOR = 4;
@@ -31,8 +31,89 @@ export function GameBoyEmulator() {
           />
         </div>
       </div>
+      <button
+        onClick={() => {
+          gameBoy.advanceFrame();
+          // console.log(gameBoy.gameBoy.vram._getArray());
+        }}
+      >
+        Step by 1 frame
+      </button>
       <Terminal logs={gameBoy.logs()} />
-      <Terminal logs={gameBoy.cpuLogs()} />
+      <VRAMMap gameBoy={gameBoy.gameBoy} />
+      <AddressSpaceMap gameBoy={gameBoy.gameBoy} />
+      {/* <Terminal logs={gameBoy.cpuLogs()} /> */}
+    </div>
+  );
+}
+
+function AddressSpaceMap({ gameBoy }: { gameBoy: GameBoy }) {
+  let ref: HTMLCanvasElement = undefined!;
+
+  function render() {
+    for (let i = 0; i <= 0xffff; i++) {
+      const byte = gameBoy.addressBus.readByte(i);
+      const x = i % 256;
+      const y = Math.floor(i / 256);
+      const ctx = ref.getContext("2d")!;
+      if (byte === 0) {
+        ctx.fillStyle = "red";
+      } else {
+        ctx.fillStyle = `rgb(${byte}, ${byte}, ${byte})`;
+      }
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={render}>render address space</button>
+      <canvas
+        width="256"
+        height="256"
+        ref={ref}
+        style={{
+          "image-rendering": "pixelated",
+          width: 256 * 4 + "px",
+          height: 256 * 4 + "px",
+        }}
+      />
+    </div>
+  );
+}
+
+function VRAMMap({ gameBoy }: { gameBoy: GameBoy }) {
+  let ref: HTMLCanvasElement = undefined!;
+
+  function render() {
+    for (let i = 0; i < 0x2000; i++) {
+      const address = i + 0x8000;
+      const byte = gameBoy.addressBus.readByte(address);
+      const x = i % 64;
+      const y = Math.floor(i / 64);
+      const ctx = ref.getContext("2d")!;
+      if (byte === 0) {
+        ctx.fillStyle = "red";
+      } else {
+        ctx.fillStyle = `rgb(${byte}, ${byte}, ${byte})`;
+      }
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={render}>render VRAM</button>
+      <canvas
+        width="64"
+        height="128"
+        ref={ref}
+        style={{
+          "image-rendering": "pixelated",
+          width: 64 * 4 + "px",
+          height: 128 * 4 + "px",
+        }}
+      />
     </div>
   );
 }

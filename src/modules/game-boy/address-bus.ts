@@ -7,20 +7,36 @@ export type AddressBus = {
 };
 
 export function createAddressBus(gameBoy: GameBoy): AddressBus {
-  const memory = new Uint8Array(0xffff);
+  const memory = new Uint8Array(0x10000);
 
   function read(address: number) {
-    // 0xff44 = LCD Y-Coordinate
-    if (address === 0xff44) {
-      // pretend the screen is always vblank (148 in particular is from Super Mario Land))
-      return 148;
+    if (address >= 0x0000 && address <= 0x7fff) {
+      return gameBoy.cartridge.readByte(address);
     }
+    if (address >= 0x8000 && address <= 0x9fff) {
+      return gameBoy.vram.readByte(address - 0x8000);
+    }
+    if (address >= 0xff00 && address <= 0xff74) {
+      return gameBoy.ioRegisters.readByte(address - 0xff00);
+    }
+    console.log(`Read ${address.toString(16)}`);
     return memory[address];
   }
 
   function write(address: number, value: number) {
+    if (address >= 0x0000 && address <= 0x7fff) {
+      return;
+    }
+    if (address >= 0x8000 && address <= 0x9fff) {
+      gameBoy.vram.writeByte(address - 0x8000, value);
+      return;
+    }
+    if (address >= 0xff00 && address <= 0xff74) {
+      if (address === 0xff0f) console.log("Write to IF register", value);
+      return gameBoy.ioRegisters.writeByte(address - 0xff00, value);
+    }
     memory[address] = value;
-    // console.log(`Wrote ${value.toString(16)} to ${address.toString(16)}`);
+    console.log(`Wrote ${value.toString(16)} to ${address.toString(16)}`);
   }
 
   return { readByte: read, writeByte: write };

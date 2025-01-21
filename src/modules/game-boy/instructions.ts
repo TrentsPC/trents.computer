@@ -63,7 +63,7 @@ export function createInstructions({
       cycles: 8,
       execute: () => {
         const addr = destination.get();
-        memory.write(addr, source.get());
+        memory.writeByte(addr, source.get());
       },
     };
   }
@@ -150,7 +150,7 @@ export function createInstructions({
     cycles: 8,
     execute: () => {
       const addr = registers.hl.get();
-      memory.write(addr, registers.a.get());
+      memory.writeByte(addr, registers.a.get());
       registers.hl.set(addr - 1);
     },
   });
@@ -162,7 +162,7 @@ export function createInstructions({
     cycles: 12,
     execute: ([param]) => {
       const addr = registers.hl.get();
-      memory.write(addr, param);
+      memory.writeByte(addr, param);
     },
   });
   addInstruction({
@@ -183,7 +183,7 @@ export function createInstructions({
     length: 1,
     cycles: 4,
     execute: () => {
-      const value = memory.read(registers.d.get());
+      const value = memory.readByte(registers.d.get());
       registers.b.set(value);
     },
   });
@@ -194,7 +194,7 @@ export function createInstructions({
     length: 1,
     cycles: 4,
     execute: () => {
-      const value = memory.read(registers.e.get());
+      const value = memory.readByte(registers.e.get());
       registers.b.set(value);
     },
   });
@@ -229,6 +229,32 @@ export function createInstructions({
       registers.pc.set((high << 8) | low);
     },
   });
+  addInstruction({
+    mnemonic: "PUSH BC",
+    print: () => "PUSH BC",
+    opcode: 0xc5,
+    length: 1,
+    cycles: 16,
+    execute: () => {
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.b.get());
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.c.get());
+    },
+  });
+  addInstruction({
+    mnemonic: "PUSH DE",
+    print: () => "PUSH DE",
+    opcode: 0xd5,
+    length: 1,
+    cycles: 16,
+    execute: () => {
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.d.get());
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.e.get());
+    },
+  });
 
   addInstruction({
     mnemonic: "LDH (a8),A",
@@ -239,7 +265,20 @@ export function createInstructions({
     cycles: 12,
     execute: ([offset]) => {
       const addr = 0xff00 + offset;
-      memory.write(addr, registers.a.get());
+      memory.writeByte(addr, registers.a.get());
+    },
+  });
+  addInstruction({
+    mnemonic: "PUSH HL",
+    print: () => "PUSH HL",
+    opcode: 0xe5,
+    length: 1,
+    cycles: 16,
+    execute: () => {
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.h.get());
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.l.get());
     },
   });
 
@@ -252,7 +291,7 @@ export function createInstructions({
     cycles: 12,
     execute: ([offset]) => {
       const addr = 0xff00 + offset;
-      registers.a.set(memory.read(addr));
+      registers.a.set(memory.readByte(addr));
     },
   });
   addInstruction({
@@ -262,6 +301,19 @@ export function createInstructions({
     length: 1,
     cycles: 4,
     execute: () => {},
+  });
+  addInstruction({
+    mnemonic: "PUSH AF",
+    print: () => "PUSH AF",
+    opcode: 0xf5,
+    length: 1,
+    cycles: 16,
+    execute: () => {
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.a.get());
+      registers.sp.set(registers.sp.get() - 1);
+      memory.writeByte(registers.sp.get(), registers.f.get());
+    },
   });
   addInstruction({
     mnemonic: "CP d8",

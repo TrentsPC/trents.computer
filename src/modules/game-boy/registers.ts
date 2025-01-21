@@ -13,8 +13,9 @@ export function createRegisters() {
   let e = 0;
   let h = 0;
   let l = 0;
+  let ime = 1;
   // Stack Pointer
-  let sp = 0;
+  let sp = 0xfffe;
   // Program Counter
   let pc = 0x100;
 
@@ -308,6 +309,11 @@ export function createRegisters() {
       name: "FC",
       get: getFlagC,
       set: setFlagC,
+    },
+    ime: {
+      name: "IME",
+      get: () => ime,
+      set: (value: number) => (ime = value),
     },
     logs,
   };
