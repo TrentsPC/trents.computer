@@ -17,7 +17,8 @@ export function createRegisters() {
   // Stack Pointer
   let sp = 0xfffe;
   // Program Counter
-  let pc = 0x100;
+  // Set to 0x100 to skip the boot ROM, set to 0 to start at the beginning
+  let pc = 0x0000;
 
   function print() {
     logger.log(

@@ -1,8 +1,23 @@
-import { For } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { createGameBoy, GameBoy } from "./gameBoy";
 import { Log } from "./logger";
 
 const SCALE_FACTOR = 4;
+
+function getColor(byte: number) {
+  switch (byte) {
+    case 0:
+      return "#9CBC10";
+    case 1:
+      return "#8CAC0D";
+    case 2:
+      return "#316231";
+    case 3:
+      return "#0F3810";
+    default:
+      return "#9CBC10";
+  }
+}
 
 export function GameBoyEmulator() {
   const gameBoy = createGameBoy();
@@ -39,10 +54,69 @@ export function GameBoyEmulator() {
       >
         Step by 1 frame
       </button>
+      <button
+        onClick={async () => {
+          for (let i = 0; i < 10; i++) {
+            gameBoy.advanceFrame();
+            await raf();
+          }
+          // console.log(gameBoy.gameBoy.vram._getArray());
+        }}
+      >
+        Step by 10 frames
+      </button>
+      <button
+        onClick={async () => {
+          for (let i = 0; i < 60; i++) {
+            gameBoy.advanceFrame();
+            await raf();
+          }
+          // console.log(gameBoy.gameBoy.vram._getArray());
+        }}
+      >
+        Step by 60 frames
+      </button>
+      <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
       <Terminal logs={gameBoy.logs()} />
+      <TileMap gameBoy={gameBoy.gameBoy} />
+      <TileData gameBoy={gameBoy.gameBoy} />
       <VRAMMap gameBoy={gameBoy.gameBoy} />
       <AddressSpaceMap gameBoy={gameBoy.gameBoy} />
       {/* <Terminal logs={gameBoy.cpuLogs()} /> */}
+    </div>
+  );
+}
+
+const raf = async () => {
+  return new Promise((resolve) => requestAnimationFrame(resolve));
+};
+
+function EnabledInterrupts({ gameBoy }: { gameBoy: GameBoy }) {
+  const [ime, setIME] = createSignal(gameBoy.cpu.getRegisters().ime.get());
+  const [enabled, setEnabled] = createSignal(
+    gameBoy.addressBus.readByte(0xffff)
+  );
+  const [requested, setRequested] = createSignal(
+    gameBoy.addressBus.readByte(0xff0f)
+  );
+
+  function update() {
+    setIME(gameBoy.cpu.getRegisters().ime.get());
+    setEnabled(gameBoy.addressBus.readByte(0xffff));
+    setRequested(gameBoy.addressBus.readByte(0xff0f));
+  }
+  return (
+    <div>
+      <button onClick={() => update()}>update</button>
+      <div>
+        Master interrupts: <code>{ime() ? "TRUE" : "FALSE"}</code>
+      </div>
+      <div>
+        enabled: <code>{enabled().toString(2).padStart(8, "0")}</code>
+      </div>
+      <div>
+        requested: <code>{requested().toString(2).padStart(8, "0")}</code>
+      </div>
     </div>
   );
 }
@@ -82,6 +156,125 @@ function AddressSpaceMap({ gameBoy }: { gameBoy: GameBoy }) {
   );
 }
 
+function TileMap({ gameBoy }: { gameBoy: GameBoy }) {
+  let ref: HTMLCanvasElement = undefined!;
+
+  const TILE_WIDTH = 8;
+  const TILE_HEIGHT = 8;
+  const TILES_PER_ROW = 32;
+  const ROWS = 64;
+
+  function renderTile(address: number) {
+    const canvas = new OffscreenCanvas(8, 8);
+    for (let y = 0; y < 8; y++) {
+      const byte1 = gameBoy.addressBus.readByte(address + y * 2);
+      const byte2 = gameBoy.addressBus.readByte(address + y * 2 + 1);
+      for (let x = 0; x < 8; x++) {
+        const bit1 = (byte1 >> (7 - x)) & 1;
+        const bit2 = (byte2 >> (7 - x)) & 1;
+        const color = bit1 + bit2 * 2;
+        const ctx = canvas.getContext("2d")!;
+
+        ctx.fillStyle = getColor(color);
+
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+    return canvas;
+  }
+
+  function render() {
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < TILES_PER_ROW; x++) {
+        const tileIndex = y * TILES_PER_ROW + x;
+        const startingAddress = 0x9800 + tileIndex;
+        const tileNumber = gameBoy.addressBus.readByte(startingAddress);
+        const startingAddress2 = 0x8000 + tileNumber * 0x10;
+
+        const tileCanvas = renderTile(startingAddress2);
+        const ctx = ref.getContext("2d")!;
+        ctx.drawImage(tileCanvas, x * TILE_WIDTH, y * TILE_HEIGHT);
+      }
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={render}>render Tile Map</button>
+      <canvas
+        width={TILE_WIDTH * TILES_PER_ROW}
+        height={TILE_HEIGHT * ROWS}
+        ref={ref}
+        style={{
+          "image-rendering": "pixelated",
+          width: TILE_WIDTH * TILES_PER_ROW * 4 + "px",
+          height: TILE_HEIGHT * ROWS * 4 + "px",
+        }}
+      />
+    </div>
+  );
+}
+
+function TileData({ gameBoy }: { gameBoy: GameBoy }) {
+  let ref: HTMLCanvasElement = undefined!;
+
+  const TILE_WIDTH = 8;
+  const TILE_HEIGHT = 8;
+  const TILES_PER_ROW = 16;
+  const TOTAL_TILES = (0x97ff - 0x8000) / 16;
+  const ROWS = Math.ceil(TOTAL_TILES / TILES_PER_ROW);
+
+  function renderTile(address: number) {
+    const canvas = new OffscreenCanvas(8, 8);
+    for (let y = 0; y < 8; y++) {
+      const byte1 = gameBoy.addressBus.readByte(address + y * 2);
+      const byte2 = gameBoy.addressBus.readByte(address + y * 2 + 1);
+      for (let x = 0; x < 8; x++) {
+        const bit1 = (byte1 >> (7 - x)) & 1;
+        const bit2 = (byte2 >> (7 - x)) & 1;
+        const color = bit1 + bit2 * 2;
+        const ctx = canvas.getContext("2d")!;
+
+        ctx.fillStyle = getColor(color);
+
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+    return canvas;
+  }
+
+  function render() {
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < TILES_PER_ROW; x++) {
+        const tileIndex = y * TILES_PER_ROW + x;
+        if (tileIndex >= TOTAL_TILES) {
+          return;
+        }
+        const startingAddress = 0x8000 + tileIndex * 0x10;
+
+        const tileCanvas = renderTile(startingAddress);
+        const ctx = ref.getContext("2d")!;
+        ctx.drawImage(tileCanvas, x * TILE_WIDTH, y * TILE_HEIGHT);
+      }
+    }
+  }
+  return (
+    <div>
+      <button onClick={render}>render Tile Data</button>
+      <canvas
+        width={TILE_WIDTH * TILES_PER_ROW}
+        height={TILE_HEIGHT * ROWS}
+        ref={ref}
+        style={{
+          "image-rendering": "pixelated",
+          width: TILE_WIDTH * TILES_PER_ROW * 4 + "px",
+          height: TILE_HEIGHT * ROWS * 4 + "px",
+        }}
+      />
+    </div>
+  );
+}
+
 function VRAMMap({ gameBoy }: { gameBoy: GameBoy }) {
   let ref: HTMLCanvasElement = undefined!;
 
@@ -104,6 +297,7 @@ function VRAMMap({ gameBoy }: { gameBoy: GameBoy }) {
   return (
     <div>
       <button onClick={render}>render VRAM</button>
+
       <canvas
         width="64"
         height="128"

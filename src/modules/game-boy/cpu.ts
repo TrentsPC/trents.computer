@@ -2,7 +2,7 @@ import { Accessor } from "solid-js";
 import type { GameBoy } from "./gameBoy";
 import { createInstructions } from "./instructions";
 import { Log, Logger } from "./logger";
-import { createRegisters } from "./registers";
+import { createRegisters, Registers } from "./registers";
 
 export type CPU = {
   /**
@@ -10,6 +10,7 @@ export type CPU = {
    */
   step: () => void;
   logs: Accessor<Log[]>;
+  getRegisters: () => Registers;
 };
 
 export function createCPU({
@@ -69,7 +70,12 @@ export function createCPU({
       throw new Error(
         `Unknown opcode ${opcode
           .toString(16)
-          .padStart(2, "0")} at ${registers.pc.get().toString(16)}`
+          .padStart(2, "0")
+          .toUpperCase()} at ${registers.pc
+          .get()
+          .toString(16)
+          .padStart(4, "0")
+          .toUpperCase()}`
       );
     }
     const args = [];
@@ -83,8 +89,12 @@ export function createCPU({
     );
     registers.pc.set(registers.pc.get() + instruction.length);
     instruction.execute(args);
-    cpuCooldown = instruction.cycles - 1;
+    const cycles =
+      typeof instruction.cycles === "function"
+        ? instruction.cycles(args)
+        : instruction.cycles;
+    cpuCooldown = cycles - 1;
   }
 
-  return { step, logs: registers.logs };
+  return { step, logs: registers.logs, getRegisters: () => registers };
 }
