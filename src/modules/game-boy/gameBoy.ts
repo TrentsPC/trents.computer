@@ -8,7 +8,7 @@ import { createIORegisters, IORegisters } from "./io-registers";
 import { createLogger } from "./logger";
 import { createOAM, OAM } from "./oam";
 import { createPPU, PPU } from "./ppu";
-import { SUPER_MARIO_LAND } from "./roms/super-mario-land";
+import { CPU_INSTR_01_SPECIAL } from "./roms/blargg/cpu_instr_01_special";
 import { createVRAM, VRAM } from "./vram";
 import { createWRAM, WRAM } from "./wram";
 
@@ -28,7 +28,11 @@ export type GameBoy = {
   ie: IE;
 };
 
-export function createGameBoy() {
+export function createGameBoy({
+  getCanvas,
+}: {
+  getCanvas: () => HTMLCanvasElement;
+}) {
   const { logs, logger } = createLogger();
 
   const gb = {} as GameBoy;
@@ -36,7 +40,7 @@ export function createGameBoy() {
   gb.addressBus = memory;
   const cpu = createCPU({ gameBoy: gb, logger });
   gb.cpu = cpu;
-  const ppu = createPPU(gb);
+  const ppu = createPPU(gb, getCanvas);
   gb.ppu = ppu;
 
   // Memory map
@@ -58,15 +62,8 @@ export function createGameBoy() {
   gb.ie = ie;
 
   onMount(() => {
-    // loadCartridge(SUPER_MARIO_LAND);
-    cartridge.insertCartridge(SUPER_MARIO_LAND);
-
-    // for (let i = 0; i < ONE_FRAME * 10; i++) {
-    //   let res = cpu.step();
-    //   if (res === false) {
-    //     break;
-    //   }
-    // }
+    // cartridge.insertCartridge(SUPER_MARIO_LAND);
+    cartridge.insertCartridge(CPU_INSTR_01_SPECIAL);
   });
 
   function advanceFrame() {
@@ -77,12 +74,6 @@ export function createGameBoy() {
         cpu.step();
       }
     }
-    // for (let i = 0; i < ONE_FRAME; i++) {
-    //   let res = cpu.step();
-    //   if (res === false) {
-    //     break;
-    //   }
-    // }
   }
 
   return { logs, cpuLogs: cpu.logs, gameBoy: gb, advanceFrame };

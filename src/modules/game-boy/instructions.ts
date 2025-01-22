@@ -24,6 +24,24 @@ export function createInstructions({
     memory,
   });
 
+  function registerADD_A_hl(opcode: number) {
+    registerInstruction({
+      mnemonic: "ADD A,[HL]",
+      print: () => "ADD A,[HL]",
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const value = memory.readByte(registers.hl.get());
+        const result = registers.a.get() + value;
+        registers.a.set(result % 256);
+        registers.flagZ.set(result === 0);
+        registers.flagN.set(false);
+        registers.flagH.set((registers.a.get() & 0xf) + (value & 0xf) > 0xf);
+        registers.flagC.set(result > 0xff);
+      },
+    });
+  }
   function register_CALL_n16(opcode: number) {
     registerInstruction({
       mnemonic: "CALL a16",
@@ -41,6 +59,23 @@ export function createInstructions({
         registers.sp.set(registers.sp.get() - 1);
         memory.writeByte(registers.sp.get(), registers.pc.get() & 0xff);
         registers.pc.set(addr);
+      },
+    });
+  }
+  function registerCP_HL(opcode: number) {
+    registerInstruction({
+      mnemonic: "CP A,[HL]",
+      print: () => "CP A,[HL]",
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const value = memory.readByte(registers.hl.get());
+        const result = registers.a.get() - value;
+        registers.flagZ.set(result === 0);
+        registers.flagN.set(true);
+        registers.flagH.set((registers.a.get() & 0xf) < (value & 0xf));
+        registers.flagC.set(registers.a.get() < value);
       },
     });
   }
@@ -89,8 +124,9 @@ export function createInstructions({
   }
   function registerJR_CC_n8(opcode: number, condition: () => boolean) {
     registerInstruction({
-      mnemonic: "JR CC,r8",
-      print: ([offset]) => `JR   $${toSigned(offset)}`,
+      mnemonic: `JR ${opcode === 0x20 ? "NZ" : "Z"},r8`,
+      print: ([offset]) =>
+        `JR ${opcode === 0x20 ? "NZ" : "Z"} $${toSigned(offset)}`,
       opcode,
       length: 2,
       cycles: () => (condition() ? 3 : 2),
@@ -123,6 +159,20 @@ export function createInstructions({
       cycles: 2,
       execute: ([param]) => {
         register.set(param);
+      },
+    });
+  }
+  function registerLD_A_HLI(opcode: number) {
+    registerInstruction({
+      mnemonic: "LD A,[HL+]",
+      print: () => "LD A,[HL+]",
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const addr = registers.hl.get();
+        registers.a.set(memory.readByte(addr));
+        registers.hl.set(addr + 1);
       },
     });
   }
@@ -286,6 +336,23 @@ export function createInstructions({
     });
   }
 
+  function registerRST(opcode: number, addr: number) {
+    registerInstruction({
+      mnemonic: `RST  $0x${addr.toString(16).padStart(2, "0")}`,
+      print: () => `RST  $0x${addr.toString(16).padStart(2, "0")}`,
+      opcode,
+      length: 1,
+      cycles: 4,
+      execute: () => {
+        registers.sp.set(registers.sp.get() - 1);
+        memory.writeByte(registers.sp.get(), (registers.pc.get() >> 8) & 0xff);
+        registers.sp.set(registers.sp.get() - 1);
+        memory.writeByte(registers.sp.get(), registers.pc.get() & 0xff);
+        registers.pc.set(addr);
+      },
+    });
+  }
+
   function registerSUB_r8(opcode: number, register: Register) {
     registerInstruction({
       mnemonic: `SUB  ${register.name}`,
@@ -332,6 +399,7 @@ export function createInstructions({
   registerNOP(0x00);
   registerInstruction(createLD16Register(0x01, registers.bc));
   registerLDAddrFromRegister(0x02, registers.bc, registers.a);
+  registerINC_r16(0x03, registers.bc);
   registerINC_r8(0x04, registers.b);
   registerInstruction(createDEC8bitRegister(0x05, registers.b));
   registerINC_r8(0x0c, registers.c);
@@ -340,10 +408,13 @@ export function createInstructions({
   registerInstruction(createLD16Register(0x11, registers.de));
   registerLDAddrFromRegister(0x12, registers.de, registers.a);
   registerINC_r16(0x13, registers.de);
+  registerINC_r8(0x14, registers.d);
   registerInstruction(createDEC8bitRegister(0x15, registers.d));
+  registerLD_r8_n8(0x16, registers.d);
   registerRLA(0x17);
   registerJR_n8(0x18);
   registerLD_A_r16(0x1a, registers.de);
+  registerINC_r8(0x1c, registers.e);
   registerInstruction(createDEC8bitRegister(0x1d, registers.e));
   registerLD_r8_n8(0x1e, registers.e);
 
@@ -354,12 +425,14 @@ export function createInstructions({
   registerINC_r8(0x24, registers.h);
   registerInstruction(createDEC8bitRegister(0x25, registers.h));
   registerJR_CC_n8(0x28, () => registers.flagZ.get());
+  registerLD_A_HLI(0x2a);
   registerInstruction(createDEC8bitRegister(0x2d, registers.l));
   registerLD_r8_n8(0x2e, registers.l);
 
   registerInstruction(createLD16Register(0x31, registers.sp));
   registerInstruction(createDEC8bitRegister(0x3d, registers.a));
 
+  registerLD_r8_r8(0x47, registers.b, registers.a);
   registerLD_r8_r8(0x4f, registers.c, registers.a);
 
   registerLD_r8_r8(0x57, registers.d, registers.a);
@@ -367,16 +440,26 @@ export function createInstructions({
   registerLD_r8_r8(0x67, registers.h, registers.a);
 
   registerLD_HL_r8(0x77, registers.a);
+  registerLD_r8_r8(0x78, registers.a, registers.b);
   registerLD_r8_r8(0x7b, registers.a, registers.e);
   registerLD_r8_r8(0x7c, registers.a, registers.h);
+  registerLD_r8_r8(0x7d, registers.a, registers.l);
+
+  registerADD_A_hl(0x86);
 
   registerSUB_r8(0x90, registers.b);
+
+  registerCP_HL(0xbe);
 
   registerPOP_r16(0xc1, registers.bc);
   registerRET(0xc9);
   register_CALL_n16(0xcd);
 
+  registerPOP_r16(0xe1, registers.hl);
   registerLD_n16_A(0xea);
+
+  registerPOP_r16(0xf1, registers.af);
+  registerRST(0xff, 0x38);
 
   registerInstruction({
     mnemonic: "LD B,d8",
@@ -399,19 +482,19 @@ export function createInstructions({
     },
   });
 
-  registerInstruction({
-    mnemonic: "JR NZ,r8",
-    print: ([offset]) => `JRNZ $${toSigned(offset)}`,
-    opcode: 0x20,
-    length: 2,
-    cycles: () => (!registers.flagZ.get() ? 3 : 2),
-    execute: ([offset]) => {
-      if (!registers.flagZ.get()) {
-        const newPc = registers.pc.get() + toSigned(offset);
-        registers.pc.set(newPc);
-      }
-    },
-  });
+  // registerInstruction({
+  //   mnemonic: "JR NZ,r8",
+  //   print: ([offset]) => `JRNZ $${toSigned(offset)}`,
+  //   opcode: 0x20,
+  //   length: 2,
+  //   cycles: () => (!registers.flagZ.get() ? 3 : 2),
+  //   execute: ([offset]) => {
+  //     if (!registers.flagZ.get()) {
+  //       const newPc = registers.pc.get() + toSigned(offset);
+  //       registers.pc.set(newPc);
+  //     }
+  //   },
+  // });
 
   registerInstruction({
     mnemonic: "LD (HL-),A",

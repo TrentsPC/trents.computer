@@ -16,15 +16,24 @@ export function createLogger() {
             },
           ];
         }
-        logs = logs.slice(-100);
-        return [
-          ...logs,
-          {
-            message,
-            type: "log",
-            key,
-          },
-        ];
+        // logs = logs.slice(-10);
+        logs.push({
+          message,
+          type: "log",
+          key,
+        });
+        if (logs.length > 256) {
+          logs.shift();
+        }
+        return logs;
+        // return [
+        //   ...logs,
+        //   {
+        //     message,
+        //     type: "log",
+        //     key,
+        //   },
+        // ];
       }),
     warn: (message: JSX.Element, { key }: { key?: unknown } = {}) =>
       setLogs((logs) => [

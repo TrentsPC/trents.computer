@@ -20,7 +20,8 @@ function getColor(byte: number) {
 }
 
 export function GameBoyEmulator() {
-  const gameBoy = createGameBoy();
+  let canvas: HTMLCanvasElement = undefined!;
+  const gameBoy = createGameBoy({ getCanvas: () => canvas });
 
   return (
     <div css={{ spaceY: 24 }}>
@@ -40,16 +41,22 @@ export function GameBoyEmulator() {
           }}
         >
           <canvas
-            width={160 * SCALE_FACTOR}
-            height={144 * SCALE_FACTOR}
-            css={{ background: "white" }}
+            ref={canvas}
+            width={160}
+            height={144}
+            css={{
+              background: "white",
+              width: 160 * 4,
+              height: 144 * 4,
+              imageRendering: "pixelated",
+            }}
           />
         </div>
       </div>
       <button
         onClick={() => {
           gameBoy.advanceFrame();
-          // console.log(gameBoy.gameBoy.vram._getArray());
+          console.log(gameBoy.logs());
         }}
       >
         Step by 1 frame
@@ -60,24 +67,32 @@ export function GameBoyEmulator() {
             gameBoy.advanceFrame();
             await raf();
           }
-          // console.log(gameBoy.gameBoy.vram._getArray());
+          console.log(gameBoy.logs());
         }}
       >
         Step by 10 frames
       </button>
       <button
         onClick={async () => {
+          const initialPoint = performance.now();
           for (let i = 0; i < 60; i++) {
             gameBoy.advanceFrame();
             await raf();
           }
-          // console.log(gameBoy.gameBoy.vram._getArray());
+          const endPoint = performance.now();
+          console.log(
+            `Running at a blazing fast ${(
+              60 /
+              ((endPoint - initialPoint) / 1000)
+            ).toFixed(3)}fps`
+          );
+          console.log(gameBoy.logs());
         }}
       >
         Step by 60 frames
       </button>
       <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
-      <Terminal logs={gameBoy.logs()} />
+      {/* <Terminal logs={gameBoy.logs()} /> */}
       <TileMap gameBoy={gameBoy.gameBoy} />
       <TileData gameBoy={gameBoy.gameBoy} />
       <VRAMMap gameBoy={gameBoy.gameBoy} />
@@ -184,6 +199,7 @@ function TileMap({ gameBoy }: { gameBoy: GameBoy }) {
   }
 
   function render() {
+    const ctx = ref.getContext("2d")!;
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < TILES_PER_ROW; x++) {
         const tileIndex = y * TILES_PER_ROW + x;
@@ -192,10 +208,15 @@ function TileMap({ gameBoy }: { gameBoy: GameBoy }) {
         const startingAddress2 = 0x8000 + tileNumber * 0x10;
 
         const tileCanvas = renderTile(startingAddress2);
-        const ctx = ref.getContext("2d")!;
         ctx.drawImage(tileCanvas, x * TILE_WIDTH, y * TILE_HEIGHT);
       }
     }
+    const SCY = gameBoy.addressBus.readByte(0xff42);
+    const SCX = gameBoy.addressBus.readByte(0xff43);
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(SCX, SCY, 160, 144);
+    // ctx.strokeRect(SCX - 255, SCY, 160, 144);
   }
 
   return (

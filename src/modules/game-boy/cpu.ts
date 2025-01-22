@@ -38,8 +38,8 @@ export function createCPU({
 
     // check for interrupts
     if (registers.ime.get()) {
-      const enabledFlags = gameBoy.addressBus.readByte(0xffff);
-      const requestedFlags = gameBoy.addressBus.readByte(0xff0f);
+      const enabledFlags = gameBoy.addressBus.readByte(0xffff, true);
+      const requestedFlags = gameBoy.addressBus.readByte(0xff0f, true);
       const interruptFlags = enabledFlags & requestedFlags;
       // console.log({
       //   enabledFlags: enabledFlags.toString(2),
