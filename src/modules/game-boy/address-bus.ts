@@ -14,13 +14,13 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
 
   function read(address: number, quiet = false) {
     if (address >= 0x0000 && address <= 0x7fff) {
-      // const bootRomSelector = memory[0xff50];
-      // if (bootRomSelector === 0) {
-      //   const maxBootloaderAddress = bootloader.length - 1;
-      //   if (address <= maxBootloaderAddress) {
-      //     return bootloader[address];
-      //   }
-      // }
+      const bootRomSelector = memory[0xff50];
+      if (bootRomSelector === 0) {
+        const maxBootloaderAddress = bootloader.length - 1;
+        if (address <= maxBootloaderAddress) {
+          return bootloader[address];
+        }
+      }
       return gameBoy.cartridge.readByte(address);
     }
     if (address >= 0x8000 && address <= 0x9fff) {
@@ -29,7 +29,7 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
     if (address >= 0xff00 && address <= 0xff74) {
       return gameBoy.ioRegisters.readByte(address - 0xff00);
     }
-    if (!quiet) console.log(`Read ${address.toString(16)}`);
+    // if (!quiet) console.log(`Read ${address.toString(16)}`);
     return memory[address];
   }
 
@@ -46,8 +46,9 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
       return gameBoy.ioRegisters.writeByte(address - 0xff00, value);
     }
     memory[address] = value;
-    if (!quiet)
-      console.log(`Wrote ${value.toString(16)} to ${address.toString(16)}`);
+    if (!quiet) {
+      // console.log(`Wrote ${value.toString(16)} to ${address.toString(16)}`);
+    }
   }
 
   return { readByte: read, writeByte: write };
