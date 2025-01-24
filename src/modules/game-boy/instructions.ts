@@ -707,6 +707,19 @@ export function createInstructions({
       },
     });
   }
+  function registerLDH_A_C(opcode: number) {
+    registerInstruction({
+      mnemonic: "LDH A,[C]",
+      print: () => "LDH A,[C]",
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const addr = 0xff00 + registers.c.get();
+        registers.a.set(memory.readByte(addr));
+      },
+    });
+  }
 
   function createLD16Register(
     opcode: number,
@@ -1310,6 +1323,7 @@ export function createInstructions({
   registerRST(0xef, 0x28);
 
   registerPOP_r16(0xf1, registers.af);
+  registerLDH_A_C(0xf2);
   registerOR_A_n8(0xf6);
   registerRST(0xf7, 0x30);
   registerLD_HL_SP_e8(0xf8);
