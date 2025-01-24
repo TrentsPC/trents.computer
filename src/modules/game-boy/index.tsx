@@ -91,6 +91,54 @@ export function GameBoyEmulator() {
       >
         Step by 60 frames
       </button>
+      <button
+        onClick={async () => {
+          const fakeCanvas = (<canvas />) as HTMLCanvasElement;
+          const fakeGameBoy = createGameBoy({
+            getCanvas: () => fakeCanvas,
+            isGBDoctor: true,
+          });
+          let result = "";
+
+          function printLn() {
+            const registers = fakeGameBoy.gameBoy.cpu.getRegisters();
+            const addr = fakeGameBoy.gameBoy.addressBus;
+            const pc = registers.pc.get();
+            const fmtByte = (byte: number, length = 2) =>
+              byte.toString(16).padStart(length, "0").toUpperCase();
+            result += `A:${fmtByte(registers.a.get())} `;
+            result += `F:${fmtByte(registers.f.get())} `;
+            result += `B:${fmtByte(registers.b.get())} `;
+            result += `C:${fmtByte(registers.c.get())} `;
+            result += `D:${fmtByte(registers.d.get())} `;
+            result += `E:${fmtByte(registers.e.get())} `;
+            result += `H:${fmtByte(registers.h.get())} `;
+            result += `L:${fmtByte(registers.l.get())} `;
+            result += `SP:${fmtByte(registers.sp.get(), 4)} `;
+            result += `PC:${fmtByte(registers.pc.get(), 4)} `;
+            result += `PCMEM:${fmtByte(addr.readByte(pc))}`;
+            result += `,${fmtByte(addr.readByte(pc + 1))}`;
+            result += `,${fmtByte(addr.readByte(pc + 2))}`;
+            result += `,${fmtByte(addr.readByte(pc + 3))}`;
+            result += "\n";
+          }
+
+          for (let frame = 0; frame < 60; frame++) {
+            // One frame worth of CPU cycles
+            for (let i = 0; i < 17556; i++) {
+              // fakeGameBoy.advanceFrame();
+              printLn();
+              fakeGameBoy.gameBoy.cpu.step();
+            }
+            await raf();
+          }
+          printLn();
+          console.log("DONE!");
+          download("my-logs.txt", result);
+        }}
+      >
+        GBDoctor
+      </button>
       <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
       {/* <Terminal logs={gameBoy.logs()} /> */}
       <TileMap gameBoy={gameBoy.gameBoy} />
@@ -100,6 +148,22 @@ export function GameBoyEmulator() {
       {/* <Terminal logs={gameBoy.cpuLogs()} /> */}
     </div>
   );
+}
+
+function download(filename: string, text: string) {
+  var element = document.createElement("a");
+  element.setAttribute(
+    "href",
+    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+  );
+  element.setAttribute("download", filename);
+
+  element.style.display = "none";
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
 }
 
 const raf = async () => {

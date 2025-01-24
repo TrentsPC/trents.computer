@@ -30,17 +30,19 @@ export type GameBoy = {
 
 export function createGameBoy({
   getCanvas,
+  isGBDoctor,
 }: {
   getCanvas: () => HTMLCanvasElement;
+  isGBDoctor?: boolean;
 }) {
   const { logs, logger } = createLogger();
 
   const gb = {} as GameBoy;
   const memory = createAddressBus(gb);
   gb.addressBus = memory;
-  const cpu = createCPU({ gameBoy: gb, logger });
+  const cpu = createCPU({ gameBoy: gb, logger, isGBDoctor });
   gb.cpu = cpu;
-  const ppu = createPPU(gb, getCanvas);
+  const ppu = createPPU(gb, getCanvas, isGBDoctor);
   gb.ppu = ppu;
 
   // Memory map

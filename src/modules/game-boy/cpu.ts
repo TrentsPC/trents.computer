@@ -16,11 +16,13 @@ export type CPU = {
 export function createCPU({
   gameBoy,
   logger,
+  isGBDoctor,
 }: {
   gameBoy: GameBoy;
   logger: Logger;
+  isGBDoctor?: boolean;
 }): CPU {
-  const registers = createRegisters();
+  const registers = createRegisters(isGBDoctor);
 
   const instructions = createInstructions({
     registers,
@@ -31,7 +33,7 @@ export function createCPU({
 
   function step() {
     // If the CPU is "in the middle of an instruction", we need to wait
-    if (cpuCooldown > 0) {
+    if (!isGBDoctor && cpuCooldown > 0) {
       cpuCooldown--;
       return;
     }

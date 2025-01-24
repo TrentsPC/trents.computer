@@ -8,7 +8,8 @@ export type PPU = {
 
 export function createPPU(
   gameBoy: GameBoy,
-  getCanvas: () => HTMLCanvasElement
+  getCanvas: () => HTMLCanvasElement,
+  isGBDoctor?: boolean
 ): PPU {
   let lcdX = 0;
   let lcdY = 0;
@@ -36,6 +37,9 @@ export function createPPU(
   }
 
   function getLCDY() {
+    if (isGBDoctor) {
+      return 0x90;
+    }
     return lcdY;
   }
 

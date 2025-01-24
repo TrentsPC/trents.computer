@@ -76,11 +76,13 @@ export function createInstructions({
       execute: () => {
         const value = memory.readByte(registers.hl.get());
         const result = registers.a.get() + value;
+        const fullCarry = result > 0xff;
+        const halfCarry = (registers.a.get() & 0xf) + (value & 0xf) > 0xf;
         registers.a.set(result % 256);
         registers.flagZ.set(result === 0);
         registers.flagN.set(false);
-        registers.flagH.set((registers.a.get() & 0xf) + (value & 0xf) > 0xf);
-        registers.flagC.set(result > 0xff);
+        registers.flagH.set(halfCarry);
+        registers.flagC.set(fullCarry);
       },
     });
   }
@@ -94,11 +96,13 @@ export function createInstructions({
       execute: ([param]) => {
         const value = param;
         const result = registers.a.get() + value;
+        const fullCarry = result > 0xff;
+        const halfCarry = (registers.a.get() & 0xf) + (value & 0xf) > 0xf;
         registers.a.set(result % 256);
         registers.flagZ.set(result % 256 === 0);
         registers.flagN.set(false);
-        registers.flagH.set((registers.a.get() & 0xf) + (value & 0xf) > 0xf);
-        registers.flagC.set(result > 0xff);
+        registers.flagH.set(halfCarry);
+        registers.flagC.set(fullCarry);
       },
     });
   }
@@ -640,7 +644,7 @@ export function createInstructions({
       mnemonic: `RRA`,
       print: () => `RRA`,
       opcode,
-      length: 2,
+      length: 1,
       cycles: 2,
       execute: () => {
         const value = registers.a.get();
@@ -712,11 +716,13 @@ export function createInstructions({
       execute: ([param]) => {
         const value = param;
         const result = registers.a.get() - value;
+        const fullCarry = result < 0;
+        const halfCarry = (registers.a.get() & 0xf) < (value & 0xf);
         registers.a.set((result + 256) % 256);
         registers.flagZ.set(result === 0);
         registers.flagN.set(true);
-        registers.flagH.set((registers.a.get() & 0xf) < (value & 0xf));
-        registers.flagC.set(registers.a.get() < value);
+        registers.flagH.set(halfCarry);
+        registers.flagC.set(fullCarry);
       },
     });
   }
@@ -843,6 +849,7 @@ export function createInstructions({
   registerINC_r8(0x3c, registers.a);
   registerInstruction(createDEC8bitRegister(0x3d, registers.a));
 
+  registerLD_r8_r8(0x40, registers.b, registers.b);
   registerLD_r8_HL(0x46, registers.b);
   registerLD_r8_r8(0x47, registers.b, registers.a);
   registerLD_r8_HL(0x4e, registers.c);

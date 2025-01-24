@@ -1,24 +1,24 @@
 import { createLogger } from "./logger";
 
-export function createRegisters() {
+export function createRegisters(isGBDoctor?: boolean) {
   const { logs, logger } = createLogger();
   // Accumulator
-  let a = 0;
+  let a = isGBDoctor ? 0x01 : 0;
   // Flags
-  let f = 0;
+  let f = isGBDoctor ? 0xb0 : 0;
 
   let b = 0;
-  let c = 0;
+  let c = isGBDoctor ? 0x13 : 0;
   let d = 0;
-  let e = 0;
-  let h = 0;
-  let l = 0;
+  let e = isGBDoctor ? 0xd8 : 0;
+  let h = isGBDoctor ? 0x01 : 0;
+  let l = isGBDoctor ? 0x4d : 0;
   let ime = 1;
   // Stack Pointer
   let sp = 0xfffe;
   // Program Counter
   // Set to 0x100 to skip the boot ROM, set to 0 to start at the beginning
-  let pc = 0x0000;
+  let pc = isGBDoctor ? 0x0100 : 0x0000;
 
   function print() {
     logger.log(
