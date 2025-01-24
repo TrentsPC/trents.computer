@@ -1278,23 +1278,31 @@ export function createInstructions({
   registerJP_cc_n16(0xc2, () => !registers.flagZ.get());
   registerCALL_cc_n16(0xc4, () => !registers.flagZ.get());
   registerADD_A_n8(0xc6);
+  registerRST(0xc7, 0x00);
   registerRET_cc(0xc8, () => registers.flagZ.get());
   registerRET(0xc9);
   registerJP_cc_n16(0xca, () => registers.flagZ.get());
+  registerCALL_cc_n16(0xcc, () => registers.flagZ.get());
   register_CALL_n16(0xcd);
   registerADC_A_n8(0xce);
   registerRST(0xcf, 0x08);
 
   registerRET_cc(0xd0, () => !registers.flagC.get());
   registerPOP_r16(0xd1, registers.de);
+  registerJP_cc_n16(0xd2, () => !registers.flagC.get());
+  registerCALL_cc_n16(0xd4, () => !registers.flagC.get());
   registerSUB_n8(0xd6);
+  registerRST(0xd7, 0x10);
   registerRET_cc(0xd8, () => registers.flagC.get());
   registerRETI(0xd9);
+  registerJP_cc_n16(0xda, () => registers.flagC.get());
+  registerCALL_cc_n16(0xdc, () => registers.flagC.get());
   registerSBC_A_n8(0xde);
   registerRST(0xdf, 0x18);
 
   registerPOP_r16(0xe1, registers.hl);
   registerAND_A_n8(0xe6);
+  registerRST(0xe7, 0x20);
   registerLD_n16_A(0xea);
   registerADD_SP_e8(0xe8);
   registerJP_r16(0xe9, registers.hl);
@@ -1303,6 +1311,7 @@ export function createInstructions({
 
   registerPOP_r16(0xf1, registers.af);
   registerOR_A_n8(0xf6);
+  registerRST(0xf7, 0x30);
   registerLD_HL_SP_e8(0xf8);
   registerLD_SP_HL(0xf9);
   registerLD_A_n16(0xfa);
