@@ -37,9 +37,9 @@ export function createPPU(
   }
 
   function getLCDY() {
-    if (isGBDoctor) {
-      return 0x90;
-    }
+    // if (isGBDoctor) {
+    //   return 0x90;
+    // }
     return lcdY;
   }
 

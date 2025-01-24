@@ -30,7 +30,7 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
       return gameBoy.ioRegisters.readByte(address - 0xff00);
     }
     // if (!quiet) console.log(`Read ${address.toString(16)}`);
-    return memory[address];
+    return memory[address] ?? 0xff;
   }
 
   function write(address: number, value: number, quiet = false) {

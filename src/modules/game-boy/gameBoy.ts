@@ -8,11 +8,11 @@ import { createIORegisters, IORegisters } from "./io-registers";
 import { createLogger } from "./logger";
 import { createOAM, OAM } from "./oam";
 import { createPPU, PPU } from "./ppu";
-import { CPU_INSTR } from "./roms/blargg/cpu_instr";
+import { CPU_INSTR_03_SP_HL } from "./roms/blargg/cpu_instr_03_sp_hl";
 import { createVRAM, VRAM } from "./vram";
 import { createWRAM, WRAM } from "./wram";
 
-const ONE_FRAME = 1_000_000 / 60;
+// const ONE_FRAME = 1_000_000 / 60;
 
 export type GameBoy = {
   cpu: CPU;
@@ -64,8 +64,8 @@ export function createGameBoy({
   gb.ie = ie;
 
   onMount(() => {
-    // cartridge.insertCartridge(SUPER_MARIO_LAND);
-    cartridge.insertCartridge(CPU_INSTR);
+    // cartridge.insertCartridge(TETRIS);
+    cartridge.insertCartridge(CPU_INSTR_03_SP_HL);
   });
 
   function advanceFrame() {

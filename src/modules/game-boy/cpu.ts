@@ -54,9 +54,18 @@ export function createCPU({
           if (interruptFlags & (1 << i)) {
             registers.ime.set(0);
             gameBoy.addressBus.writeByte(0xff0f, requestedFlags & ~(1 << i));
-            console.log(registers.sp.get().toString(16));
-            // registers.sp.set(registers.sp.get() - 2);
-            // gameBoy.addressBus.writeByte(registers.sp.get(), registers.pc.get());
+
+            registers.sp.set(registers.sp.get() - 1);
+            gameBoy.addressBus.writeByte(
+              registers.sp.get(),
+              registers.pc.get() >> 8
+            );
+            registers.sp.set(registers.sp.get() - 1);
+            gameBoy.addressBus.writeByte(
+              registers.sp.get(),
+              registers.pc.get() & 0xff
+            );
+
             registers.pc.set(0x40 + i * 8);
             cpuCooldown = 4;
             return;

@@ -11,6 +11,7 @@ export function createCartridge(gameBoy: GameBoy): Cartridge {
 
   function insertCartridge(cart: ArrayBuffer) {
     const array = new Uint8Array(cart);
+    rom.fill(0);
     rom.set(array.slice(0x0000, 0x8000), 0x0000);
   }
 

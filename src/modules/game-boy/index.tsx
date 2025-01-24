@@ -1,6 +1,20 @@
 import { createSignal, For } from "solid-js";
 import { createGameBoy, GameBoy } from "./gameBoy";
 import { Log } from "./logger";
+import { CPU_INSTR } from "./roms/blargg/cpu_instr";
+import { CPU_INSTR_01_SPECIAL } from "./roms/blargg/cpu_instr_01_special";
+import { CPU_INSTR_02_INTERRUPTS } from "./roms/blargg/cpu_instr_02_interrupts";
+import { CPU_INSTR_03_SP_HL } from "./roms/blargg/cpu_instr_03_sp_hl";
+import { CPU_INSTR_04_R_IMM } from "./roms/blargg/cpu_instr_04_r_imm";
+import { CPU_INSTR_05_RP } from "./roms/blargg/cpu_instr_05_rp";
+import { CPU_INSTR_06_LD } from "./roms/blargg/cpu_instr_06_ld";
+import { CPU_INSTR_07_JP } from "./roms/blargg/cpu_instr_07_JP";
+import { CPU_INSTR_08_MISC } from "./roms/blargg/cpu_instr_08_MISC";
+import { CPU_INSTR_09_r_r } from "./roms/blargg/cpu_instr_09_r_r";
+import { CPU_INSTR_10_BIT } from "./roms/blargg/cpu_instr_10_bit";
+import { CPU_INSTR_11_A_HL } from "./roms/blargg/cpu_instr_11_A_HL";
+import { SUPER_MARIO_LAND } from "./roms/super-mario-land";
+import { TETRIS } from "./roms/tetris";
 
 const SCALE_FACTOR = 4;
 
@@ -21,7 +35,8 @@ function getColor(byte: number) {
 
 export function GameBoyEmulator() {
   let canvas: HTMLCanvasElement = undefined!;
-  const gameBoy = createGameBoy({ getCanvas: () => canvas, isGBDoctor: true });
+  const gameBoy = createGameBoy({ getCanvas: () => canvas });
+  gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
 
   return (
     <div css={{ spaceY: 24 }}>
@@ -53,94 +68,210 @@ export function GameBoyEmulator() {
           />
         </div>
       </div>
-      <button
-        onClick={() => {
-          gameBoy.advanceFrame();
-          console.log(gameBoy.logs());
-        }}
-      >
-        Step by 1 frame
-      </button>
-      <button
-        onClick={async () => {
-          for (let i = 0; i < 10; i++) {
+      <div css={{ spaceX: 10 }}>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          full test (needs rom bank switching)
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_01_SPECIAL);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 1
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_02_INTERRUPTS);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 2
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_03_SP_HL);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 3
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_04_R_IMM);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 4
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_05_RP);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 5
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_06_LD);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 6
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_07_JP);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 7
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_08_MISC);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 8
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_09_r_r);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 9
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_10_BIT);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 10
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_11_A_HL);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          test 11
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(TETRIS);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          Tetris
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(SUPER_MARIO_LAND);
+            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          Super Mario Land
+        </button>
+      </div>
+      <div css={{ spaceX: 10 }}>
+        <button
+          onClick={() => {
             gameBoy.advanceFrame();
-            await raf();
-          }
-          console.log(gameBoy.logs());
-        }}
-      >
-        Step by 10 frames
-      </button>
-      <button
-        onClick={async () => {
-          const initialPoint = performance.now();
-          for (let i = 0; i < 60; i++) {
-            gameBoy.advanceFrame();
-            await raf();
-          }
-          const endPoint = performance.now();
-          console.log(
-            `Running at a blazing fast ${(
-              60 /
-              ((endPoint - initialPoint) / 1000)
-            ).toFixed(3)}fps`
-          );
-          console.log(gameBoy.logs());
-        }}
-      >
-        Step by 60 frames
-      </button>
-      <button
-        onClick={async () => {
-          const fakeCanvas = (<canvas />) as HTMLCanvasElement;
-          const fakeGameBoy = createGameBoy({
-            getCanvas: () => fakeCanvas,
-            isGBDoctor: true,
-          });
-          let result = "";
-
-          function printLn() {
-            const registers = fakeGameBoy.gameBoy.cpu.getRegisters();
-            const addr = fakeGameBoy.gameBoy.addressBus;
-            const pc = registers.pc.get();
-            const fmtByte = (byte: number, length = 2) =>
-              byte.toString(16).padStart(length, "0").toUpperCase();
-            result += `A:${fmtByte(registers.a.get())} `;
-            result += `F:${fmtByte(registers.f.get())} `;
-            result += `B:${fmtByte(registers.b.get())} `;
-            result += `C:${fmtByte(registers.c.get())} `;
-            result += `D:${fmtByte(registers.d.get())} `;
-            result += `E:${fmtByte(registers.e.get())} `;
-            result += `H:${fmtByte(registers.h.get())} `;
-            result += `L:${fmtByte(registers.l.get())} `;
-            result += `SP:${fmtByte(registers.sp.get(), 4)} `;
-            result += `PC:${fmtByte(registers.pc.get(), 4)} `;
-            result += `PCMEM:${fmtByte(addr.readByte(pc))}`;
-            result += `,${fmtByte(addr.readByte(pc + 1))}`;
-            result += `,${fmtByte(addr.readByte(pc + 2))}`;
-            result += `,${fmtByte(addr.readByte(pc + 3))}`;
-            result += "\n";
-          }
-
-          // for (let seconds = 0; seconds < 2; seconds++) {
-          for (let frame = 0; frame < 60; frame++) {
-            // One frame worth of CPU cycles
-            for (let i = 0; i < 17556; i++) {
-              // fakeGameBoy.advanceFrame();
-              printLn();
-              fakeGameBoy.gameBoy.cpu.step();
+            console.log(gameBoy.logs());
+          }}
+        >
+          Step by 1 frame
+        </button>
+        <button
+          onClick={async () => {
+            for (let i = 0; i < 10; i++) {
+              gameBoy.advanceFrame();
+              await raf();
             }
-            await raf();
-          }
-          // }
-          printLn();
-          console.log("DONE!");
-          download("my-logs.txt", result);
-        }}
-      >
-        GBDoctor
-      </button>
+            console.log(gameBoy.logs());
+          }}
+        >
+          Step by 10 frames
+        </button>
+        <button
+          onClick={async () => {
+            const initialPoint = performance.now();
+            for (let i = 0; i < 60; i++) {
+              gameBoy.advanceFrame();
+              await raf();
+            }
+            const endPoint = performance.now();
+            console.log(
+              `Running at a blazing fast ${(
+                60 /
+                ((endPoint - initialPoint) / 1000)
+              ).toFixed(3)}fps`
+            );
+            console.log(gameBoy.logs());
+          }}
+        >
+          Step by 60 frames
+        </button>
+        <button
+          onClick={async () => {
+            const fakeCanvas = (<canvas />) as HTMLCanvasElement;
+            const fakeGameBoy = createGameBoy({
+              getCanvas: () => fakeCanvas,
+              isGBDoctor: true,
+            });
+            let result = "";
+
+            function printLn() {
+              const registers = fakeGameBoy.gameBoy.cpu.getRegisters();
+              const addr = fakeGameBoy.gameBoy.addressBus;
+              const pc = registers.pc.get();
+              const fmtByte = (byte: number, length = 2) =>
+                byte.toString(16).padStart(length, "0").toUpperCase();
+              result += `A:${fmtByte(registers.a.get())} `;
+              result += `F:${fmtByte(registers.f.get())} `;
+              result += `B:${fmtByte(registers.b.get())} `;
+              result += `C:${fmtByte(registers.c.get())} `;
+              result += `D:${fmtByte(registers.d.get())} `;
+              result += `E:${fmtByte(registers.e.get())} `;
+              result += `H:${fmtByte(registers.h.get())} `;
+              result += `L:${fmtByte(registers.l.get())} `;
+              result += `SP:${fmtByte(registers.sp.get(), 4)} `;
+              result += `PC:${fmtByte(registers.pc.get(), 4)} `;
+              result += `PCMEM:${fmtByte(addr.readByte(pc))}`;
+              result += `,${fmtByte(addr.readByte(pc + 1))}`;
+              result += `,${fmtByte(addr.readByte(pc + 2))}`;
+              result += `,${fmtByte(addr.readByte(pc + 3))}`;
+              result += "\n";
+            }
+
+            for (let seconds = 0; seconds < 2; seconds++) {
+              for (let frame = 0; frame < 60; frame++) {
+                // One frame worth of CPU cycles
+                for (let i = 0; i < 17556; i++) {
+                  // fakeGameBoy.advanceFrame();
+                  printLn();
+                  fakeGameBoy.gameBoy.cpu.step();
+                }
+                await raf();
+              }
+            }
+            printLn();
+            console.log("DONE!");
+            download("my-logs.txt", result);
+          }}
+        >
+          GBDoctor
+        </button>
+      </div>
       <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
       {/* <Terminal logs={gameBoy.logs()} /> */}
       <TileMap gameBoy={gameBoy.gameBoy} />

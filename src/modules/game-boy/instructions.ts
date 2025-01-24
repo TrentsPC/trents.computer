@@ -66,6 +66,27 @@ export function createInstructions({
       },
     });
   }
+  function registerADC_A_HL(opcode: number) {
+    registerInstruction({
+      mnemonic: "ADC A,[HL]",
+      print: () => `ADC A,[HL]`,
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const value = memory.readByte(registers.hl.get());
+        const carry = registers.flagC.get() ? 1 : 0;
+        const result = registers.a.get() + value + carry;
+        const halfCarry =
+          (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
+        registers.a.set(result % 256);
+        registers.flagZ.set(result % 256 === 0);
+        registers.flagN.set(false);
+        registers.flagH.set(halfCarry);
+        registers.flagC.set(result > 0xff);
+      },
+    });
+  }
   function registerADD_A_hl(opcode: number) {
     registerInstruction({
       mnemonic: "ADD A,[HL]",
@@ -153,11 +174,30 @@ export function createInstructions({
       execute: ([param]) => {
         const signedParam = toSigned(param);
         const result = registers.sp.get() + signedParam;
+        const halfCarry = (registers.sp.get() & 0xf) + (param & 0xf) > 0xf;
+        const fullCarry = (registers.sp.get() & 0xff) + param > 0xff;
         registers.sp.set(result);
         registers.flagZ.set(false);
         registers.flagN.set(false);
-        registers.flagH.set((registers.sp.get() & 0xf) + (param & 0xf) > 0xf);
-        registers.flagC.set((registers.sp.get() & 0xff) + param > 0xff);
+        registers.flagH.set(halfCarry);
+        registers.flagC.set(fullCarry);
+      },
+    });
+  }
+  function registerAND_A_r8(opcode: number, register: Register) {
+    registerInstruction({
+      mnemonic: "AND  r8",
+      print: () => `AND  $${register.name}`,
+      opcode,
+      length: 1,
+      cycles: 1,
+      execute: () => {
+        const value = registers.a.get() & register.get();
+        registers.a.set(value);
+        registers.flagZ.set(value === 0);
+        registers.flagN.set(false);
+        registers.flagH.set(true);
+        registers.flagC.set(false);
       },
     });
   }
@@ -316,7 +356,7 @@ export function createInstructions({
       length: 1,
       cycles: 2,
       execute: () => {
-        const result = (register.get() - 1) % 65536;
+        const result = (register.get() - 1 + 0x10000) % 0x10000;
         register.set(result);
       },
     });
@@ -351,6 +391,23 @@ export function createInstructions({
     });
   }
 
+  function registerINC_HL(opcode: number) {
+    registerInstruction({
+      mnemonic: `INC [HL]`,
+      print: () => `INC [HL]`,
+      opcode,
+      length: 1,
+      cycles: 3,
+      execute: () => {
+        const addr = registers.hl.get();
+        const result = (memory.readByte(addr) + 1) % 256;
+        memory.writeByte(addr, result);
+        registers.flagZ.set(result === 0);
+        registers.flagN.set(false);
+        registers.flagH.set((result & 0xf) === 0);
+      },
+    });
+  }
   function registerINC_r8(opcode: number, register: Register) {
     registerInstruction({
       mnemonic: `INC ${register.name}`,
@@ -494,6 +551,19 @@ export function createInstructions({
       },
     });
   }
+  function registerLD_A_BC(opcode: number) {
+    registerInstruction({
+      mnemonic: "LD A,[BC]",
+      print: () => "LD A,[BC]",
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const addr = registers.bc.get();
+        registers.a.set(memory.readByte(addr));
+      },
+    });
+  }
   function registerLD_A_HLI(opcode: number) {
     registerInstruction({
       mnemonic: "LD A,[HL+]",
@@ -504,7 +574,21 @@ export function createInstructions({
       execute: () => {
         const addr = registers.hl.get();
         registers.a.set(memory.readByte(addr));
-        registers.hl.set(addr + 1);
+        registers.hl.set((addr + 1) % 0x10000);
+      },
+    });
+  }
+  function registerLD_A_HLD(opcode: number) {
+    registerInstruction({
+      mnemonic: "LD A,[HL-]",
+      print: () => "LD A,[HL-]",
+      opcode,
+      length: 1,
+      cycles: 2,
+      execute: () => {
+        const addr = registers.hl.get();
+        registers.a.set(memory.readByte(addr));
+        registers.hl.set((addr - 1 + 0x10000) % 0x10000);
       },
     });
   }
@@ -737,7 +821,7 @@ export function createInstructions({
       print: () => "RET",
       opcode,
       length: 1,
-      cycles: 3,
+      cycles: 4,
       execute: () => {
         const low = memory.readByte(registers.sp.get());
         registers.sp.set(registers.sp.get() + 1);
@@ -762,6 +846,23 @@ export function createInstructions({
           registers.sp.set(registers.sp.get() + 1);
           registers.pc.set((high << 8) | low);
         }
+      },
+    });
+  }
+  function registerRETI(opcode: number) {
+    registerInstruction({
+      mnemonic: "RETI",
+      print: () => "RETI",
+      opcode,
+      length: 1,
+      cycles: 4,
+      execute: () => {
+        const low = memory.readByte(registers.sp.get());
+        registers.sp.set(registers.sp.get() + 1);
+        const high = memory.readByte(registers.sp.get());
+        registers.sp.set(registers.sp.get() + 1);
+        registers.pc.set((high << 8) | low);
+        registers.ime.set(1);
       },
     });
   }
@@ -854,8 +955,9 @@ export function createInstructions({
         const carry = registers.flagC.get() ? 1 : 0;
         const result = registers.a.get() - value - carry;
         const halfCarry = (registers.a.get() & 0xf) < (value & 0xf) + carry;
-        registers.a.set(result % 256);
-        registers.flagZ.set(result === 0);
+        const nextValue = (result + 256) % 256;
+        registers.a.set(nextValue);
+        registers.flagZ.set(nextValue === 0);
         registers.flagN.set(true);
         registers.flagH.set(halfCarry);
         registers.flagC.set(result < 0);
@@ -884,7 +986,7 @@ export function createInstructions({
       execute: () => {
         const value = register.get();
         const result = registers.a.get() - value;
-        registers.a.set(result);
+        registers.a.set((result + 256) % 256);
         registers.flagZ.set(result === 0);
         registers.flagN.set(true);
         registers.flagH.set((registers.a.get() & 0xf) < (value & 0xf));
@@ -905,10 +1007,28 @@ export function createInstructions({
         const fullCarry = result < 0;
         const halfCarry = (registers.a.get() & 0xf) < (value & 0xf);
         registers.a.set((result + 256) % 256);
-        registers.flagZ.set(result === 0);
+        registers.flagZ.set((result + 256) % 256 === 0);
         registers.flagN.set(true);
         registers.flagH.set(halfCarry);
         registers.flagC.set(fullCarry);
+      },
+    });
+  }
+  function registerSUB_A_HL(opcode: number) {
+    registerInstruction({
+      mnemonic: `SUB  HL`,
+      print: () => `SUB  HL`,
+      opcode,
+      length: 1,
+      cycles: 1,
+      execute: () => {
+        const value = memory.readByte(registers.hl.get());
+        const result = registers.a.get() - value;
+        registers.a.set((result + 256) % 256);
+        registers.flagZ.set((result + 256) % 256 === 0);
+        registers.flagN.set(true);
+        registers.flagH.set((registers.a.get() & 0xf) < (value & 0xf));
+        registers.flagC.set(registers.a.get() < value);
       },
     });
   }
@@ -997,6 +1117,9 @@ export function createInstructions({
   registerInstruction(createDEC8bitRegister(0x05, registers.b));
   registerRLCA(0x07);
   registerLD_n16_SP(0x08);
+  registerADD_r16_r16(0x09, registers.hl, registers.bc);
+  registerLD_A_BC(0x0a);
+  registerDEC_r16(0x0b, registers.bc);
   registerINC_r8(0x0c, registers.c);
   registerInstruction(createDEC8bitRegister(0x0d, registers.c));
 
@@ -1011,6 +1134,7 @@ export function createInstructions({
   registerJR_n8(0x18);
   registerADD_r16_r16(0x19, registers.hl, registers.de);
   registerLD_A_r16(0x1a, registers.de);
+  registerDEC_r16(0x1b, registers.de);
   registerINC_r8(0x1c, registers.e);
   registerInstruction(createDEC8bitRegister(0x1d, registers.e));
   registerLD_r8_n8(0x1e, registers.e);
@@ -1027,6 +1151,7 @@ export function createInstructions({
   registerJR_CC_n8(0x28, () => registers.flagZ.get());
   registerADD_r16_r16(0x29, registers.hl, registers.hl);
   registerLD_A_HLI(0x2a);
+  registerDEC_r16(0x2b, registers.hl);
   registerINC_r8(0x2c, registers.l);
   registerInstruction(createDEC8bitRegister(0x2d, registers.l));
   registerLD_r8_n8(0x2e, registers.l);
@@ -1035,9 +1160,11 @@ export function createInstructions({
   registerJR_CC_n8(0x30, () => !registers.flagC.get());
   registerInstruction(createLD16Register(0x31, registers.sp));
   registerINC_r16(0x33, registers.sp);
+  registerINC_HL(0x34);
   registerDEC_HL_POINTER(0x35);
   registerJR_CC_n8(0x38, () => registers.flagC.get());
   registerADD_r16_r16(0x39, registers.hl, registers.sp);
+  registerLD_A_HLD(0x3a);
   registerDEC_r16(0x3b, registers.sp);
   registerINC_r8(0x3c, registers.a);
   registerInstruction(createDEC8bitRegister(0x3d, registers.a));
@@ -1114,6 +1241,8 @@ export function createInstructions({
   registerADD_A_r8(0x84, registers.h);
   registerADD_A_r8(0x85, registers.l);
   registerADD_A_hl(0x86);
+  registerADD_A_r8(0x87, registers.a);
+  registerADC_A_HL(0x8e);
 
   registerSUB_r8(0x90, registers.b);
   registerSUB_r8(0x91, registers.c);
@@ -1121,7 +1250,10 @@ export function createInstructions({
   registerSUB_r8(0x93, registers.e);
   registerSUB_r8(0x94, registers.h);
   registerSUB_r8(0x95, registers.l);
+  registerSUB_A_HL(0x96);
 
+  registerAND_A_r8(0xa1, registers.b);
+  registerAND_A_r8(0xa7, registers.a);
   registerXOR_A_r8(0xa8, registers.b);
   registerXOR_A_r8(0xa9, registers.c);
   registerXOR_A_r8(0xad, registers.l);
@@ -1141,28 +1273,33 @@ export function createInstructions({
   registerCP_r8(0xbb, registers.e);
   registerCP_HL(0xbe);
 
+  registerRET_cc(0xc0, () => !registers.flagZ.get());
   registerPOP_r16(0xc1, registers.bc);
   registerJP_cc_n16(0xc2, () => !registers.flagZ.get());
   registerCALL_cc_n16(0xc4, () => !registers.flagZ.get());
   registerADD_A_n8(0xc6);
   registerRET_cc(0xc8, () => registers.flagZ.get());
   registerRET(0xc9);
+  registerJP_cc_n16(0xca, () => registers.flagZ.get());
   register_CALL_n16(0xcd);
   registerADC_A_n8(0xce);
+  registerRST(0xcf, 0x08);
 
   registerRET_cc(0xd0, () => !registers.flagC.get());
   registerPOP_r16(0xd1, registers.de);
   registerSUB_n8(0xd6);
   registerRET_cc(0xd8, () => registers.flagC.get());
+  registerRETI(0xd9);
   registerSBC_A_n8(0xde);
+  registerRST(0xdf, 0x18);
 
   registerPOP_r16(0xe1, registers.hl);
   registerAND_A_n8(0xe6);
-
   registerLD_n16_A(0xea);
   registerADD_SP_e8(0xe8);
   registerJP_r16(0xe9, registers.hl);
   registerXOR_A_n8(0xee);
+  registerRST(0xef, 0x28);
 
   registerPOP_r16(0xf1, registers.af);
   registerOR_A_n8(0xf6);
@@ -1485,6 +1622,22 @@ function createPrefixedInstructions({
     registerInstruction(instruction);
   }
 
+  function registerRES_n3_r8(opcode: number, bit: number, register: Register) {
+    const instruction: Instruction = {
+      mnemonic: `RES  ${bit},${register.name}`,
+      print: () => `RES  ${bit},${register.name}`,
+      opcode,
+      length: 2,
+      cycles: 2,
+      execute: () => {
+        const value = register.get();
+        const result = value & ~(1 << bit);
+        register.set(result);
+      },
+    };
+    registerInstruction(instruction);
+  }
+
   function registerRL_r8(opcode: number, register: Register) {
     registerInstruction({
       mnemonic: `RL   ${register.name}`,
@@ -1579,6 +1732,8 @@ function createPrefixedInstructions({
   registerSRL_r8(0x3f, registers.a);
 
   registerBITr8(0x7c, 7, registers.h);
+
+  registerRES_n3_r8(0x87, 0, registers.a);
 
   return instructions;
 }
