@@ -21,22 +21,22 @@ export function createRegisters(isGBDoctor?: boolean) {
   let pc = isGBDoctor ? 0x0100 : 0x0000;
 
   function print() {
-    logger.log(
-      `${pc.toString(16).padStart(4, "0")}: A: ${a
-        .toString(16)
-        .padStart(2, "0")} B: ${b.toString(16).padStart(2, "0")} C: ${c
-        .toString(16)
-        .padStart(2, "0")} D: ${d.toString(16).padStart(2, "0")} E: ${e
-        .toString(16)
-        .padStart(2, "0")} H: ${h.toString(16).padStart(2, "0")} L: ${l
-        .toString(16)
-        .padStart(2, "0")} SP: ${sp.toString(16).padStart(4, "0")} FZ: ${
-        f & 0b10000000 ? 1 : 0
-      } FN: ${f & 0b01000000 ? 1 : 0} FH: ${f & 0b00100000 ? 1 : 0} FC: ${
-        f & 0b00010000 ? 1 : 0
-      }`,
-      { key: pc }
-    );
+    // logger.log(
+    //   `${pc.toString(16).padStart(4, "0")}: A: ${a
+    //     .toString(16)
+    //     .padStart(2, "0")} B: ${b.toString(16).padStart(2, "0")} C: ${c
+    //     .toString(16)
+    //     .padStart(2, "0")} D: ${d.toString(16).padStart(2, "0")} E: ${e
+    //     .toString(16)
+    //     .padStart(2, "0")} H: ${h.toString(16).padStart(2, "0")} L: ${l
+    //     .toString(16)
+    //     .padStart(2, "0")} SP: ${sp.toString(16).padStart(4, "0")} FZ: ${
+    //     f & 0b10000000 ? 1 : 0
+    //   } FN: ${f & 0b01000000 ? 1 : 0} FH: ${f & 0b00100000 ? 1 : 0} FC: ${
+    //     f & 0b00010000 ? 1 : 0
+    //   }`,
+    //   { key: pc }
+    // );
   }
 
   function getA() {
@@ -45,7 +45,7 @@ export function createRegisters(isGBDoctor?: boolean) {
 
   function setA(value: number) {
     a = value;
-    print();
+    // print();
   }
 
   function getF() {

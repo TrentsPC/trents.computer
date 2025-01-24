@@ -21,7 +21,7 @@ function getColor(byte: number) {
 
 export function GameBoyEmulator() {
   let canvas: HTMLCanvasElement = undefined!;
-  const gameBoy = createGameBoy({ getCanvas: () => canvas });
+  const gameBoy = createGameBoy({ getCanvas: () => canvas, isGBDoctor: true });
 
   return (
     <div css={{ spaceY: 24 }}>
@@ -123,6 +123,7 @@ export function GameBoyEmulator() {
             result += "\n";
           }
 
+          // for (let seconds = 0; seconds < 2; seconds++) {
           for (let frame = 0; frame < 60; frame++) {
             // One frame worth of CPU cycles
             for (let i = 0; i < 17556; i++) {
@@ -132,6 +133,7 @@ export function GameBoyEmulator() {
             }
             await raf();
           }
+          // }
           printLn();
           console.log("DONE!");
           download("my-logs.txt", result);

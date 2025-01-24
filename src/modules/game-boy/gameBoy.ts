@@ -8,7 +8,7 @@ import { createIORegisters, IORegisters } from "./io-registers";
 import { createLogger } from "./logger";
 import { createOAM, OAM } from "./oam";
 import { createPPU, PPU } from "./ppu";
-import { CPU_INSTR_06_LD } from "./roms/blargg/cpu_instr_06_ld";
+import { CPU_INSTR } from "./roms/blargg/cpu_instr";
 import { createVRAM, VRAM } from "./vram";
 import { createWRAM, WRAM } from "./wram";
 
@@ -65,7 +65,7 @@ export function createGameBoy({
 
   onMount(() => {
     // cartridge.insertCartridge(SUPER_MARIO_LAND);
-    cartridge.insertCartridge(CPU_INSTR_06_LD);
+    cartridge.insertCartridge(CPU_INSTR);
   });
 
   function advanceFrame() {
