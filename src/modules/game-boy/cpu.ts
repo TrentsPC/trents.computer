@@ -1,8 +1,9 @@
 import { Accessor } from "solid-js";
+import { Address } from "./addresses";
+import { createInstructions } from "./cpu-instructions";
+import { createRegisters, Registers } from "./cpu-registers";
 import type { GameBoy } from "./gameBoy";
-import { createInstructions } from "./instructions";
 import { Log, Logger } from "./logger";
-import { createRegisters, Registers } from "./registers";
 
 export type CPU = {
   /**
@@ -41,7 +42,7 @@ export function createCPU({
     // check for interrupts
     if (registers.ime.get()) {
       const enabledFlags = gameBoy.addressBus.readByte(0xffff, true);
-      const requestedFlags = gameBoy.addressBus.readByte(0xff0f, true);
+      const requestedFlags = gameBoy.addressBus.readByte(Address.IF, true);
       const interruptFlags = enabledFlags & requestedFlags;
       // console.log({
       //   enabledFlags: enabledFlags.toString(2),
@@ -49,7 +50,7 @@ export function createCPU({
       //   // interruptFlags,
       // });
       if (interruptFlags) {
-        console.log("Interrupt!", interruptFlags.toString(2));
+        // console.log("Interrupt!", interruptFlags.toString(2));
         for (let i = 0; i < 5; i++) {
           if (interruptFlags & (1 << i)) {
             registers.ime.set(0);
@@ -58,12 +59,12 @@ export function createCPU({
             registers.sp.set(registers.sp.get() - 1);
             gameBoy.addressBus.writeByte(
               registers.sp.get(),
-              registers.pc.get() >> 8
+              registers.pc.get() >> 8,
             );
             registers.sp.set(registers.sp.get() - 1);
             gameBoy.addressBus.writeByte(
               registers.sp.get(),
-              registers.pc.get() & 0xff
+              registers.pc.get() & 0xff,
             );
 
             registers.pc.set(0x40 + i * 8);
@@ -86,7 +87,7 @@ export function createCPU({
           .get()
           .toString(16)
           .padStart(4, "0")
-          .toUpperCase()}`
+          .toUpperCase()}`,
       );
     }
     const args = [];
@@ -96,7 +97,7 @@ export function createCPU({
     logger.log(
       registers.pc.get().toString(16).padStart(4, "0") +
         ": " +
-        instruction.print(args)
+        instruction.print(args),
     );
     registers.pc.set(registers.pc.get() + instruction.length);
     instruction.execute(args);
@@ -105,6 +106,11 @@ export function createCPU({
         ? instruction.cycles(args)
         : instruction.cycles;
     cpuCooldown = cycles - 1;
+
+    if (registers.imePending.get()) {
+      registers.ime.set(1);
+      registers.imePending.set(0);
+    }
   }
 
   return { step, logs: registers.logs, getRegisters: () => registers };

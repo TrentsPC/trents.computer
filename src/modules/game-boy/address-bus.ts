@@ -1,3 +1,4 @@
+import { Address } from "./addresses";
 import { BOOTLOADER_ROM } from "./bootloader";
 import type { GameBoy } from "./gameBoy";
 import { uint16, uint8 } from "./types";
@@ -26,8 +27,11 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
     if (address >= 0x8000 && address <= 0x9fff) {
       return gameBoy.vram.readByte(address - 0x8000);
     }
+    if (address >= 0xfe00 && address <= 0xfe9f) {
+      return gameBoy.oam.readByte(address - 0xfe00);
+    }
     if (address >= 0xff00 && address <= 0xff74) {
-      return gameBoy.ioRegisters.readByte(address - 0xff00);
+      return gameBoy.ioRegisters.readByte(address);
     }
     // if (!quiet) console.log(`Read ${address.toString(16)}`);
     return memory[address] ?? 0xff;
@@ -41,9 +45,21 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
       gameBoy.vram.writeByte(address - 0x8000, value);
       return;
     }
+    if (address >= 0xfe00 && address <= 0xfe9f) {
+      gameBoy.oam.writeByte(address - 0xfe00, value);
+      return;
+    }
     if (address >= 0xff00 && address <= 0xff74) {
-      if (address === 0xff0f) console.log("Write to IF register", value);
-      return gameBoy.ioRegisters.writeByte(address - 0xff00, value);
+      // if (address === 0xff41)
+      // console.log("Write to STAT", value.toString(2).padStart(8, "0"));
+      if (address === Address.DMA) {
+        gameBoy.oam.dmaTransfer(value);
+        // return;
+      }
+      return gameBoy.ioRegisters.writeByte(address, value);
+    }
+    if (address === 0xffff) {
+      console.log(`Write to IE ${value.toString(2)}`);
     }
     memory[address] = value;
     if (!quiet) {

@@ -21,7 +21,7 @@ const SCALE_FACTOR = 4;
 function getColor(byte: number) {
   switch (byte) {
     case 0:
-      return "#9CBC10";
+      return "#a3b334";
     case 1:
       return "#8CAC0D";
     case 2:
@@ -35,8 +35,11 @@ function getColor(byte: number) {
 
 export function GameBoyEmulator() {
   let canvas: HTMLCanvasElement = undefined!;
-  const gameBoy = createGameBoy({ getCanvas: () => canvas });
+  const gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
+  gameBoy.gameBoy.addressBus.writeByte(0xff50, 1);
+  gameBoy.gameBoy.addressBus.writeByte(0xffff, 0x00);
   gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+  const [fps, setFPS] = createSignal(0);
 
   return (
     <div css={{ spaceY: 24 }}>
@@ -48,24 +51,46 @@ export function GameBoyEmulator() {
       >
         <div
           css={{
-            d: "flex",
-            flexDir: "column",
-            width: "min-content",
-            p: 16,
-            bg: "#616c7a",
+            padding: 22 * 4,
+            borderRadius: 10 * 4,
+            backgroundColor: "#dcdce2",
           }}
         >
-          <canvas
-            ref={canvas}
-            width={160}
-            height={144}
+          <div
             css={{
-              background: "white",
-              width: 160 * 4,
-              height: 144 * 4,
-              imageRendering: "pixelated",
+              d: "flex",
+              flexDir: "column",
+              width: "min-content",
+              px: 48 * 4,
+              py: 24 * 4,
+              borderRadius: 10 * 4,
+              bg: "#928EA3",
+              borderBottomRightRadius: `${40 * 4}px ${35 * 4}px`,
             }}
-          />
+          >
+            <div
+              css={{
+                padding: 2 * 4,
+                backgroundColor: "#a3b334",
+                position: "relative",
+              }}
+            >
+              <canvas
+                ref={canvas}
+                width={160}
+                height={144}
+                css={{
+                  background: "#a3b334",
+                  width: 160 * 4,
+                  height: 144 * 4,
+                  imageRendering: "pixelated",
+                }}
+              />
+              <div css={{ position: "absolute", top: "100%", left: 0, pt: 8 }}>
+                FPS: {fps().toFixed()}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div css={{ spaceX: 10 }}>
@@ -210,16 +235,27 @@ export function GameBoyEmulator() {
               await raf();
             }
             const endPoint = performance.now();
-            console.log(
-              `Running at a blazing fast ${(
-                60 /
-                ((endPoint - initialPoint) / 1000)
-              ).toFixed(3)}fps`
-            );
-            console.log(gameBoy.logs());
+            const fps = 60 / ((endPoint - initialPoint) / 1000);
+            setFPS(fps);
           }}
         >
           Step by 60 frames
+        </button>
+        <button
+          onClick={async () => {
+            while (true) {
+              const initialPoint = performance.now();
+              for (let i = 0; i < 60; i++) {
+                gameBoy.advanceFrame();
+                await raf();
+              }
+              const endPoint = performance.now();
+              const fps = 60 / ((endPoint - initialPoint) / 1000);
+              setFPS(fps);
+            }
+          }}
+        >
+          Run forever
         </button>
         <button
           onClick={async () => {
@@ -227,7 +263,9 @@ export function GameBoyEmulator() {
             const fakeGameBoy = createGameBoy({
               getCanvas: () => fakeCanvas,
               isGBDoctor: true,
+              getColor,
             });
+            fakeGameBoy.gameBoy.cartridge.insertCartridge(CPU_INSTR_09_r_r);
             let result = "";
 
             function printLn() {
@@ -253,7 +291,7 @@ export function GameBoyEmulator() {
               result += "\n";
             }
 
-            for (let seconds = 0; seconds < 2; seconds++) {
+            for (let seconds = 0; seconds < 3; seconds++) {
               for (let frame = 0; frame < 60; frame++) {
                 // One frame worth of CPU cycles
                 for (let i = 0; i < 17556; i++) {
@@ -273,6 +311,7 @@ export function GameBoyEmulator() {
         </button>
       </div>
       <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
+      <OAMMap gameBoy={gameBoy.gameBoy} />
       {/* <Terminal logs={gameBoy.logs()} /> */}
       <TileMap gameBoy={gameBoy.gameBoy} />
       <TileData gameBoy={gameBoy.gameBoy} />
@@ -287,7 +326,7 @@ function download(filename: string, text: string) {
   var element = document.createElement("a");
   element.setAttribute(
     "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    "data:text/plain;charset=utf-8," + encodeURIComponent(text),
   );
   element.setAttribute("download", filename);
 
@@ -306,10 +345,10 @@ const raf = async () => {
 function EnabledInterrupts({ gameBoy }: { gameBoy: GameBoy }) {
   const [ime, setIME] = createSignal(gameBoy.cpu.getRegisters().ime.get());
   const [enabled, setEnabled] = createSignal(
-    gameBoy.addressBus.readByte(0xffff)
+    gameBoy.addressBus.readByte(0xffff),
   );
   const [requested, setRequested] = createSignal(
-    gameBoy.addressBus.readByte(0xff0f)
+    gameBoy.addressBus.readByte(0xff0f),
   );
 
   function update() {
@@ -329,6 +368,41 @@ function EnabledInterrupts({ gameBoy }: { gameBoy: GameBoy }) {
       <div>
         requested: <code>{requested().toString(2).padStart(8, "0")}</code>
       </div>
+    </div>
+  );
+}
+
+function OAMMap({ gameBoy }: { gameBoy: GameBoy }) {
+  let ref: HTMLCanvasElement = undefined!;
+
+  function render() {
+    for (let i = 0; i <= 0x9f; i++) {
+      const byte = gameBoy.addressBus.readByte(0xfe00 + i);
+      const x = i % 4;
+      const y = Math.floor(i / 4);
+      const ctx = ref.getContext("2d")!;
+      if (byte === 0) {
+        ctx.fillStyle = "red";
+      } else {
+        ctx.fillStyle = `rgb(${byte}, ${byte}, ${byte})`;
+      }
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={render}>render OAM</button>
+      <canvas
+        width="4"
+        height="40"
+        ref={ref}
+        style={{
+          "image-rendering": "pixelated",
+          width: 4 * 4 + "px",
+          height: 40 * 4 + "px",
+        }}
+      />
     </div>
   );
 }

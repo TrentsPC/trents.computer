@@ -14,6 +14,7 @@ export function createRegisters(isGBDoctor?: boolean) {
   let h = isGBDoctor ? 0x01 : 0;
   let l = isGBDoctor ? 0x4d : 0;
   let ime = 1;
+  let imePending = 0;
   // Stack Pointer
   let sp = 0xfffe;
   // Program Counter
@@ -315,6 +316,11 @@ export function createRegisters(isGBDoctor?: boolean) {
       name: "IME",
       get: () => ime,
       set: (value: number) => (ime = value),
+    },
+    imePending: {
+      name: "IME PENDING",
+      get: () => imePending,
+      set: (value: number) => (imePending = value),
     },
     logs,
   };

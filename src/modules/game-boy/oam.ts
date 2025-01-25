@@ -6,6 +6,7 @@ import type { GameBoy } from "./gameBoy";
 export type OAM = {
   readByte: (address: number) => number;
   writeByte: (address: number, value: number) => void;
+  dmaTransfer: (value: number) => void;
 };
 
 export function createOAM(gameBoy: GameBoy): OAM {
@@ -19,5 +20,13 @@ export function createOAM(gameBoy: GameBoy): OAM {
     memory[address] = value;
   }
 
-  return { readByte: read, writeByte: write };
+  function dmaTransfer(value: number) {
+    // console.log(`DMA transfer ${value.toString(16)}`);
+    const startAddress = value << 8;
+    for (let i = 0; i < 0xa0; i++) {
+      memory[i] = gameBoy.addressBus.readByte(startAddress + i);
+    }
+  }
+
+  return { readByte: read, writeByte: write, dmaTransfer };
 }

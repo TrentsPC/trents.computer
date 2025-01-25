@@ -4,7 +4,7 @@ import { createCartridge, type Cartridge } from "./cartridge";
 import { CPU, createCPU } from "./cpu";
 import { createExternalRAM, ExternalRAM } from "./external-ram";
 import { createIE, IE } from "./ie";
-import { createIORegisters, IORegisters } from "./io-registers";
+import { createIORegisters, IORegisters } from "./io-bus";
 import { createLogger } from "./logger";
 import { createOAM, OAM } from "./oam";
 import { createPPU, PPU } from "./ppu";
@@ -30,10 +30,12 @@ export type GameBoy = {
 
 export function createGameBoy({
   getCanvas,
+  getColor,
   isGBDoctor,
 }: {
   getCanvas: () => HTMLCanvasElement;
   isGBDoctor?: boolean;
+  getColor: (index: number) => string;
 }) {
   const { logs, logger } = createLogger();
 
@@ -42,7 +44,7 @@ export function createGameBoy({
   gb.addressBus = memory;
   const cpu = createCPU({ gameBoy: gb, logger, isGBDoctor });
   gb.cpu = cpu;
-  const ppu = createPPU(gb, getCanvas, isGBDoctor);
+  const ppu = createPPU(gb, getCanvas, getColor, isGBDoctor);
   gb.ppu = ppu;
 
   // Memory map
