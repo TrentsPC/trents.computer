@@ -45,18 +45,22 @@ export function createJoypad(gameBoy: GameBoy): Joypad {
 
   if (typeof window != "undefined") {
     window.addEventListener("keydown", (e) => {
+      if (e.key in joypadMap) {
+        e.preventDefault();
+      }
       if (e.repeat) return;
       if (e.key in joypadMap) {
         state[joypadMap[e.key]] = true;
-        e.preventDefault();
       }
       console.log("down", e.key);
     });
     window.addEventListener("keyup", (e) => {
+      if (e.key in joypadMap) {
+        e.preventDefault();
+      }
       if (e.repeat) return;
       if (e.key in joypadMap) {
         state[joypadMap[e.key]] = false;
-        e.preventDefault();
       }
       console.log("up", e.key);
     });
