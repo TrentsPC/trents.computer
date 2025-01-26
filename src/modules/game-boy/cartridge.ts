@@ -7,16 +7,15 @@ export type Cartridge = {
 };
 
 export function createCartridge(gameBoy: GameBoy): Cartridge {
-  const rom = new Uint8Array(0x8000);
+  let rom = new Uint8Array(0x8000);
 
   function insertCartridge(cart: ArrayBuffer) {
     const array = new Uint8Array(cart);
-    rom.fill(0);
-    rom.set(array.slice(0x0000, 0x8000), 0x0000);
+    rom = array;
   }
 
   function readByte(address: uint16) {
-    return rom[address];
+    return rom[address] ?? 0xff;
   }
 
   return { insertCartridge, readByte };

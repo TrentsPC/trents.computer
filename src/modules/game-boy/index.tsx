@@ -23,8 +23,10 @@ function getColor(byte: number) {
     case 0:
       return "#a3b334";
     case 1:
+      return "#6B882E";
       return "#8CAC0D";
     case 2:
+      return "#3A6122";
       return "#316231";
     case 3:
       return "#0F3810";

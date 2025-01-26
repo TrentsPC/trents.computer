@@ -1353,6 +1353,7 @@ export function createInstructions({
   registerLD_HL_r8(0x73, registers.e);
   registerLD_HL_r8(0x74, registers.h);
   registerLD_HL_r8(0x75, registers.l);
+  registerNOP(0x76);
   registerLD_HL_r8(0x77, registers.a);
   registerLD_r8_r8(0x78, registers.a, registers.b);
   registerLD_r8_r8(0x79, registers.a, registers.c);

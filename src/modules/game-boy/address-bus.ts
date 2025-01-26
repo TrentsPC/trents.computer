@@ -10,11 +10,15 @@ export type AddressBus = {
 
 const bootloader = new Uint8Array(BOOTLOADER_ROM);
 
+/**
+ * Also called the Memory Management Unit, apparently.
+ */
 export function createAddressBus(gameBoy: GameBoy): AddressBus {
   const memory = new Uint8Array(0x10000);
+  let memoryBank = 1;
 
   function read(address: number, quiet = false) {
-    if (address >= 0x0000 && address <= 0x7fff) {
+    if (address >= 0x0000 && address <= 0x3fff) {
       // const bootRomSelector = memory[0xff50];
       // if (bootRomSelector === 0) {
       //   const maxBootloaderAddress = bootloader.length - 1;
@@ -23,6 +27,10 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
       //   }
       // }
       return gameBoy.cartridge.readByte(address);
+    }
+    if (address >= 0x4000 && address <= 0x7fff) {
+      const adjustedAddress = address - 0x4000 + memoryBank * 0x4000;
+      return gameBoy.cartridge.readByte(adjustedAddress);
     }
     if (address >= 0x8000 && address <= 0x9fff) {
       return gameBoy.vram.readByte(address - 0x8000);
@@ -39,6 +47,9 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
 
   function write(address: number, value: number, quiet = false) {
     if (address >= 0x0000 && address <= 0x7fff) {
+      if (address >= 0x2000 && address <= 0x3fff) {
+        memoryBank = value & 0b00011111;
+      }
       return;
     }
     if (address >= 0x8000 && address <= 0x9fff) {
