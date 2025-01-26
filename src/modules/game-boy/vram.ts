@@ -18,6 +18,9 @@ export function createVRAM(gameBoy: GameBoy): VRAM {
 
   function write(address: number, value: number) {
     memory[address] = value;
+    if (address <= 0x17ff) {
+      gameBoy.ppu.invalidateTileDataCache(address + 0x8000);
+    }
   }
 
   return { readByte: read, writeByte: write, _getArray: () => memory };

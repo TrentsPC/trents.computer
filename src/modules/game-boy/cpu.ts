@@ -94,11 +94,11 @@ export function createCPU({
     for (let i = 1; i < instruction.length; i++) {
       args.push(gameBoy.addressBus.readByte(registers.pc.get() + i));
     }
-    logger.log(
-      registers.pc.get().toString(16).padStart(4, "0") +
-        ": " +
-        instruction.print(args),
-    );
+    // logger.log(
+    //   registers.pc.get().toString(16).padStart(4, "0") +
+    //     ": " +
+    //     instruction.print(args),
+    // );
     registers.pc.set(registers.pc.get() + instruction.length);
     instruction.execute(args);
     const cycles =

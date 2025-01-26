@@ -5,12 +5,12 @@ export type PPU = {
   step: () => void;
   getLCDX: () => number;
   getLCDY: () => number;
+  invalidateTileDataCache: (address: number) => void;
 };
 
 export function createPPU(
   gameBoy: GameBoy,
   getCanvas: () => HTMLCanvasElement,
-  getColor: (index: number) => string,
   isGBDoctor?: boolean,
 ): PPU {
   let lcdX = 0;
@@ -44,7 +44,7 @@ export function createPPU(
         );
       }
       if (lcdY === 144) {
-        renderScreen(gameBoy, getCanvas(), getColor);
+        renderScreen(gameBoy, getCanvas());
         gameBoy.addressBus.writeByte(
           0xff0f,
           gameBoy.addressBus.readByte(0xff0f) | 0x01,
@@ -64,108 +64,104 @@ export function createPPU(
     return lcdY;
   }
 
-  return { step, getLCDX, getLCDY };
-}
+  // UH OH RENDERING STUFF
 
-function renderTile(
-  gameBoy: GameBoy,
-  address: number,
-  getColor: (index: number) => string,
-) {
-  const canvas = new OffscreenCanvas(8, 8);
-  for (let y = 0; y < 8; y++) {
-    const byte1 = gameBoy.addressBus.readByte(address + y * 2);
-    const byte2 = gameBoy.addressBus.readByte(address + y * 2 + 1);
-    for (let x = 0; x < 8; x++) {
-      const bit1 = (byte1 >> (7 - x)) & 1;
-      const bit2 = (byte2 >> (7 - x)) & 1;
-      const color = bit1 + bit2 * 2;
-      const ctx = canvas.getContext("2d")!;
+  /**
+   * get cached tile data from starating address of tile
+   */
+  const tileDataCache = new Map<number, OffscreenCanvas>();
 
-      ctx.fillStyle = getColor(color);
-
-      ctx.fillRect(x, y, 1, 1);
-    }
+  function invalidateTileDataCache(address: number) {
+    const startingAddress = address & 0xfff0;
+    tileDataCache.delete(startingAddress);
   }
-  return canvas;
-}
 
-function renderTileMap(gameBoy: GameBoy, getColor: (index: number) => string) {
-  const canvas = new OffscreenCanvas(256, 256);
-  const ctx = canvas.getContext("2d")!;
+  function renderTile(gameBoy: GameBoy, startingAddress: number) {
+    const canvas = new OffscreenCanvas(8, 8);
+    const ctx = canvas.getContext("2d")!;
+    for (let y = 0; y < 8; y++) {
+      const lowByte = gameBoy.addressBus.readByte(startingAddress + y * 2);
+      const highByte = gameBoy.addressBus.readByte(startingAddress + y * 2 + 1);
+      for (let x = 0; x < 8; x++) {
+        const lowBit = (lowByte >> (7 - x)) & 1;
+        const highBit = (highByte >> (7 - x)) & 1;
+        const color = lowBit + highBit * 2;
 
-  const tileCache = new Map<number, OffscreenCanvas>();
+        const [r, g, b] = gameBoy.getColor(color);
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+    return canvas;
+  }
 
   function getTile(startingAddress: number) {
-    if (tileCache.has(startingAddress)) {
-      return tileCache.get(startingAddress)!;
+    if (tileDataCache.has(startingAddress)) {
+      return tileDataCache.get(startingAddress)!;
     }
-    const tileCanvas = renderTile(gameBoy, startingAddress, getColor);
-    tileCache.set(startingAddress, tileCanvas);
+    const tileCanvas = renderTile(gameBoy, startingAddress);
+    tileDataCache.set(startingAddress, tileCanvas);
     return tileCanvas;
   }
 
-  for (let y = 0; y < 32; y++) {
-    for (let x = 0; x < 32; x++) {
-      const address = 0x9800 + y * 32 + x;
-      const tileNumber = gameBoy.addressBus.readByte(address);
-      const tileAddress = 0x8000 + tileNumber * 16;
-      const tileCanvas = getTile(tileAddress);
-      ctx.drawImage(tileCanvas, x * 8, y * 8);
+  function renderTileMap(gameBoy: GameBoy) {
+    const canvas = new OffscreenCanvas(256, 256);
+    const ctx = canvas.getContext("2d")!;
+
+    for (let y = 0; y < 32; y++) {
+      for (let x = 0; x < 32; x++) {
+        const address = 0x9800 + y * 32 + x;
+        const tileNumber = gameBoy.addressBus.readByte(address);
+        const tileAddress = 0x8000 + tileNumber * 16;
+        const tileCanvas = getTile(tileAddress);
+        ctx.drawImage(tileCanvas, x * 8, y * 8);
+      }
+    }
+    return canvas;
+  }
+
+  function renderQuadTileMap(gameBoy: GameBoy) {
+    const canvas = new OffscreenCanvas(256 * 4, 256 * 4);
+    const ctx = canvas.getContext("2d")!;
+    const tileMap = renderTileMap(gameBoy);
+    ctx.drawImage(tileMap, 0, 0);
+    ctx.drawImage(tileMap, 256, 0);
+    ctx.drawImage(tileMap, 0, 256);
+    ctx.drawImage(tileMap, 256, 256);
+    return canvas;
+  }
+
+  function drawObject(gameBoy: GameBoy, address: number) {
+    const canvas = new OffscreenCanvas(160, 144);
+    const ctx = canvas.getContext("2d")!;
+    const y = gameBoy.addressBus.readByte(address);
+    const x = gameBoy.addressBus.readByte(address + 1);
+    const tileNumber = gameBoy.addressBus.readByte(address + 2);
+    // const attributes = gameBoy.addressBus.readByte(address + 3);
+    const tileAddress = 0x8000 + tileNumber * 16;
+    const tileCanvas = renderTile(gameBoy, tileAddress);
+    ctx.drawImage(tileCanvas, x - 8, y - 16);
+    // ctx.fillStyle = "red";
+    // ctx.fillRect(x - 8, y - 16, 8, 9);
+    return canvas;
+  }
+
+  function renderScreen(gameBoy: GameBoy, ref: HTMLCanvasElement) {
+    const ctx = ref.getContext("2d")!;
+
+    const tileMap = renderQuadTileMap(gameBoy);
+
+    const SCY = gameBoy.addressBus.readByte(0xff42);
+    const SCX = gameBoy.addressBus.readByte(0xff43);
+
+    ctx.drawImage(tileMap, -SCX, -SCY);
+
+    for (let addr = 0xfe00; addr < 0xfea0; addr += 4) {
+      const canvas = drawObject(gameBoy, addr);
+      ctx.drawImage(canvas, 0, 0);
     }
   }
-  return canvas;
-}
 
-function renderQuadTileMap(
-  gameBoy: GameBoy,
-  getColor: (index: number) => string,
-) {
-  const canvas = new OffscreenCanvas(256 * 4, 256 * 4);
-  const ctx = canvas.getContext("2d")!;
-  const tileMap = renderTileMap(gameBoy, getColor);
-  ctx.drawImage(tileMap, 0, 0);
-  ctx.drawImage(tileMap, 256, 0);
-  ctx.drawImage(tileMap, 0, 256);
-  ctx.drawImage(tileMap, 256, 256);
-  return canvas;
-}
-
-function drawObject(
-  gameBoy: GameBoy,
-  address: number,
-  getColor: (index: number) => string,
-) {
-  const canvas = new OffscreenCanvas(160, 144);
-  const ctx = canvas.getContext("2d")!;
-  const y = gameBoy.addressBus.readByte(address);
-  const x = gameBoy.addressBus.readByte(address + 1);
-  const tileNumber = gameBoy.addressBus.readByte(address + 2);
-  // const attributes = gameBoy.addressBus.readByte(address + 3);
-  const tileAddress = 0x8000 + tileNumber * 16;
-  const tileCanvas = renderTile(gameBoy, tileAddress, getColor);
-  ctx.drawImage(tileCanvas, x - 8, y - 16);
-  // ctx.fillStyle = "red";
-  // ctx.fillRect(x - 8, y - 16, 8, 9);
-  return canvas;
-}
-
-function renderScreen(
-  gameBoy: GameBoy,
-  ref: HTMLCanvasElement,
-  getColor: (index: number) => string,
-) {
-  const ctx = ref.getContext("2d")!;
-
-  const tileMap = renderQuadTileMap(gameBoy, getColor);
-
-  const SCY = gameBoy.addressBus.readByte(0xff42);
-  const SCX = gameBoy.addressBus.readByte(0xff43);
-
-  ctx.drawImage(tileMap, -SCX, -SCY);
-
-  for (let addr = 0xfe00; addr < 0xfea0; addr += 4) {
-    const canvas = drawObject(gameBoy, addr, getColor);
-    ctx.drawImage(canvas, 0, 0);
-  }
+  return { step, getLCDX, getLCDY, invalidateTileDataCache };
 }

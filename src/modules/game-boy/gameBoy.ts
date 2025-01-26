@@ -13,6 +13,10 @@ import { createVRAM, VRAM } from "./vram";
 import { createWRAM, WRAM } from "./wram";
 
 // const ONE_FRAME = 1_000_000 / 60;
+//
+export type GetColor = (
+  index: number,
+) => [red: number, green: number, blue: number];
 
 export type GameBoy = {
   cpu: CPU;
@@ -26,6 +30,7 @@ export type GameBoy = {
   oam: OAM;
   ioRegisters: IORegisters;
   ie: IE;
+  getColor: GetColor;
 };
 
 export function createGameBoy({
@@ -35,16 +40,16 @@ export function createGameBoy({
 }: {
   getCanvas: () => HTMLCanvasElement;
   isGBDoctor?: boolean;
-  getColor: (index: number) => string;
+  getColor: GetColor;
 }) {
   const { logs, logger } = createLogger();
 
-  const gb = {} as GameBoy;
+  const gb = { getColor } as GameBoy;
   const memory = createAddressBus(gb);
   gb.addressBus = memory;
   const cpu = createCPU({ gameBoy: gb, logger, isGBDoctor });
   gb.cpu = cpu;
-  const ppu = createPPU(gb, getCanvas, getColor, isGBDoctor);
+  const ppu = createPPU(gb, getCanvas, isGBDoctor);
   gb.ppu = ppu;
 
   // Memory map

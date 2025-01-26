@@ -1,4 +1,4 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { createGameBoy, GameBoy } from "./gameBoy";
 import { Log } from "./logger";
 import { CPU_INSTR } from "./roms/blargg/cpu_instr";
@@ -18,20 +18,23 @@ import { TETRIS } from "./roms/tetris";
 
 const SCALE_FACTOR = 4;
 
-function getColor(byte: number) {
+function getColor(byte: number): [number, number, number] {
   switch (byte) {
     case 0:
-      return "#a3b334";
+      return [163, 179, 52];
+    // return "#a3b334";
     case 1:
-      return "#6B882E";
-      return "#8CAC0D";
+      return [107, 136, 46];
+    // return "#6B882E";
     case 2:
-      return "#3A6122";
-      return "#316231";
+      return [58, 97, 34];
+    // return "#3A6122";
     case 3:
-      return "#0F3810";
+      return [15, 56, 16];
+    // return "#0F3810";
     default:
-      return "#9CBC10";
+      return [163, 179, 52];
+    // return "#a3b334";
   }
 }
 
@@ -42,6 +45,7 @@ export function GameBoyEmulator() {
   gameBoy.gameBoy.addressBus.writeByte(0xffff, 0x00);
   gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
   const [fps, setFPS] = createSignal(0);
+  const [running, setRunning] = createSignal(false);
 
   return (
     <div css={{ spaceY: 24 }}>
@@ -245,7 +249,8 @@ export function GameBoyEmulator() {
         </button>
         <button
           onClick={async () => {
-            while (true) {
+            setRunning(true);
+            while (running()) {
               const initialPoint = performance.now();
               for (let i = 0; i < 60; i++) {
                 gameBoy.advanceFrame();
@@ -259,6 +264,9 @@ export function GameBoyEmulator() {
         >
           Run forever
         </button>
+        <Show when={running()}>
+          <button onClick={() => setRunning(false)}>stop</button>
+        </Show>
         <button
           onClick={async () => {
             const fakeCanvas = (<canvas />) as HTMLCanvasElement;
@@ -463,7 +471,8 @@ function TileMap({ gameBoy }: { gameBoy: GameBoy }) {
         const color = bit1 + bit2 * 2;
         const ctx = canvas.getContext("2d")!;
 
-        ctx.fillStyle = getColor(color);
+        const [r, g, b] = gameBoy.getColor(color);
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
 
         ctx.fillRect(x, y, 1, 1);
       }
@@ -529,7 +538,8 @@ function TileData({ gameBoy }: { gameBoy: GameBoy }) {
         const color = bit1 + bit2 * 2;
         const ctx = canvas.getContext("2d")!;
 
-        ctx.fillStyle = getColor(color);
+        const [r, g, b] = gameBoy.getColor(color);
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
 
         ctx.fillRect(x, y, 1, 1);
       }
