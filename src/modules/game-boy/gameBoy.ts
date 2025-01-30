@@ -1,4 +1,3 @@
-import { onMount } from "solid-js";
 import { AddressBus, createAddressBus } from "./address-bus";
 import { createCartridge, type Cartridge } from "./cartridge";
 import { CPU, createCPU } from "./cpu";
@@ -8,14 +7,13 @@ import { createIORegisters, IORegisters } from "./io-bus";
 import { createLogger } from "./logger";
 import { createOAM, OAM } from "./oam";
 import { createPPU, PPU } from "./ppu";
-import { CPU_INSTR_03_SP_HL } from "./roms/blargg/cpu_instr_03_sp_hl";
 import { createVRAM, VRAM } from "./vram";
 import { createWRAM, WRAM } from "./wram";
 
 // const ONE_FRAME = 1_000_000 / 60;
 //
 export type GetColor = (
-  index: number,
+  index: number
 ) => [red: number, green: number, blue: number];
 
 export type GameBoy = {
@@ -70,10 +68,10 @@ export function createGameBoy({
   const ie = createIE(gb);
   gb.ie = ie;
 
-  onMount(() => {
-    // cartridge.insertCartridge(TETRIS);
-    cartridge.insertCartridge(CPU_INSTR_03_SP_HL);
-  });
+  // onMount(() => {
+  //   // cartridge.insertCartridge(TETRIS);
+  //   cartridge.insertCartridge(CPU_INSTR_03_SP_HL);
+  // });
 
   function advanceFrame() {
     const dotsPerFrame = 154 * 456;
