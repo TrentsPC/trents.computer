@@ -19,13 +19,13 @@ export function createAddressBus(gameBoy: GameBoy): AddressBus {
 
   function read(address: number, quiet = false) {
     if (address >= 0x0000 && address <= 0x3fff) {
-      // const bootRomSelector = memory[0xff50];
-      // if (bootRomSelector === 0) {
-      //   const maxBootloaderAddress = bootloader.length - 1;
-      //   if (address <= maxBootloaderAddress) {
-      //     return bootloader[address];
-      //   }
-      // }
+      const bootRomSelector = read(0xff50);
+      if (bootRomSelector === 0) {
+        const maxBootloaderAddress = bootloader.length - 1;
+        if (address <= maxBootloaderAddress) {
+          return bootloader[address];
+        }
+      }
       return gameBoy.cartridge.readByte(address);
     }
     if (address >= 0x4000 && address <= 0x7fff) {
