@@ -1,4 +1,5 @@
 import html2canvas from "html2canvas";
+// TODO: Switch to `modern-screenshot`
 import { bezier } from "./bezier";
 const getNewPage = () => import("~/modules/os/sonoma").then((m) => m.TrentOS);
 
