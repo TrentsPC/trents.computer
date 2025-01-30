@@ -1,5 +1,6 @@
 import { createSignal, For, Show } from "solid-js";
 import { createGameBoy, GameBoy } from "./gameBoy";
+import bezel from "./gbp.png";
 import { Log } from "./logger";
 import { CPU_INSTR } from "./roms/blargg/cpu_instr";
 import { CPU_INSTR_01_SPECIAL } from "./roms/blargg/cpu_instr_01_special";
@@ -13,6 +14,7 @@ import { CPU_INSTR_08_MISC } from "./roms/blargg/cpu_instr_08_MISC";
 import { CPU_INSTR_09_r_r } from "./roms/blargg/cpu_instr_09_r_r";
 import { CPU_INSTR_10_BIT } from "./roms/blargg/cpu_instr_10_bit";
 import { CPU_INSTR_11_A_HL } from "./roms/blargg/cpu_instr_11_A_HL";
+import { POKEMON_RED } from "./roms/pokemon-red";
 import { SUPER_MARIO_LAND } from "./roms/super-mario-land";
 import { TETRIS } from "./roms/tetris";
 
@@ -41,9 +43,9 @@ function getColor(byte: number): [number, number, number] {
 export function GameBoyEmulator() {
   let canvas: HTMLCanvasElement = undefined!;
   const gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
-  gameBoy.gameBoy.addressBus.writeByte(0xff50, 1);
-  gameBoy.gameBoy.addressBus.writeByte(0xffff, 0x00);
-  gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+  // gameBoy.gameBoy.addressBus.writeByte(0xff50, 1);
+  // gameBoy.gameBoy.addressBus.writeByte(0xffff, 0x00);
+  // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
   const [fps, setFPS] = createSignal(0);
   const [running, setRunning] = createSignal(false);
 
@@ -57,44 +59,41 @@ export function GameBoyEmulator() {
       >
         <div
           css={{
-            padding: 22 * 4,
-            borderRadius: 10 * 4,
-            backgroundColor: "#dcdce2",
+            position: "relative",
           }}
         >
+          <img
+            src={bezel}
+            css={{
+              width: 258 * 2,
+              height: 416 * 2,
+              imageRendering: "pixelated",
+            }}
+          />
           <div
             css={{
-              d: "flex",
-              flexDir: "column",
-              width: "min-content",
-              px: 48 * 4,
-              py: 24 * 4,
-              borderRadius: 10 * 4,
-              bg: "#928EA3",
-              borderBottomRightRadius: `${40 * 4}px ${35 * 4}px`,
+              padding: 1 * 2,
+              backgroundColor: "#a3b334",
+              position: "absolute",
+              top: 44 * 2,
+              left: 48 * 2,
+              width: 162 * 2,
+              height: 146 * 2,
             }}
           >
-            <div
+            <canvas
+              ref={canvas}
+              width={160}
+              height={144}
               css={{
-                padding: 2 * 4,
-                backgroundColor: "#a3b334",
-                position: "relative",
+                background: "#a3b334",
+                width: 160 * 2,
+                height: 144 * 2,
+                imageRendering: "pixelated",
               }}
-            >
-              <canvas
-                ref={canvas}
-                width={160}
-                height={144}
-                css={{
-                  background: "#a3b334",
-                  width: 160 * 4,
-                  height: 144 * 4,
-                  imageRendering: "pixelated",
-                }}
-              />
-              <div css={{ position: "absolute", top: "100%", left: 0, pt: 8 }}>
-                FPS: {fps().toFixed()}
-              </div>
+            />
+            <div css={{ position: "absolute", top: "100%", right: 0, pt: 8 }}>
+              FPS: {fps().toFixed()}
             </div>
           </div>
         </div>
@@ -199,7 +198,7 @@ export function GameBoyEmulator() {
         <button
           onClick={() => {
             gameBoy.gameBoy.cartridge.insertCartridge(TETRIS);
-            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+            // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
           }}
         >
           Tetris
@@ -207,10 +206,18 @@ export function GameBoyEmulator() {
         <button
           onClick={() => {
             gameBoy.gameBoy.cartridge.insertCartridge(SUPER_MARIO_LAND);
-            gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+            // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
           }}
         >
           Super Mario Land
+        </button>
+        <button
+          onClick={() => {
+            gameBoy.gameBoy.cartridge.insertCartridge(POKEMON_RED);
+            // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
+          }}
+        >
+          Pokemon
         </button>
       </div>
       <div css={{ spaceX: 10 }}>
@@ -336,7 +343,7 @@ function download(filename: string, text: string) {
   var element = document.createElement("a");
   element.setAttribute(
     "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text),
+    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
   );
   element.setAttribute("download", filename);
 
@@ -355,10 +362,10 @@ const raf = async () => {
 function EnabledInterrupts({ gameBoy }: { gameBoy: GameBoy }) {
   const [ime, setIME] = createSignal(gameBoy.cpu.getRegisters().ime.get());
   const [enabled, setEnabled] = createSignal(
-    gameBoy.addressBus.readByte(0xffff),
+    gameBoy.addressBus.readByte(0xffff)
   );
   const [requested, setRequested] = createSignal(
-    gameBoy.addressBus.readByte(0xff0f),
+    gameBoy.addressBus.readByte(0xff0f)
   );
 
   function update() {
