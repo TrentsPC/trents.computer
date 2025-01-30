@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, onMount, Show } from "solid-js";
 import { createGameBoy, GameBoy } from "./gameBoy";
 import bezel from "./gbp.png";
 import { Log } from "./logger";
@@ -14,7 +14,9 @@ import { CPU_INSTR_08_MISC } from "./roms/blargg/cpu_instr_08_MISC";
 import { CPU_INSTR_09_r_r } from "./roms/blargg/cpu_instr_09_r_r";
 import { CPU_INSTR_10_BIT } from "./roms/blargg/cpu_instr_10_bit";
 import { CPU_INSTR_11_A_HL } from "./roms/blargg/cpu_instr_11_A_HL";
+import dmgAcid from "./roms/dmg-acid2.gb?url";
 import { POKEMON_RED } from "./roms/pokemon-red";
+import prehistorikMan from "./roms/prehistorik-man.gb?url";
 import { SUPER_MARIO_LAND } from "./roms/super-mario-land";
 import { TETRIS } from "./roms/tetris";
 
@@ -42,12 +44,49 @@ function getColor(byte: number): [number, number, number] {
 
 export function GameBoyEmulator() {
   let canvas: HTMLCanvasElement = undefined!;
-  const gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
+  let gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
   // gameBoy.gameBoy.addressBus.writeByte(0xff50, 1);
   // gameBoy.gameBoy.addressBus.writeByte(0xffff, 0x00);
   // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
   const [fps, setFPS] = createSignal(0);
   const [running, setRunning] = createSignal(false);
+
+  async function runForever() {
+    setRunning(true);
+    while (running()) {
+      const initialPoint = performance.now();
+      for (let i = 0; i < 60; i++) {
+        gameBoy.advanceFrame();
+        await raf();
+      }
+      const endPoint = performance.now();
+      const fps = 60 / ((endPoint - initialPoint) / 1000);
+      setFPS(fps);
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    document.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const files = e.dataTransfer?.files;
+      if (!files) return;
+      const file = files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const buffer = e.target?.result;
+        gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
+        gameBoy.gameBoy.cartridge.insertCartridge(buffer as ArrayBuffer);
+        gameBoy.gameBoy.cpu.getRegisters().pc.set(0x0000);
+        runForever();
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  });
 
   return (
     <div css={{ spaceY: 24 }}>
@@ -218,6 +257,32 @@ export function GameBoyEmulator() {
           }}
         >
           Pokemon
+        </button>
+        <button
+          onClick={() => {
+            fetch(prehistorikMan)
+              .then((res) => res.arrayBuffer())
+              .then((buffer) => {
+                gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
+                gameBoy.gameBoy.cartridge.insertCartridge(buffer);
+                gameBoy.gameBoy.cpu.getRegisters().pc.set(0x0000);
+              });
+          }}
+        >
+          Prehistorik Man
+        </button>
+        <button
+          onClick={() => {
+            fetch(dmgAcid)
+              .then((res) => res.arrayBuffer())
+              .then((buffer) => {
+                gameBoy = createGameBoy({ getCanvas: () => canvas, getColor });
+                gameBoy.gameBoy.cartridge.insertCartridge(buffer);
+                gameBoy.gameBoy.cpu.getRegisters().pc.set(0x0000);
+              });
+          }}
+        >
+          DMG Acid
         </button>
       </div>
       <div css={{ spaceX: 10 }}>
