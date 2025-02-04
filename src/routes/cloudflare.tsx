@@ -1,12 +1,18 @@
 import { createAsync } from "@solidjs/router";
 import { getRequestEvent } from "solid-js/web";
+import { getPlatformProxy } from "wrangler";
 
 async function getCloudflare() {
   "use server";
 
+  let env: any;
   const event = getRequestEvent();
-  return event?.nativeEvent.context;
-  // return event?.nativeEvent.context.cloudflare?.env as CfPagesEnv
+  if (process.env.NODE_ENV === "development") {
+    env = (await getPlatformProxy({})).env;
+  } else {
+    env = event?.nativeEvent.context.cloudflare?.env;
+  }
+  return JSON.stringify(env, null, 2);
 }
 
 export default function Page() {
@@ -16,7 +22,7 @@ export default function Page() {
       <h1>Cloudflare binding test</h1>
       <small>
         <pre>
-          <code>{JSON.stringify(thing(), null, 2)}</code>
+          <code>{thing()}</code>
         </pre>
       </small>
     </div>
