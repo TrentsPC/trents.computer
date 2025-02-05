@@ -54,7 +54,7 @@ export async function POST({ request, nativeEvent }: APIEvent) {
   const { query, params } = await request.json();
   return json(
     // @ts-expect-error overload on command
-    db
+    await db
       .prepare(query)
       .bind(...params)
       [command]()
