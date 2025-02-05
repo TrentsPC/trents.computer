@@ -1,18 +1,25 @@
+import type { D1Database } from "@cloudflare/workers-types";
 import { createAsync } from "@solidjs/router";
 import { getRequestEvent } from "solid-js/web";
 
-async function getCloudflare() {
-  "use server";
+type Env = { DB: D1Database };
 
-  let env: any;
+async function getCloudflareEnv() {
+  let env: Env;
   const event = getRequestEvent();
   if (import.meta.env.DEV) {
     const { getPlatformProxy } = await import("wrangler");
-    env = (await getPlatformProxy({})).env;
+    env = (await getPlatformProxy({})).env as Env;
   } else {
     env = event?.nativeEvent.context.cloudflare?.env;
   }
-  return JSON.stringify(env, null, 2);
+  return env;
+}
+
+async function getCloudflare() {
+  "use server";
+  const env = await getCloudflareEnv();
+  return JSON.stringify(await env.DB.prepare("SELECT 1;").all(), null, 2);
 }
 
 export default function Page() {

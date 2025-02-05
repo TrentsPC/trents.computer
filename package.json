@@ -2,7 +2,7 @@
   "name": "trents.computer",
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev",
+    "dev": "vinxi dev --remote",
     "build": "vinxi build",
     "wrangle": "wrangler deploy",
     "typecheck": "tsc --noEmit",
@@ -14,29 +14,31 @@
     "@hypergood/spring": "^0.0.1",
     "@kobalte/core": "^0.13.3",
     "@solidjs/meta": "^0.29.4",
-    "@solidjs/router": "^0.13.5",
-    "@solidjs/start": "^1.0.1",
-    "@tanstack/solid-query": "^5.62.7",
+    "@solidjs/router": "^0.15.3",
+    "@solidjs/start": "^1.0.11",
+    "@tanstack/solid-query": "^5.66.0",
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "@types/sql.js": "^1.4.9",
-    "csv": "^6.3.9",
+    "csv": "^6.3.11",
     "figma-squircle": "^0.3.1",
     "html2canvas": "^1.4.1",
     "marked": "^15.0.4",
+    "ofetch": "^1.4.1",
     "pixi.js": "^8.6.6",
     "solid-gesture": "^0.0.3",
-    "solid-js": "^1.8.16",
+    "solid-js": "^1.9.4",
     "solid-radix-icons": "^1.0.0",
     "sql.js": "^1.12.0",
     "valibot": "^0.30.0",
-    "vinxi": "^0.3.11",
-    "wrangler": "^3.58.0"
+    "vinxi": "^0.5.1",
+    "wrangler": "^3.107.3"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250204.0",
     "vite-plugin-inspect": "^0.8.3"
   }
 }
