@@ -7,7 +7,7 @@ async function getCloudflare() {
 
   let env: any;
   const event = getRequestEvent();
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.dev) {
     env = (await getPlatformProxy({})).env;
   } else {
     env = event?.nativeEvent.context.cloudflare?.env;
