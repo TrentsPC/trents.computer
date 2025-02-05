@@ -13,7 +13,7 @@ export async function getDatabase() {
 }
 
 export async function getRemoteDatabase() {
-  if (import.meta.env.DEV) {
+  if (!import.meta.env.DEV) {
     return getDatabase();
   }
   const d1API = ofetch.create({
