@@ -10,6 +10,10 @@ export default createMiddleware({
       );
       event.nativeEvent.headers.set("Access-Control-Allow-Headers", "*");
       event.nativeEvent.headers.set("Access-Control-Expose-Headers", "*");
+
+      if (event.nativeEvent.method.toUpperCase() === "OPTIONS") {
+        return new Response(null, { status: 204 });
+      }
     },
   ],
 });
