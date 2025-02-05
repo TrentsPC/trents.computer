@@ -13,9 +13,9 @@ export async function getDatabase() {
 }
 
 export async function getRemoteDatabase() {
-  if (import.meta.env.DEV) {
-    return getDatabase();
-  }
+  // if (import.meta.env.DEV) {
+  //   return getDatabase();
+  // }
   const d1API = ofetch.create({
     baseURL: "https://wwwwwww.trents.computer/api/db",
     method: "POST",
