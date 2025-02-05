@@ -12,7 +12,15 @@ export default createMiddleware({
       event.nativeEvent.headers.set("Access-Control-Expose-Headers", "*");
 
       if (event.nativeEvent.method.toUpperCase() === "OPTIONS") {
-        return new Response(null, { status: 204 });
+        const res = new Response(null, { status: 204 });
+        res.headers.set("Access-Control-Allow-Origin", "*");
+        res.headers.set(
+          "Access-Control-Allow-Methods",
+          "GET,HEAD,PUT,PATCH,POST,DELETE"
+        );
+        res.headers.set("Access-Control-Allow-Headers", "*");
+        res.headers.set("Access-Control-Expose-Headers", "*");
+        return res;
       }
     },
   ],
