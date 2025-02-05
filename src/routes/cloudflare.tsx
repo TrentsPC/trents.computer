@@ -1,6 +1,5 @@
 import { createAsync } from "@solidjs/router";
 import { getRequestEvent } from "solid-js/web";
-import { getPlatformProxy } from "wrangler";
 
 async function getCloudflare() {
   "use server";
@@ -8,6 +7,7 @@ async function getCloudflare() {
   let env: any;
   const event = getRequestEvent();
   if (import.meta.env.DEV) {
+    const { getPlatformProxy } = await import("wrangler");
     env = (await getPlatformProxy({})).env;
   } else {
     env = event?.nativeEvent.context.cloudflare?.env;
