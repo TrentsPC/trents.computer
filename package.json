@@ -21,6 +21,8 @@
     "@trpc/server": "^10.45.2",
     "@types/sql.js": "^1.4.9",
     "csv": "^6.3.11",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.1",
     "figma-squircle": "^0.3.1",
     "html2canvas": "^1.4.1",
     "marked": "^15.0.4",
@@ -39,6 +41,8 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250204.0",
+    "drizzle-kit": "^0.30.4",
+    "tsx": "^4.19.2",
     "vite-plugin-inspect": "^0.8.3"
   }
 }
