@@ -3,6 +3,7 @@ import { defineConfig } from "@solidjs/start/config";
 import { styleConfig } from "./src/hypergood.config";
 
 export default defineConfig({
+  middleware: "./src/middleware.ts",
   ssr: true,
   server: {
     preset: "cloudflare_module",
