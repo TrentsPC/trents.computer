@@ -4,7 +4,7 @@ import {
   D1PreparedStatement,
 } from "@cloudflare/workers-types";
 import { ofetch } from "ofetch";
-import { createError, H3Error } from "vinxi/http";
+import type { H3Error } from "vinxi/http";
 import { getCloudflareEnv } from "./cloudflare";
 
 export async function getDatabase() {
@@ -13,9 +13,9 @@ export async function getDatabase() {
 }
 
 export async function getRemoteDatabase() {
-  // if (import.meta.env.DEV) {
-  //   return getDatabase();
-  // }
+  if (import.meta.env.DEV) {
+    return getDatabase();
+  }
   const d1API = ofetch.create({
     baseURL: "https://wwwwwww.trents.computer/api/db",
     method: "POST",
@@ -79,9 +79,9 @@ export async function getRemoteDatabase() {
 }
 
 function handleProxyError(err: H3Error) {
-  throw createError({
-    statusCode: err.statusCode,
-    // @ts-expect-error not aware of data property
-    message: err.data?.message || err.message,
-  });
+  // throw createError({
+  //   statusCode: err.statusCode,
+  //   // @ts-expect-error not aware of data property
+  //   message: err.data?.message || err.message,
+  // });
 }
