@@ -1,9 +1,9 @@
 import { createAsync } from "@solidjs/router";
-import { getCloudflareEnv } from "~/server/cloudflare";
+import { getRemoteDatabase } from "~/server/database";
 
 async function getCloudflare() {
   // "use server";
-  const db = (await getCloudflareEnv()).DB;
+  const db = await getRemoteDatabase();
   const result = await db.prepare("SELECT * from recipe_books").all();
   console.log(result);
   return JSON.stringify(result, null, 2);
