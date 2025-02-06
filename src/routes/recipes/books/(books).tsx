@@ -4,15 +4,14 @@ import { recipeBooksQuery } from "~/modules/recipes/queries";
 import { getResizedImageUrl } from "~/utils/images";
 
 export default function Page() {
-  const books = createQuery(() => recipeBooksQuery);
+  const thing = createQuery(() => recipeBooksQuery);
 
   return (
     <div css={{ padding: 20 }}>
       <div css={{ display: "flex", gap: 20 }}>
-        <For each={books.data}>
+        <For each={thing.data}>
           {(book) => (
-            <a
-              href={`/recipes/books/${book.id}`}
+            <div
               css={{
                 display: "flex",
                 flexDirection: "column",
@@ -27,7 +26,7 @@ export default function Page() {
                 }
               />
               {book.title}
-            </a>
+            </div>
           )}
         </For>
       </div>

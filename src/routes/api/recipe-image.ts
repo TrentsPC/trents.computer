@@ -27,24 +27,12 @@ export async function POST(event: APIEvent) {
   console.log("value", blob, imagePath);
   await env.IMAGES.put(imagePath, blob as any);
 
-  let width: number | null = null;
-  let height: number | null = null;
-  try {
-    const dimensions = await getImageDimensions(imagePath);
-    width = dimensions.width;
-    height = dimensions.height;
-  } catch (e) {
-    console.error(e);
-  }
-
   const db = drizzle(env.DB, { schema });
   const image = await db
     .insert(schema.images)
     .values({
       storage_path: imagePath,
       created_at: new Date().toISOString(),
-      width: width,
-      height: height,
     })
     .returning();
   return json(image);
