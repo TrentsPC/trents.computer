@@ -1,5 +1,6 @@
 import { createAsync } from "@solidjs/router";
 import { drizzle } from "drizzle-orm/d1";
+import { createSignal } from "solid-js";
 import * as schema from "~/db/schema";
 import { getRemoteDatabase } from "~/server/database";
 
@@ -25,6 +26,46 @@ export default function Page() {
         </pre>
       </small>
       <button onClick={getCloudflare}>go</button>
+      <UploadImages />
     </div>
+  );
+}
+
+function UploadImages() {
+  const [file, setFile] = createSignal<File | undefined>(undefined);
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        // const body = new FormData();
+        // body.append("file", file()!);
+        if (file()) {
+          try {
+            const res = await fetch("/api/recipe-image", {
+              method: "POST",
+              body: file()!,
+            });
+            if (res.ok) {
+              console.log("Uploaded successfully!");
+              console.log(res);
+            } else {
+              console.error(res);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }}
+    >
+      <input
+        type="file"
+        onChange={(e) => {
+          if (e.target.files) {
+            setFile(e.target.files[0]);
+          }
+        }}
+      />
+      <button type="submit">Upload</button>
+    </form>
   );
 }
