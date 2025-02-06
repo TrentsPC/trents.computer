@@ -41,10 +41,13 @@ function UploadImages() {
         // body.append("file", file()!);
         if (file()) {
           try {
-            const res = await fetch("/api/recipe-image", {
-              method: "POST",
-              body: file()!,
-            });
+            const res = await fetch(
+              "https://wwwwwww.trents.computer/api/recipe-image",
+              {
+                method: "POST",
+                body: file()!,
+              }
+            );
             if (res.ok) {
               console.log("Uploaded successfully!");
               console.log(res);

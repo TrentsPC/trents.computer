@@ -1,3 +1,4 @@
+import { json } from "@solidjs/router";
 import type { APIEvent } from "@solidjs/start/server";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "~/db/schema";
@@ -18,18 +19,22 @@ export async function POST(event: APIEvent) {
   if (!contentType || !contentType.includes("image")) {
     return new Response("Content type must be an image!", { status: 400 });
   }
-  const imagePath = `/recipes/${id}${getExtensionForContentType(contentType)}`;
+  const imagePath = `recipes/${id}${getExtensionForContentType(contentType)}`;
+  // while (env.IMAGES.list({prefix: imagePath})) {}
   // Inefficient, but i don't care
   const blob = await readableStreamToBlob(value);
 
   console.log("value", blob, imagePath);
   await env.IMAGES.put(imagePath, blob as any);
   const db = drizzle(env.DB, { schema });
-  await db.insert(schema.images).values({
-    storage_path: imagePath,
-    created_at: new Date().toISOString(),
-  });
-  return new Response(`Put ${imagePath} successfully!`);
+  const image = await db
+    .insert(schema.images)
+    .values({
+      storage_path: imagePath,
+      created_at: new Date().toISOString(),
+    })
+    .returning();
+  return json(image);
 }
 
 async function readableStreamToBlob(readableStream: ReadableStream) {
