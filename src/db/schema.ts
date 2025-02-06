@@ -5,3 +5,9 @@ export const recipeBooks = sqliteTable("recipe_books", {
   title: text().notNull(),
   created_at: int().notNull(),
 });
+
+export const images = sqliteTable("images", {
+  id: int().primaryKey({ autoIncrement: true }),
+  storage_path: text().notNull(),
+  created_at: text().notNull(),
+});

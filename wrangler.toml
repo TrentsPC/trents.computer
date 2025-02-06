@@ -15,3 +15,7 @@ bucket = ".output/public"
 binding = "DB"                                       # i.e. available in your Worker on env.DB
 database_name = "prod-db-recipes"
 database_id = "84530114-0f50-4881-9648-07597d355917"
+
+[[r2_buckets]]
+binding = 'IMAGES'     # <~ valid JavaScript variable name
+bucket_name = 'images'
