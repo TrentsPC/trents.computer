@@ -48,7 +48,9 @@ export function DropdownMenu(props: {
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
 export function DropdownMenuItem(
-  props: DropdownMenuPrimitive.DropdownMenuItemProps
+  props: DropdownMenuPrimitive.DropdownMenuItemProps & {
+    children?: JSX.Element;
+  }
 ) {
   return (
     <DropdownMenuPrimitive.Item
@@ -91,5 +93,71 @@ export function DropdownMenuSeparator() {
         my: 5,
       }}
     ></DropdownMenuPrimitive.Separator>
+  );
+}
+
+export function DropdownMenuSub(props: {
+  children?: JSX.Element;
+  content?: JSX.Element;
+}) {
+  return (
+    <DropdownMenuPrimitive.Sub>
+      <DropdownMenuPrimitive.SubTrigger
+        ref={useSquircle()}
+        css={{
+          fontFamily: "system-ui",
+          py: 3,
+          pl: 10,
+          pr: 12,
+          r: 3,
+          d: "flex",
+          items: "center",
+          minH: 22,
+          color: "rgba(0,0,0, 0.85)",
+          fontSize: 13,
+          fontWeight: 420,
+          lineHeight: "16px",
+          userSelect: "none",
+          "&[data-highlighted]": {
+            bg: "#007AFF",
+            color: "rgba(255,255,255, 1)",
+          },
+        }}
+      >
+        {props.children}
+      </DropdownMenuPrimitive.SubTrigger>
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.SubContent
+          // ref={useSquircle()}
+          css={{
+            position: "relative",
+            padding: 5,
+            r: 6,
+            bg: "rgba(246, 246, 246, 0.36)",
+            boxShadow:
+              "0px 7px 22px 0px rgba(0, 0, 0, 0.25), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.30), 0px 0px 1px 0px rgba(0, 0, 0, 0.40)",
+            backdropFilter: "blur(40px)",
+
+            // // border: "1px solid rgba(26, 26, 26, 0.46)",
+            // bg: "rgba(246, 246, 246, 0.36)",
+            // mixBlendMode: "luminosity",
+          }}
+        >
+          <div
+            css={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              r: "inherit",
+              bg: "rgba(246, 246, 246, 0.36)",
+              mixBlendMode: "luminosity",
+            }}
+          />
+          {props.content}
+        </DropdownMenuPrimitive.SubContent>
+      </DropdownMenuPrimitive.Portal>
+    </DropdownMenuPrimitive.Sub>
   );
 }
