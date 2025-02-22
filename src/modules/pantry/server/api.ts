@@ -47,6 +47,7 @@ export async function getRecipe(recipeId: number) {
   const result = await db.query.recipes.findFirst({
     with: {
       image: true,
+      book: true,
       sections: {
         with: {
           ingredientGroups: {

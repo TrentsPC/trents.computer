@@ -39,6 +39,7 @@ export function ResponsiveDesignDemo(props: { initialPath: string }) {
 
   const scaleFactor = createMemo(() => {
     const d = device();
+    if (typeof window === "undefined") return 1;
     const containerWidth = window.innerWidth - 40;
     const containerHeight = window.innerHeight - 40;
     const deviceWidth = d.width + Math.max(d.margin.left, d.margin.right) * 2;
@@ -191,14 +192,14 @@ export function ResponsiveDesignDemo(props: { initialPath: string }) {
         >
           <div
             css={{
-              backgroundColor: "#777",
+              backgroundColor: "#fff",
               width: "100%",
               height: "100%",
               overflow: "hidden",
             }}
             style={{ "border-radius": device().cornerRadius + "px" }}
           >
-            <iframe src="/pantry" css={{ size: "100%", border: 0 }} />
+            <iframe src="/pantry/books/2" css={{ size: "100%", border: 0 }} />
           </div>
           <img
             css={{

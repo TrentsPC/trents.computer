@@ -7,7 +7,7 @@ export default function Page() {
   const thing = createQuery(() => recipeBooksQuery);
 
   return (
-    <div css={{ padding: 20 }}>
+    <div css={{ padding: 20, backgroundColor: "#fffbe6", color: "#356859" }}>
       <div css={{ display: "flex", gap: 20 }}>
         <For each={thing.data}>
           {(book) => (

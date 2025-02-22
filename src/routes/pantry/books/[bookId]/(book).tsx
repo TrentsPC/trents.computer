@@ -1,7 +1,7 @@
 import { useParams } from "@solidjs/router";
 import { createQuery } from "@tanstack/solid-query";
 import { drizzle } from "drizzle-orm/d1";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import * as schema from "~/db/schema";
 import { recipeBookQuery, recipesQuery } from "~/modules/pantry/queries";
 import { getRemoteDatabase } from "~/server/database";
@@ -13,27 +13,53 @@ export default function Page() {
   const recipes = createQuery(() => recipesQuery(Number(params.bookId)));
 
   return (
-    <div css={{ padding: 20 }}>
+    <div
+      css={{
+        // fontFamily: "Signifier, sans-serif",
+        // fontSize: 18,
+        // lineHeight: 1.75,
+        backgroundColor: "#fffbe6",
+        color: "#356859",
+        padding: 16,
+      }}
+    >
       <NewRecipe />
       <div
-        css={
-          {
-            // display: "flex",
-            // flexDirection: "column",
-            // justifyContent: "flex-end",
-          }
-        }
+        css={{
+          display: "flex",
+          flexDirection: "column",
+          items: "center",
+        }}
       >
-        <img
-          src={
-            book.data?.image?.storage_path
-              ? getResizedImageUrl(book.data.image.storage_path, 320)
-              : ""
-          }
-        />
-        {book.data?.title}
+        <Show when={book.data?.image} fallback={<div>{book.data?.title}</div>}>
+          <img
+            css={{ borderRadius: 3 }}
+            src={
+              book.data?.image?.storage_path
+                ? getResizedImageUrl(book.data.image.storage_path, 320)
+                : ""
+            }
+          />
+        </Show>
       </div>
-      <div css={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+      <div css={{ height: 64 }} />
+      <div
+        css={{
+          display: "grid",
+          gridCols: 2,
+          columnGap: 8,
+          rowGap: 16,
+          "@sm": {
+            gridCols: 4,
+          },
+          "@md": {
+            gridCols: 5,
+          },
+          "@lg": {
+            gridCols: 6,
+          },
+        }}
+      >
         <For each={recipes.data}>
           {(recipe) => (
             <a href={`/pantry/recipes/${recipe.id}`}>
@@ -43,8 +69,9 @@ export default function Page() {
                     ? getResizedImageUrl(recipe.image.storage_path, 320)
                     : ""
                 }
+                css={{ borderRadius: 3 }}
               />
-              {recipe.name}
+              <div css={{ fontSize: 12 }}>{recipe.name}</div>
             </a>
           )}
         </For>
