@@ -1,10 +1,11 @@
 import hypergoodCss from "@hypergood/css/vite";
 import { defineConfig } from "@solidjs/start/config";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { styleConfig } from "./src/hypergood.config";
 
 export default defineConfig({
   middleware: "./src/middleware.ts",
-  ssr: true,
+  ssr: false,
   server: {
     preset: "cloudflare_module",
     rollupConfig: {
@@ -21,6 +22,11 @@ export default defineConfig({
       cssCodeSplit: true,
     },
     plugins: [
+      TanStackRouterVite({
+        target: "solid",
+        autoCodeSplitting: true,
+        routeFilePrefix: "+",
+      }) as any,
       hypergoodCss({
         config: styleConfig,
       }),

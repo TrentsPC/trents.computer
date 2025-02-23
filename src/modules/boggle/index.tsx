@@ -1,3 +1,4 @@
+import { getRouteApi, useNavigate } from "@tanstack/solid-router";
 import {
   For,
   Show,
@@ -5,14 +6,15 @@ import {
   createMemo,
   createSignal,
   onCleanup,
+  onMount,
 } from "solid-js";
+import { MixerHorizontalIcon, ReloadIcon, ResetIcon } from "solid-radix-icons";
 import { useSquircle } from "~/utils/squircle";
-import { onMount } from "solid-js";
-import { getValidWordPath } from "./utils";
-import { Board } from "./Board";
 import { createSpring } from "../spring";
-import { ReloadIcon, ResetIcon, MixerHorizontalIcon } from "solid-radix-icons";
-import { useNavigate, useSearchParams } from "@solidjs/router";
+import { Board } from "./Board";
+import { getValidWordPath } from "./utils";
+
+const route = getRouteApi("/boggle");
 
 /**
  * All the Boggle dice, in order
@@ -73,9 +75,7 @@ export function rotateBoard90DegCW(board: string[][]): string[][] {
   return newBoard;
 }
 
-function getBoardFromSearch() {
-  const params = new URLSearchParams(window.location.search);
-  const boardString = params.get("board");
+function getBoardFromSearch(boardString?: string) {
   if (!boardString) {
     return undefined;
   }
@@ -94,8 +94,8 @@ function getBoardFromSearch() {
   return board;
 }
 
-function getInitialBoard() {
-  return getBoardFromSearch() || shuffleBoard();
+function getInitialBoard(urlBoard?: string) {
+  return getBoardFromSearch(urlBoard) || shuffleBoard();
 }
 
 function getBoardString(board: string[][]) {
@@ -122,16 +122,16 @@ const NUMBER_NAMES = [
 ];
 
 export function BoggleGame(props: { dictionary: string[] }) {
-  const [board, setBoard] = createSignal(getInitialBoard());
+  const searchParams = route.useSearch();
+
+  const [board, setBoard] = createSignal(getInitialBoard(searchParams().board));
   const [rotation, setRotation] = createSignal(0);
   const [foundWords, setFoundWords] = createSignal<string[]>([]);
 
-  const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
 
   createEffect(() => {
-    const _ = params.board;
-    const board = getBoardFromSearch();
+    const board = getBoardFromSearch(searchParams().board);
     if (board) {
       setBoard(board);
     }
@@ -203,7 +203,12 @@ export function BoggleGame(props: { dictionary: string[] }) {
                 setFoundWords([]);
                 setOpen({});
                 const newBoard = shuffleBoard();
-                navigate(`?board=${getBoardString(newBoard)}`);
+                navigate({
+                  to: "/boggle",
+                  search: {
+                    board: getBoardString(newBoard),
+                  },
+                });
                 requestAnimationFrame(() => {
                   setBoard(newBoard);
                 });

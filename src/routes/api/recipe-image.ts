@@ -1,8 +1,8 @@
-import { json } from "@solidjs/router";
 import type { APIEvent } from "@solidjs/start/server";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "~/db/schema";
 import { getCloudflareEnv } from "~/server/cloudflare";
+import { json } from "~/server/json";
 import { customAlphabet } from "~/utils/nanoid";
 
 const randomImageId = customAlphabet(

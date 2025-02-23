@@ -7,8 +7,12 @@ import { getMonthView, sameDate } from "./utils";
 type CalendarView = "year" | "month" | "week" | "day";
 
 const DATES: Record<string, Date> = {
-  IBM: new Date("2023-03-04T00:00:00+13:00"),
-  Falafel: new Date("2023-04-01T23:00:00+13:00"),
+  // IBM: new Date("2023-03-04T00:00:00+13:00"),
+  // Falafel: new Date("2023-04-01T23:00:00+13:00"),
+  // Break: new Date(1715509620000), // 10:27pm 2024-05-12 nz time
+
+  Reunion: new Date("2024-05-31T23:00:00+12:00"),
+  Christchurch: new Date("2025-02-15T20:00:00+13:00"),
 };
 
 const MILESTONES = {

@@ -1,19 +1,22 @@
-import { useLocation } from "@solidjs/router";
+import { getRouteApi, useRouter } from "@tanstack/solid-router";
 import { For, Index, Show, createEffect, createSignal } from "solid-js";
-import { createSpring } from "../spring";
 import { HeartFilledIcon, HeartIcon } from "solid-radix-icons";
-import { createBeatRacer } from "../beat-racer";
 import { colors } from "~/theme.styles";
+import { createBeatRacer } from "../beat-racer";
+import { createSpring } from "../spring";
 
 const GAP = 36;
 const MARGIN = 22;
 
+const route = getRouteApi("/");
+
 export function HistoryRacer() {
-  const location = useLocation();
+  const search = route.useSearch();
+  const navigate = route.useNavigate();
+  const router = useRouter();
   const [maxX, setMaxX] = createSignal(0);
   const x = () => {
-    const params = new URLSearchParams(location.search);
-    let num = Number(params.get("x") || 0);
+    let num = search().x || 0;
     if (isFinite(num)) {
       return num;
     }
@@ -35,10 +38,18 @@ export function HistoryRacer() {
 
   createEffect(() => {
     if (x() === maxX() && maxX() < 5) {
-      setTimeout(() => {
-        history.pushState(undefined, "", `?x=${x() + 1}`);
-        history.go(-1);
-      }, 250);
+      // setTimeout(() => {
+      //   navigate({
+      //     to: "/",
+      //     search: { x: x() + 1 },
+      //     mask: {
+      //       to: "/",
+      //     },
+      //   });
+      //   setTimeout(() => {
+      //     router.history.back();
+      //   }, 100);
+      // }, 250);
     }
     setMaxX(Math.max(x(), maxX()));
   });

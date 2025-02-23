@@ -1,5 +1,5 @@
 import { styled } from "@hypergood/css";
-import { useSearchParams } from "@solidjs/router";
+import { getRouteApi } from "@tanstack/solid-router";
 import { onMount } from "solid-js";
 import { ExternalLinkIcon } from "solid-radix-icons";
 import { useSquircle } from "~/utils/squircle";
@@ -162,8 +162,9 @@ const gridArea4_3 = fillTemplate(
   ]
 );
 
+const route = getRouteApi("/");
+
 export function HomePageGrid() {
-  const [search] = useSearchParams<{ os: string }>();
   let ref: HTMLDivElement;
   onMount(() => {
     if (ref) {

@@ -1,7 +1,7 @@
-import { json } from "@solidjs/router";
 import type { APIEvent } from "@solidjs/start/server";
 import { setResponseHeaders } from "vinxi/http";
 import { getDatabase } from "~/server/database";
+import { json } from "~/server/json";
 
 export async function OPTIONS({ request, nativeEvent }: APIEvent) {
   setResponseHeaders(nativeEvent, {

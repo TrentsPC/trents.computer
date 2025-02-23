@@ -8,7 +8,9 @@ import {
 
 export const recipeBooksQuery = queryOptions({
   queryKey: ["recipes", "books", "list"],
-  queryFn: getRecipeBooks,
+  queryFn: async () => {
+    return await getRecipeBooks();
+  },
 });
 
 export const recipeBookQuery = (bookId: number) =>

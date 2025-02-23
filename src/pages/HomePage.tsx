@@ -1,4 +1,3 @@
-import { Title } from "@solidjs/meta";
 import { Clicker } from "~/modules/clicker";
 import { HistoryRacer } from "~/modules/history-racer";
 import { colors, fonts } from "~/theme.styles";
@@ -7,7 +6,7 @@ import { HomePageGrid } from "./HomePageGrid";
 export function HomePage() {
   return (
     <>
-      <Title>Trents PC</Title>
+      {/* <Title>Trents PC</Title> */}
       <div
         css={{
           // position: "fixed",
