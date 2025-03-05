@@ -2,7 +2,6 @@ import { clientOnly } from "@solidjs/start";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, onMount } from "solid-js";
 import { fallback, object, optional, parse, string } from "valibot";
-import "~/modules/boggle";
 
 export const Route = createFileRoute("/boggle")({
   component: Page,

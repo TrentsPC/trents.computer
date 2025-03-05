@@ -217,12 +217,6 @@ export function TrentOS() {
                   onClose={() => {
                     removeWindow(window.id);
                   }}
-                  // onMinimize={() => {
-                  //   removeWindow(window.id);
-                  // }}
-                  // onMaximize={() => {
-                  //   // removeWindow(window.id);
-                  // }}
                 />
               </Suspense>
             );

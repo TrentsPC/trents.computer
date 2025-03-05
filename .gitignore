@@ -26,6 +26,7 @@ netlify
 # Temp
 gitignore
 top-sneaky/
+stats/
 
 # System Files
 .DS_Store

@@ -701,3 +701,138 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "+__root.tsx",
+      "children": [
+        "/",
+        "/boggle",
+        "/calendar",
+        "/chadgdp",
+        "/cv",
+        "/demo",
+        "/font-explorer",
+        "/gb",
+        "/iso",
+        "/jesus",
+        "/nested",
+        "/secret-word",
+        "/sokoban",
+        "/tic-tac-toe",
+        "/two-hard-things",
+        "/words",
+        "/pantry/",
+        "/os/ios",
+        "/os/sonoma",
+        "/os/win98",
+        "/pantry/books/",
+        "/pantry/books/$bookId/",
+        "/pantry/recipes/$recipeId/",
+        "/pantry/recipes/$recipeId/edit"
+      ]
+    },
+    "/": {
+      "filePath": "+index.tsx"
+    },
+    "/boggle": {
+      "filePath": "+boggle.tsx"
+    },
+    "/calendar": {
+      "filePath": "+calendar.tsx"
+    },
+    "/chadgdp": {
+      "filePath": "+chadgdp/+route.tsx"
+    },
+    "/cv": {
+      "filePath": "+cv.tsx"
+    },
+    "/demo": {
+      "filePath": "+demo.tsx"
+    },
+    "/font-explorer": {
+      "filePath": "+font-explorer/+route.tsx",
+      "children": [
+        "/font-explorer/",
+        "/font-explorer/hex",
+        "/font-explorer/tables/",
+        "/font-explorer/tables/$unknownTable",
+        "/font-explorer/tables/FFTM"
+      ]
+    },
+    "/gb": {
+      "filePath": "+gb.tsx"
+    },
+    "/iso": {
+      "filePath": "+iso.tsx"
+    },
+    "/jesus": {
+      "filePath": "+jesus.tsx"
+    },
+    "/nested": {
+      "filePath": "+nested/+route.tsx"
+    },
+    "/secret-word": {
+      "filePath": "+secret-word.tsx"
+    },
+    "/sokoban": {
+      "filePath": "+sokoban.tsx"
+    },
+    "/tic-tac-toe": {
+      "filePath": "+tic-tac-toe.tsx"
+    },
+    "/two-hard-things": {
+      "filePath": "+two-hard-things.tsx"
+    },
+    "/words": {
+      "filePath": "+words.tsx"
+    },
+    "/font-explorer/": {
+      "filePath": "+font-explorer/+index.tsx",
+      "parent": "/font-explorer"
+    },
+    "/pantry/": {
+      "filePath": "+pantry/+index.tsx"
+    },
+    "/font-explorer/hex": {
+      "filePath": "+font-explorer/+hex.tsx",
+      "parent": "/font-explorer"
+    },
+    "/os/ios": {
+      "filePath": "+os/+ios.tsx"
+    },
+    "/os/sonoma": {
+      "filePath": "+os/+sonoma.tsx"
+    },
+    "/os/win98": {
+      "filePath": "+os/+win98.tsx"
+    },
+    "/font-explorer/tables/": {
+      "filePath": "+font-explorer/+tables/+index.tsx",
+      "parent": "/font-explorer"
+    },
+    "/pantry/books/": {
+      "filePath": "+pantry/+books/+index.tsx"
+    },
+    "/font-explorer/tables/$unknownTable": {
+      "filePath": "+font-explorer/+tables/+$unknownTable.tsx",
+      "parent": "/font-explorer"
+    },
+    "/font-explorer/tables/FFTM": {
+      "filePath": "+font-explorer/+tables/+FFTM.tsx",
+      "parent": "/font-explorer"
+    },
+    "/pantry/books/$bookId/": {
+      "filePath": "+pantry/+books/+$bookId/+index.tsx"
+    },
+    "/pantry/recipes/$recipeId/": {
+      "filePath": "+pantry/+recipes/+$recipeId/+index.tsx"
+    },
+    "/pantry/recipes/$recipeId/edit": {
+      "filePath": "+pantry/+recipes/+$recipeId/+edit/+route.tsx"
+    }
+  }
+}
+ROUTE_MANIFEST_END */

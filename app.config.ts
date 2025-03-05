@@ -1,6 +1,7 @@
 import hypergoodCss from "@hypergood/css/vite";
 import { defineConfig } from "@solidjs/start/config";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { visualizer } from "rollup-plugin-visualizer";
 import { styleConfig } from "./src/hypergood.config";
 
 export default defineConfig({
@@ -29,6 +30,11 @@ export default defineConfig({
       }) as any,
       hypergoodCss({
         config: styleConfig,
+      }),
+      visualizer({
+        brotliSize: true,
+        template: "treemap",
+        filename: "stats/treemap.html",
       }),
       // inspect({
       //   build: true,

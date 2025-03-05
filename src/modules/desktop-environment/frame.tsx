@@ -1,4 +1,3 @@
-import { useDrag } from "solid-gesture";
 import {
   Accessor,
   ComponentProps,
@@ -9,6 +8,7 @@ import {
   useContext,
 } from "solid-js";
 import { createStore } from "solid-js/store";
+import { useDrag } from "../use-gesture";
 import { DesktopContext } from "./desktop";
 import { Rect } from "./types";
 import {

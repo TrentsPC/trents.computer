@@ -93,10 +93,6 @@ export function FinderWindow(props: MacOSWindowProps) {
             <SidebarGroup>
               <SectionHeader>Favourites</SectionHeader>
               <SidebarItem>Universe</SidebarItem>
-              {/* <SidebarItem>Applications</SidebarItem>
-              <SidebarItem>Desktop</SidebarItem>
-              <SidebarItem>Documents</SidebarItem>
-              <SidebarItem>Downloads</SidebarItem> */}
             </SidebarGroup>
           </SidebarList>
         </div>
