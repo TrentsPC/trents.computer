@@ -1,9 +1,16 @@
 import { styled } from "@hypergood/css";
-import { ComponentProps, createSignal, For } from "solid-js";
+import { ComponentProps, createSignal, For, Show } from "solid-js";
 import { Bot, Group, Message, useChatbots } from "~/modules/chatbots";
 import { FrameDragArea } from "~/modules/desktop-environment";
 import { colors } from "~/theme.styles";
-import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
+import {
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarPortal,
+  MenubarTrigger,
+} from "../sonoma-ui/menubar";
 
 const [conversations, setConversations] = useChatbots();
 
@@ -14,6 +21,16 @@ export function MessagesWindow(props: MacOSWindowProps) {
 
   return (
     <MacOSWindow {...props}>
+      <Show when={props.active}>
+        <MenubarPortal>
+          <MenubarMenu>
+            <MenubarTrigger>Messages</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onSelect={props.onClose}>Quit Messages</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </MenubarPortal>
+      </Show>
       <div
         css={{
           d: "flex",

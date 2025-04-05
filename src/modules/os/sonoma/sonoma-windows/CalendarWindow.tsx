@@ -1,5 +1,5 @@
 import { FrameDragArea } from "~/modules/desktop-environment";
-import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
 
 export function CalendarWindow(props: MacOSWindowProps) {
   return (

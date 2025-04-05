@@ -42,6 +42,7 @@ export type FrameProps = {
   maxHeight?: number;
   children?: JSX.Element;
   style?: JSX.CSSProperties;
+  onMouseDown?: () => void;
 };
 export function Frame(props: FrameProps) {
   const ctx = useContext(DesktopContext);
@@ -108,6 +109,9 @@ export function Frame(props: FrameProps) {
           left: rect().x + "px",
           top: rect().y + "px",
           ...props.style,
+        }}
+        onMouseDown={(e) => {
+          props.onMouseDown?.();
         }}
       >
         {props.children}

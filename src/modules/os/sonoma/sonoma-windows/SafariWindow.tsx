@@ -1,9 +1,27 @@
+import { Show } from "solid-js";
 import { FrameDragArea } from "~/modules/desktop-environment";
-import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
+import {
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarPortal,
+  MenubarTrigger,
+} from "../sonoma-ui/menubar";
 
 export function SafariWindow(props: MacOSWindowProps) {
   return (
     <MacOSWindow {...props}>
+      <Show when={props.active}>
+        <MenubarPortal>
+          <MenubarMenu>
+            <MenubarTrigger>Safari</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onSelect={props.onClose}>Quit Safari</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </MenubarPortal>
+      </Show>
       <div
         css={{
           d: "flex",

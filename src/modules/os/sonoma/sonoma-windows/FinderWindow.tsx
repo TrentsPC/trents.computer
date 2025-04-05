@@ -1,10 +1,17 @@
 import { styled } from "@hypergood/css";
 import { createQuery, queryOptions } from "@tanstack/solid-query";
-import { ComponentProps, createSignal, For } from "solid-js";
+import { ComponentProps, createSignal, For, Show } from "solid-js";
 import { ChevronLeftIcon, ChevronRightIcon } from "solid-radix-icons";
 import { FrameDragArea } from "~/modules/desktop-environment";
 import { everything } from "~/modules/nested-ts";
-import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
+import {
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarPortal,
+  MenubarTrigger,
+} from "../sonoma-ui/menubar";
 import document from "./document.png";
 import folder from "./folder.png";
 
@@ -73,6 +80,16 @@ export function FinderWindow(props: MacOSWindowProps) {
 
   return (
     <MacOSWindow {...props}>
+      <Show when={props.active}>
+        <MenubarPortal>
+          <MenubarMenu>
+            <MenubarTrigger>Finder</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onSelect={props.onClose}>Quit Finder</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </MenubarPortal>
+      </Show>
       <div
         css={{
           d: "flex",

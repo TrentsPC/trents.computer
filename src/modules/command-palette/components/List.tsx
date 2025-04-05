@@ -24,7 +24,7 @@ function sortListItems(listItems: ListItem[], query: string) {
 }
 
 const clamp = (x: number, min: number, max: number) =>
-  Math.max(0, Math.min(x, max));
+  Math.max(min, Math.min(x, max));
 
 export function List(props: ListProps) {
   const { canGoBack, close, pop } = useContext(CmdContext);
@@ -107,11 +107,19 @@ export function List(props: ListProps) {
         autofocus
         onKeyDown={handleKeyDown}
       />
-      <div css={{ flex: "1 0 0px", overflow: "hidden" }}>
+      <div css={{ flex: "1 0 0px", overflow: "auto", padding: 8 }}>
         <For each={sortedListItems()}>
           {(listItem, index) => (
             <button
-              css={{ width: "100%", display: "flex", height: 40, fontSize: 14 }}
+              css={{
+                width: "100%",
+                display: "flex",
+                height: 40,
+                alignItems: "center",
+                fontSize: 14,
+                px: 8,
+                borderRadius: 8,
+              }}
               style={{
                 "background-color":
                   selectedIndex() === index()

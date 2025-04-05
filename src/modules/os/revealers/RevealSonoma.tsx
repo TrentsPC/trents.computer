@@ -48,7 +48,7 @@ export function RevealSonoma() {
 }
 
 function preload() {
-  import("~/modules/os/sonoma");
+  import("~/modules/os/sonoma/sonoma");
   import("~/modules/genie");
   preloadImage(osWallpaper);
 }

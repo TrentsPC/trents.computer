@@ -4,7 +4,7 @@ import { FrameDragArea } from "~/modules/desktop-environment";
 import "~/modules/zork";
 import { zork } from "~/modules/zork/zMachine";
 import { fonts } from "~/theme.styles";
-import { MacOSWindow, MacOSWindowProps } from "../base-windows/MacOSWindow";
+import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
 
 type Message = { text: string; options: any; side: "left" | "right" };
 

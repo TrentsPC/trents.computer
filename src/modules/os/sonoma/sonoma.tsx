@@ -1,4 +1,5 @@
 import { styled } from "@hypergood/css";
+import { Menubar } from "@kobalte/core/menubar";
 import {
   Component,
   ComponentProps,
@@ -6,11 +7,12 @@ import {
   For,
   JSX,
   lazy,
+  Show,
   splitProps,
   Suspense,
 } from "solid-js";
 // import wallpaper from "./wallpapers/macos/sonoma-light.png";
-import wallpaper from "./wallpapers/windows7/harmony.jpg";
+import wallpaper from "../wallpapers/windows7/harmony.jpg";
 
 import calendar from "./sonoma-icons/calendar.png";
 import finder from "./sonoma-icons/finder.png";
@@ -20,9 +22,10 @@ import simulator from "./sonoma-icons/simulator.png";
 import terminal from "./sonoma-icons/terminal.png";
 
 import { Dynamic } from "solid-js/web";
-import { Desktop } from "../desktop-environment/desktop";
-import type { MacOSWindowProps } from "./base-windows/MacOSWindow";
+import { Desktop } from "../../desktop-environment/desktop";
+import type { MacOSWindowProps } from "../base-windows/MacOSWindow";
 import trash from "./sonoma-icons/trash-empty.png";
+import { menubarId, OSMenu } from "./sonoma-ui/menubar";
 
 type Application = {
   id: string;
@@ -123,35 +126,35 @@ const APPLICATIONS: Application[] = [
   },
 ];
 
-const [openWindows, setOpenWindows] = createSignal<Array<{ id: string }>>([]);
+const [openWindowIds, setOpenWindowIds] = createSignal<Array<string>>([]);
 
 function addWindow(id: string) {
-  const items = openWindows().slice();
-  if (items.some((w) => w.id === id)) {
-    const idx = items.findIndex((w) => w.id === id)!;
+  const items = openWindowIds().slice();
+  if (items.some((w) => w === id)) {
+    const idx = items.findIndex((w) => w === id)!;
     const item = items.splice(idx, 1);
     items.push(item[0]);
   } else {
-    items.push({ id });
+    items.push(id);
   }
-  setOpenWindows(items);
+  setOpenWindowIds(items);
 }
 
 function bringToFront(id: string) {
-  const items = openWindows().slice();
-  if (items.some((w) => w.id === id)) {
-    const idx = items.findIndex((w) => w.id === id)!;
+  const items = openWindowIds().slice();
+  if (items.some((w) => w === id)) {
+    const idx = items.findIndex((w) => w === id)!;
     const item = items.splice(idx, 1);
     items.push(item[0]);
-    setOpenWindows(items);
+    setOpenWindowIds(items);
   }
 }
 
 function removeWindow(id: string) {
-  const items = openWindows().slice();
-  const idx = items.findIndex((w) => w.id === id)!;
+  const items = openWindowIds().slice();
+  const idx = items.findIndex((w) => w === id)!;
   items.splice(idx, 1);
-  setOpenWindows(items);
+  setOpenWindowIds(items);
 }
 
 export function TrentOS() {
@@ -188,21 +191,23 @@ export function TrentOS() {
       {/* Windows */}
       <Desktop
         insets={{
-          top: 66,
+          // top: 66,
+          top: 0,
           right: 0,
-          bottom: 0,
+          bottom: 25 + 6 + 7,
           left: 0,
         }}
       >
-        <For each={openWindows()}>
+        <For each={openWindowIds()}>
           {(window, i) => {
-            const app = APPLICATIONS.find((a) => a.id === window.id);
+            const app = APPLICATIONS.find((a) => a.id === window);
             if (!app) {
               return null;
             }
             return (
               <Suspense fallback={null}>
                 <Dynamic
+                  active={i() === openWindowIds().length - 1}
                   component={app.component}
                   style={{
                     "z-index": i() * 100 + 100,
@@ -212,10 +217,10 @@ export function TrentOS() {
                   minWidth={app.minWidth}
                   minHeight={app.minHeight}
                   onMouseDown={() => {
-                    bringToFront(window.id);
+                    bringToFront(window);
                   }}
                   onClose={() => {
-                    removeWindow(window.id);
+                    removeWindow(window);
                   }}
                 />
               </Suspense>
@@ -233,7 +238,7 @@ export function TrentOS() {
           {/* <DockItem src={maps} /> */}
           {/* <DockItem src={photos} /> */}
           {/* <DockItem src={facetime} /> */}
-          <DockItem id="terminal" />
+          {/* <DockItem id="terminal" /> */}
           <DockItem id="simulator" />
           {/* <DockItem id="calendar" /> */}
           {/* <DockItem src={contacts} /> */}
@@ -251,13 +256,14 @@ export function TrentOS() {
           {/* <DockItem src={preview} /> */}
           {/* <DockItem src={yourApp} /> */}
         </DockGroup>
-        <DockSeparator />
-        <DockGroup>
-          {/* <DockItem src={folder} /> */}
-          {/* <DockItem src={documentIcon} /> */}
-          <Trash />
-        </DockGroup>
+        {/* <DockSeparator /> */}
+        {/* <DockGroup> */}
+        {/* <DockItem src={folder} /> */}
+        {/* <DockItem src={documentIcon} /> */}
+        {/* <Trash /> */}
+        {/* </DockGroup> */}
       </Dock>
+      <MenuBar isEmpty={!openWindowIds().length} />
     </div>
   );
 }
@@ -388,3 +394,35 @@ function Trash(props: ComponentProps<"button">) {
     </button>
   );
 }
+
+function MenuBar(props: { isEmpty: boolean }) {
+  return (
+    <MenubarRoot>
+      <div id={menubarId} css={{ display: "flex", height: "100%" }}>
+        <Show when={props.isEmpty}>
+          <Menubar css={{ display: "flex", height: "100%" }}>
+            <OSMenu />
+          </Menubar>
+        </Show>
+      </div>
+      {/* <MenubarMenu>
+        <MenubarTrigger>Sat 5 Apr 11:02 AM</MenubarTrigger>
+      </MenubarMenu> */}
+    </MenubarRoot>
+  );
+}
+
+const MenubarRoot = styled("div", {
+  position: "fixed",
+  bottom: 0,
+  left: 0,
+  right: 0,
+  height: 24 + 6 + 6,
+  zIndex: 2147483647,
+  backgroundColor: "rgba(0,0,0,0.18)",
+  backdropFilter: "blur(50px)",
+  px: 6 + 6,
+  display: "flex",
+  // justifyContent: "center",
+  alignItems: "center",
+});

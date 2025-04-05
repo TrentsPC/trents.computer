@@ -23,7 +23,7 @@ export function rectIsFullyContained(container: Rect, rect: Rect): boolean {
     rect.x >= container.x &&
     rect.y >= container.y &&
     rect.x + rect.width <= container.x + container.width &&
-    rect.y + rect.height <= container.y + container.height
+    rect.y + 52 <= container.y + container.height
   );
 }
 

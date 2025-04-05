@@ -1,7 +1,18 @@
+import { JSX, Show } from "solid-js";
 import { Frame, FrameDragArea } from "~/modules/desktop-environment";
 import "~/modules/zork";
 import { useSquircle } from "~/utils/squircle";
-import { MacOSWindowProps, TrafficLights } from "../base-windows/MacOSWindow";
+import {
+  MacOSWindowProps,
+  TrafficLights,
+} from "../../base-windows/MacOSWindow";
+import {
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarPortal,
+  MenubarTrigger,
+} from "../sonoma-ui/menubar";
 
 const DEVICE_HEIGHT = 852;
 const DEVICE_WIDTH = 393;
@@ -12,7 +23,22 @@ const width = DEVICE_WIDTH;
 
 export function SimulatorWindow(props: MacOSWindowProps) {
   return (
-    <Frame initialHeight={height} initialWidth={width}>
+    <Frame
+      initialHeight={height}
+      initialWidth={width}
+      onMouseDown={props.onMouseDown}
+      style={props.style as JSX.CSSProperties}
+    >
+      <Show when={props.active}>
+        <MenubarPortal>
+          <MenubarMenu>
+            <MenubarTrigger>Simulator</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onSelect={props.onClose}>Quit Simulator</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </MenubarPortal>
+      </Show>
       <FrameDragArea
         css={{
           display: "flex",

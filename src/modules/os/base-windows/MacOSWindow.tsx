@@ -2,7 +2,7 @@ import { ComponentProps, JSX } from "solid-js";
 import { ResizableFrame } from "~/modules/desktop-environment";
 import { useSquircle } from "~/utils/squircle";
 
-export type MacOSWindowProps = ComponentProps<"div"> & {
+export type MacOSWindowProps = Omit<ComponentProps<"div">, "onMouseDown"> & {
   minWidth?: number;
   minHeight?: number;
   initialWidth: number;
@@ -11,6 +11,8 @@ export type MacOSWindowProps = ComponentProps<"div"> & {
   maxHeight?: number;
   onClose?: () => void;
   trafficLights?: number;
+  active?: boolean;
+  onMouseDown?: () => void;
 };
 
 export function MacOSWindow(props: MacOSWindowProps) {
@@ -23,6 +25,7 @@ export function MacOSWindow(props: MacOSWindowProps) {
       minHeight={props.minHeight}
       minWidth={props.minWidth}
       style={props.style as JSX.CSSProperties}
+      onMouseDown={props.onMouseDown}
     >
       <div
         css={{
