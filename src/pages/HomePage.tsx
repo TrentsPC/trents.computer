@@ -1,4 +1,3 @@
-import { Clicker } from "~/modules/clicker";
 import { HistoryRacer } from "~/modules/history-racer";
 import { colors, fonts } from "~/theme.styles";
 import { HomePageGrid } from "./HomePageGrid";
@@ -52,9 +51,9 @@ export function HomePage() {
             },
           }}
         >
-          <h1>
+          {/* <h1>
             <Clicker />
-          </h1>
+          </h1> */}
           <br />
           <p>
             Trent was released in late 2002 and software has been better ever

@@ -1,5 +1,6 @@
 import { Address } from "./addresses";
 import type { GameBoy } from "./gameBoy";
+import { toSigned } from "./utils";
 
 export type PPU = {
   step: () => void;
@@ -11,7 +12,7 @@ export type PPU = {
 export function createPPU(
   gameBoy: GameBoy,
   getCanvas: () => HTMLCanvasElement,
-  isGBDoctor?: boolean,
+  isGBDoctor?: boolean
 ): PPU {
   let lcdX = 0;
   let lcdY = 0;
@@ -28,26 +29,26 @@ export function createPPU(
       if (lcdY === lyc) {
         gameBoy.addressBus.writeByte(
           Address.STAT,
-          gameBoy.addressBus.readByte(Address.STAT) | 0x04,
+          gameBoy.addressBus.readByte(Address.STAT) | 0x04
         );
         // If the LYC=LY coincidence interrupt is enabled
         if (gameBoy.addressBus.readByte(Address.STAT) & 0x40) {
           gameBoy.addressBus.writeByte(
             Address.IF,
-            gameBoy.addressBus.readByte(Address.IF) | 0x02,
+            gameBoy.addressBus.readByte(Address.IF) | 0x02
           );
         }
       } else {
         gameBoy.addressBus.writeByte(
           Address.STAT,
-          gameBoy.addressBus.readByte(Address.STAT) & ~0x04,
+          gameBoy.addressBus.readByte(Address.STAT) & ~0x04
         );
       }
       if (lcdY === 144) {
         renderScreen(gameBoy, getCanvas());
         gameBoy.addressBus.writeByte(
           0xff0f,
-          gameBoy.addressBus.readByte(0xff0f) | 0x01,
+          gameBoy.addressBus.readByte(0xff0f) | 0x01
         );
       }
     }
@@ -67,16 +68,21 @@ export function createPPU(
   // UH OH RENDERING STUFF
 
   /**
-   * get cached tile data from starating address of tile
+   * get cached tile data from starting address of tile
    */
   const tileDataCache = new Map<number, OffscreenCanvas>();
+  const transparentTileDataCache = new Map<number, OffscreenCanvas>();
 
   function invalidateTileDataCache(address: number) {
     const startingAddress = address & 0xfff0;
     tileDataCache.delete(startingAddress);
   }
 
-  function renderTile(gameBoy: GameBoy, startingAddress: number) {
+  function renderTile(
+    gameBoy: GameBoy,
+    startingAddress: number,
+    transparent?: boolean
+  ) {
     const canvas = new OffscreenCanvas(8, 8);
     const ctx = canvas.getContext("2d")!;
     for (let y = 0; y < 8; y++) {
@@ -87,8 +93,10 @@ export function createPPU(
         const highBit = (highByte >> (7 - x)) & 1;
         const color = lowBit + highBit * 2;
 
-        const [r, g, b] = gameBoy.getColor(color);
-        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        if (transparent && color === 0) {
+          continue;
+        }
+        ctx.fillStyle = gameBoy.colors[color];
 
         ctx.fillRect(x, y, 1, 1);
       }
@@ -105,15 +113,32 @@ export function createPPU(
     return tileCanvas;
   }
 
+  function getObjectTile(startingAddress: number) {
+    if (transparentTileDataCache.has(startingAddress)) {
+      return transparentTileDataCache.get(startingAddress)!;
+    }
+    const tileCanvas = renderTile(gameBoy, startingAddress, true);
+    transparentTileDataCache.set(startingAddress, tileCanvas);
+    return tileCanvas;
+  }
+
   function renderTileMap(gameBoy: GameBoy) {
     const canvas = new OffscreenCanvas(256, 256);
     const ctx = canvas.getContext("2d")!;
 
+    const lcdControl = gameBoy.addressBus.readByte(0xff40);
+    const addressingMode = (lcdControl & 0x10) >> 4;
+
     for (let y = 0; y < 32; y++) {
       for (let x = 0; x < 32; x++) {
         const address = 0x9800 + y * 32 + x;
-        const tileNumber = gameBoy.addressBus.readByte(address);
-        const tileAddress = 0x8000 + tileNumber * 16;
+        const tileIndex = gameBoy.addressBus.readByte(address);
+        let tileAddress = 0;
+        if (addressingMode) {
+          tileAddress = 0x8000 + tileIndex * 16;
+        } else {
+          tileAddress = 0x9000 + toSigned(tileIndex) * 16;
+        }
         const tileCanvas = getTile(tileAddress);
         ctx.drawImage(tileCanvas, x * 8, y * 8);
       }
@@ -138,12 +163,27 @@ export function createPPU(
     const y = gameBoy.addressBus.readByte(address);
     const x = gameBoy.addressBus.readByte(address + 1);
     const tileNumber = gameBoy.addressBus.readByte(address + 2);
-    // const attributes = gameBoy.addressBus.readByte(address + 3);
     const tileAddress = 0x8000 + tileNumber * 16;
-    const tileCanvas = renderTile(gameBoy, tileAddress);
+
+    const attributes = gameBoy.addressBus.readByte(address + 3);
+    const flipX = (attributes & 0x20) !== 0;
+    const flipY = (attributes & 0x40) !== 0;
+
+    const sourceTile = renderTile(gameBoy, tileAddress, true);
+    const tileCanvas = new OffscreenCanvas(8, 8);
+    const tileCtx = tileCanvas.getContext("2d")!;
+    if (flipX) {
+      tileCtx.scale(-1, 1);
+      tileCtx.translate(0 - tileCanvas.width, 0);
+    }
+    if (flipY) {
+      tileCtx.scale(1, -1);
+      tileCtx.translate(0, 0 - tileCanvas.height);
+    }
+
+    tileCtx.drawImage(sourceTile, 0, 0);
+
     ctx.drawImage(tileCanvas, x - 8, y - 16);
-    // ctx.fillStyle = "red";
-    // ctx.fillRect(x - 8, y - 16, 8, 9);
     return canvas;
   }
 

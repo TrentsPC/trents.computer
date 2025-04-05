@@ -28,21 +28,21 @@ export type GameBoy = {
   oam: OAM;
   ioRegisters: IORegisters;
   ie: IE;
-  getColor: GetColor;
+  colors: string[];
 };
 
 export function createGameBoy({
   getCanvas,
-  getColor,
   isGBDoctor,
+  colors,
 }: {
   getCanvas: () => HTMLCanvasElement;
   isGBDoctor?: boolean;
-  getColor: GetColor;
+  colors: string[];
 }) {
   const { logs, logger } = createLogger();
 
-  const gb = { getColor } as GameBoy;
+  const gb = { colors } as GameBoy;
   const memory = createAddressBus(gb);
   gb.addressBus = memory;
   const cpu = createCPU({ gameBoy: gb, logger, isGBDoctor });

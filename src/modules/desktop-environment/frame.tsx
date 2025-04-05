@@ -20,13 +20,13 @@ import {
   truncate,
 } from "./utils";
 
-type FrameContextType = {
+export type FrameContextType = {
   rect: Accessor<Rect>;
   setRect: (rect: Rect) => void;
   dragRectBy: (delta: Rect) => void;
   commitDrag: () => void;
 };
-const FrameContext = createContext<FrameContextType>({
+export const FrameContext = createContext<FrameContextType>({
   rect: () => ({ x: 0, y: 0, width: 0, height: 0 }),
   setRect: () => {},
   dragRectBy: () => {},
