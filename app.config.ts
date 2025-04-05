@@ -5,7 +5,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import { styleConfig } from "./src/hypergood.config";
 
 export default defineConfig({
-  middleware: "./src/middleware.ts",
+  // middleware: "./src/middleware.ts",
   ssr: false,
   server: {
     preset: "cloudflare_module",
