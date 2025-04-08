@@ -1,5 +1,5 @@
 name = "trents-pc-site"
-compatibility_date = "2023-03-25"
+compatibility_date = "2025-04-01"
 account_id = "db0779db1eebaa1a7061f7828b9bd04f"
 workers_dev = true
 
@@ -8,8 +8,10 @@ compatibility_flags = ["nodejs_compat"]
 main = "./.output/server/index.mjs"
 
 rules = [{ type = "ESModule", globs = ["**/*.js", "**/*.mjs"] }]
-[site]
-bucket = ".output/public"
+
+[assets]
+directory = "./.output/public"
+binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"                                       # i.e. available in your Worker on env.DB

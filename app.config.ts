@@ -9,6 +9,7 @@ export default defineConfig({
   ssr: false,
   server: {
     preset: "cloudflare_module",
+    compatibilityDate: "2025-04-01",
     rollupConfig: {
       external: ["__STATIC_CONTENT_MANIFEST", "node:async_hooks"],
       treeshake: "smallest",
