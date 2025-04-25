@@ -7,6 +7,7 @@ import {
   For,
   JSX,
   lazy,
+  onMount,
   Show,
   splitProps,
   Suspense,
@@ -21,11 +22,12 @@ import safari from "./sonoma-icons/safari.png";
 import simulator from "./sonoma-icons/simulator.png";
 import terminal from "./sonoma-icons/terminal.png";
 
+import { parse } from "csv/browser/esm";
 import { Dynamic } from "solid-js/web";
 import { Desktop } from "../../desktop-environment/desktop";
 import type { MacOSWindowProps } from "../base-windows/MacOSWindow";
 import trash from "./sonoma-icons/trash-empty.png";
-import { menubarId, OSMenu } from "./sonoma-ui/menubar";
+import { menubarId, MenubarTrigger, OSMenu } from "./sonoma-ui/menubar";
 
 type Application = {
   id: string;
@@ -411,6 +413,49 @@ function MenuBar(props: { isEmpty: boolean }) {
     </MenubarRoot>
   );
 }
+
+function MenubarClock() {
+  // const [cards, setCards] = createSignal<Card[]>([]);
+  // const q = useQuery(() => ({
+  //   queryKey: ["world-cities"],
+  //   queryFn: async () => {
+  //     const res = await fetch("/api/cities.csv");
+  //     const text = await res.text();
+  //     const data = await parseCsvAsync(text);
+  //     return data;
+  //   },
+  // }));
+
+  onMount(() => {
+    async function idk() {
+      const res = await fetch("/api/cities.csv");
+      const text = await res.text();
+      const data = await parseCsvAsync(text);
+      console.log(data);
+    }
+    idk();
+    // setCards(data);
+  });
+  return <MenubarTrigger>Sat 5 Apr 11:02 AM</MenubarTrigger>;
+}
+
+const parseCsvAsync = (text: string) => {
+  return new Promise((resolve, reject) => {
+    parse(
+      text,
+      {
+        columns: true,
+      },
+      (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      }
+    );
+  });
+};
 
 const MenubarRoot = styled("div", {
   position: "fixed",

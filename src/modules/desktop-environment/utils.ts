@@ -20,9 +20,9 @@ export function addRect(a: Rect, b: Rect): Rect {
 
 export function rectIsFullyContained(container: Rect, rect: Rect): boolean {
   return (
-    rect.x >= container.x &&
+    // rect.x >= container.x &&
     rect.y >= container.y &&
-    rect.x + rect.width <= container.x + container.width &&
+    // rect.x + rect.width <= container.x + container.width &&
     rect.y + 52 <= container.y + container.height
   );
 }
