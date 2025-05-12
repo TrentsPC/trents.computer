@@ -1,27 +1,31 @@
-import { Show } from "solid-js";
 import { FrameDragArea } from "~/modules/desktop-environment";
 import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
-import {
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarPortal,
-  MenubarTrigger,
-} from "../sonoma-ui/menubar";
+import { useMenuBar, useOSContext } from "../provider";
 
 export function SafariWindow(props: MacOSWindowProps) {
+  const { closeApplication } = useOSContext();
+
+  useMenuBar("safari", () => [
+    {
+      title: "Safari",
+      items: [
+        {
+          label: "Quit Safari",
+          action: () => {
+            closeApplication("safari");
+          },
+        },
+      ],
+    },
+  ]);
   return (
-    <MacOSWindow {...props}>
-      <Show when={props.active}>
-        <MenubarPortal>
-          <MenubarMenu>
-            <MenubarTrigger>Safari</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onSelect={props.onClose}>Quit Safari</MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-        </MenubarPortal>
-      </Show>
+    <MacOSWindow
+      initialWidth={935}
+      initialHeight={598}
+      minWidth={574}
+      minHeight={224}
+      applicationId="safari"
+    >
       <div
         css={{
           d: "flex",

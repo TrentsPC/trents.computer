@@ -1,17 +1,11 @@
 import { styled } from "@hypergood/css";
 import { createQuery, queryOptions } from "@tanstack/solid-query";
-import { ComponentProps, createSignal, For, Show } from "solid-js";
+import { ComponentProps, createSignal, For } from "solid-js";
 import { ChevronLeftIcon, ChevronRightIcon } from "solid-radix-icons";
 import { FrameDragArea } from "~/modules/desktop-environment";
 import { everything } from "~/modules/nested-ts";
 import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
-import {
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarPortal,
-  MenubarTrigger,
-} from "../sonoma-ui/menubar";
+import { useMenuBar, useOSContext } from "../provider";
 import document from "./document.png";
 import folder from "./folder.png";
 
@@ -78,18 +72,30 @@ export function FinderWindow(props: MacOSWindowProps) {
     listThingChildrenQuery(currentHistory().id, currentHistory().path)
   );
 
+  const { closeApplication } = useOSContext();
+
+  useMenuBar("finder", () => [
+    {
+      title: "Finder",
+      items: [
+        {
+          label: "Quit Finder",
+          action: () => {
+            closeApplication("finder");
+          },
+        },
+      ],
+    },
+  ]);
+
   return (
-    <MacOSWindow {...props}>
-      <Show when={props.active}>
-        <MenubarPortal>
-          <MenubarMenu>
-            <MenubarTrigger>Finder</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onSelect={props.onClose}>Quit Finder</MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-        </MenubarPortal>
-      </Show>
+    <MacOSWindow
+      initialWidth={830}
+      initialHeight={520}
+      minWidth={640}
+      minHeight={503}
+      applicationId="finder"
+    >
       <div
         css={{
           d: "flex",

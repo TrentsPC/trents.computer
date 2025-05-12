@@ -199,7 +199,7 @@ export function ResponsiveDesignDemo(props: { initialPath: string }) {
             }}
             style={{ "border-radius": device().cornerRadius + "px" }}
           >
-            <iframe src="/pantry/books/2" css={{ size: "100%", border: 0 }} />
+            <iframe src="/os/ios" css={{ size: "100%", border: 0 }} />
           </div>
           <img
             css={{

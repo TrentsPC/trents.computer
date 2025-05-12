@@ -1,45 +1,42 @@
 import { styled } from "@hypergood/css";
 import { Menubar } from "@kobalte/core/menubar";
 import {
-  Component,
   ComponentProps,
-  createSignal,
+  createEffect,
   For,
   JSX,
   lazy,
-  onMount,
   Show,
   splitProps,
   Suspense,
+  useContext,
 } from "solid-js";
 // import wallpaper from "./wallpapers/macos/sonoma-light.png";
 import wallpaper from "../wallpapers/windows7/harmony.jpg";
 
-import calendar from "./sonoma-icons/calendar.png";
 import finder from "./sonoma-icons/finder.png";
 import messages from "./sonoma-icons/messages.png";
 import safari from "./sonoma-icons/safari.png";
 import simulator from "./sonoma-icons/simulator.png";
-import terminal from "./sonoma-icons/terminal.png";
 
 import { parse } from "csv/browser/esm";
 import { Dynamic } from "solid-js/web";
+import { ChevronRightIcon } from "solid-radix-icons";
 import { Desktop } from "../../desktop-environment/desktop";
-import type { MacOSWindowProps } from "../base-windows/MacOSWindow";
+import { MenuBarItem, OSContext, OSContextProvider } from "./provider";
 import trash from "./sonoma-icons/trash-empty.png";
-import { menubarId, MenubarTrigger, OSMenu } from "./sonoma-ui/menubar";
-
-type Application = {
-  id: string;
-  name: string;
-  icon: string;
-  // Equivalent to SwiftUI `App`, could contain Window, WindowGroup, MenuBarExtra, etc.
-  component: Component<MacOSWindowProps>;
-  minWidth?: number;
-  minHeight?: number;
-  basisWidth: number;
-  basisHeight: number;
-};
+import {
+  MenubarContent,
+  menubarId,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+  OSMenu,
+} from "./sonoma-ui/menubar";
+import { Application } from "./types";
 
 const APPLICATIONS: Application[] = [
   {
@@ -47,119 +44,54 @@ const APPLICATIONS: Application[] = [
     name: "Finder",
     icon: finder,
     component: lazy(() =>
-      import("./sonoma-windows/FinderWindow").then((m) => ({
+      import("./apps/finder.lazy").then((m) => ({
         default: m.FinderWindow,
       }))
     ),
-    basisWidth: 830,
-    basisHeight: 520,
-    minWidth: 640,
-    minHeight: 503,
   },
   {
     id: "messages",
     name: "Messages",
     icon: messages,
     component: lazy(() =>
-      import("./sonoma-windows/MessagesWindow").then((m) => ({
+      import("./apps/messages.lazy").then((m) => ({
         default: m.MessagesWindow,
       }))
     ),
-    basisWidth: 1024,
-    basisHeight: 820,
-    minWidth: 660,
-    minHeight: 320,
-  },
-  {
-    id: "terminal",
-    name: "Terminal",
-    icon: terminal,
-    component: lazy(() =>
-      import("./sonoma-windows/TerminalWindow").then((m) => ({
-        default: m.TerminalWindow,
-      }))
-    ),
-    basisWidth: 935,
-    basisHeight: 598,
-    minWidth: 574,
-    minHeight: 224,
   },
   {
     id: "safari",
     name: "Safari",
     icon: safari,
     component: lazy(() =>
-      import("./sonoma-windows/SafariWindow").then((m) => ({
+      import("./apps/safari.lazy").then((m) => ({
         default: m.SafariWindow,
       }))
     ),
-    basisWidth: 935,
-    basisHeight: 598,
-    minWidth: 574,
-    minHeight: 224,
-  },
-  {
-    id: "calendar",
-    name: "Calendar",
-    icon: calendar,
-    component: lazy(() =>
-      import("./sonoma-windows/CalendarWindow").then((m) => ({
-        default: m.CalendarWindow,
-      }))
-    ),
-    basisWidth: 935,
-    basisHeight: 598,
-    minWidth: 640,
-    minHeight: 503,
   },
   {
     id: "simulator",
     name: "Simulator",
     icon: simulator,
     component: lazy(() =>
-      import("./sonoma-windows/SimulatorWindow").then((m) => ({
+      import("./apps/simulator.lazy").then((m) => ({
         default: m.SimulatorWindow,
       }))
     ),
-    basisWidth: 935,
-    basisHeight: 598,
-    minWidth: 640,
-    minHeight: 503,
   },
 ];
 
-const [openWindowIds, setOpenWindowIds] = createSignal<Array<string>>([]);
-
-function addWindow(id: string) {
-  const items = openWindowIds().slice();
-  if (items.some((w) => w === id)) {
-    const idx = items.findIndex((w) => w === id)!;
-    const item = items.splice(idx, 1);
-    items.push(item[0]);
-  } else {
-    items.push(id);
-  }
-  setOpenWindowIds(items);
-}
-
-function bringToFront(id: string) {
-  const items = openWindowIds().slice();
-  if (items.some((w) => w === id)) {
-    const idx = items.findIndex((w) => w === id)!;
-    const item = items.splice(idx, 1);
-    items.push(item[0]);
-    setOpenWindowIds(items);
-  }
-}
-
-function removeWindow(id: string) {
-  const items = openWindowIds().slice();
-  const idx = items.findIndex((w) => w === id)!;
-  items.splice(idx, 1);
-  setOpenWindowIds(items);
-}
-
 export function TrentOS() {
+  return (
+    <OSContextProvider>
+      <TrentOSInner />
+    </OSContextProvider>
+  );
+}
+
+function TrentOSInner() {
+  const { openedApplicationIds, bringToFront, closeApplication } =
+    useContext(OSContext);
   if (document?.body) {
     document.body.style.overflow = "hidden";
   }
@@ -200,7 +132,7 @@ export function TrentOS() {
           left: 0,
         }}
       >
-        <For each={openWindowIds()}>
+        <For each={openedApplicationIds()}>
           {(window, i) => {
             const app = APPLICATIONS.find((a) => a.id === window);
             if (!app) {
@@ -208,23 +140,7 @@ export function TrentOS() {
             }
             return (
               <Suspense fallback={null}>
-                <Dynamic
-                  active={i() === openWindowIds().length - 1}
-                  component={app.component}
-                  style={{
-                    "z-index": i() * 100 + 100,
-                  }}
-                  initialHeight={app.basisHeight}
-                  initialWidth={app.basisWidth}
-                  minWidth={app.minWidth}
-                  minHeight={app.minHeight}
-                  onMouseDown={() => {
-                    bringToFront(window);
-                  }}
-                  onClose={() => {
-                    removeWindow(window);
-                  }}
-                />
+                <Dynamic component={app.component} />
               </Suspense>
             );
           }}
@@ -265,7 +181,7 @@ export function TrentOS() {
         {/* <Trash /> */}
         {/* </DockGroup> */}
       </Dock>
-      <MenuBar isEmpty={!openWindowIds().length} />
+      <MenuBar isEmpty={!openedApplicationIds().length} />
     </div>
   );
 }
@@ -342,6 +258,7 @@ const DockGroup = styled("div", {
 });
 
 function DockItem(props: ComponentProps<"button"> & { id: string }) {
+  const { openApplication } = useContext(OSContext);
   const [, otherProps] = splitProps(props, ["id"]);
   const app = APPLICATIONS.find((a) => a.id === props.id);
   if (!app) {
@@ -354,7 +271,7 @@ function DockItem(props: ComponentProps<"button"> & { id: string }) {
         d: "flex",
         flexDirection: "column",
       }}
-      onClick={() => addWindow(app.id)}
+      onClick={() => openApplication(app.id)}
       {...otherProps}
     >
       {/* <div
@@ -398,19 +315,65 @@ function Trash(props: ComponentProps<"button">) {
 }
 
 function MenuBar(props: { isEmpty: boolean }) {
+  const { menuBar } = useContext(OSContext);
+
+  createEffect(() => console.log(menuBar()));
   return (
     <MenubarRoot>
       <div id={menubarId} css={{ display: "flex", height: "100%" }}>
-        <Show when={props.isEmpty}>
-          <Menubar css={{ display: "flex", height: "100%" }}>
-            <OSMenu />
-          </Menubar>
-        </Show>
+        <Menubar css={{ display: "flex", height: "100%" }}>
+          <OSMenu />
+          <For each={menuBar()}>
+            {(menu) => (
+              <MenubarMenu>
+                <MenubarTrigger>{menu.title}</MenubarTrigger>
+                <MenubarContent>
+                  <For each={menu.items}>
+                    {(item) => <SmartMenubarItem item={item} />}
+                  </For>
+                </MenubarContent>
+              </MenubarMenu>
+            )}
+          </For>
+        </Menubar>
       </div>
       {/* <MenubarMenu>
         <MenubarTrigger>Sat 5 Apr 11:02 AM</MenubarTrigger>
       </MenubarMenu> */}
     </MenubarRoot>
+  );
+}
+
+function SmartMenubarItem(props: { item: MenuBarItem }) {
+  return (
+    <Show
+      when={props.item.submenu}
+      fallback={
+        <MenubarItem
+          onSelect={() => {
+            props.item.action?.();
+          }}
+        >
+          {props.item.label}
+        </MenubarItem>
+      }
+    >
+      <MenubarSub overflowPadding={24 + 6 + 6} shift={-5}>
+        <MenubarSubTrigger
+          onSelect={() => {
+            props.item.action?.();
+          }}
+        >
+          {props.item.label}
+          <ChevronRightIcon css={{ transform: "translateX(5px)" }} />
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <For each={props.item.submenu}>
+            {(subitem) => <SmartMenubarItem item={subitem} />}
+          </For>
+        </MenubarSubContent>
+      </MenubarSub>
+    </Show>
   );
 }
 
@@ -426,16 +389,16 @@ function MenubarClock() {
   //   },
   // }));
 
-  onMount(() => {
-    async function idk() {
-      const res = await fetch("/api/cities.csv");
-      const text = await res.text();
-      const data = await parseCsvAsync(text);
-      console.log(data);
-    }
-    idk();
-    // setCards(data);
-  });
+  // onMount(() => {
+  //   async function idk() {
+  //     const res = await fetch("/api/cities.csv");
+  //     const text = await res.text();
+  //     const data = await parseCsvAsync(text);
+  //     console.log(data);
+  //   }
+  //   idk();
+  //   // setCards(data);
+  // });
   return <MenubarTrigger>Sat 5 Apr 11:02 AM</MenubarTrigger>;
 }
 

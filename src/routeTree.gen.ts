@@ -21,6 +21,7 @@ import { Route as JesusImport } from './routes/+jesus'
 import { Route as IsoImport } from './routes/+iso'
 import { Route as GbImport } from './routes/+gb'
 import { Route as FontExplorerRouteImport } from './routes/+font-explorer/+route'
+import { Route as FakerImport } from './routes/+faker'
 import { Route as DemoImport } from './routes/+demo'
 import { Route as CvImport } from './routes/+cv'
 import { Route as ChadgdpRouteImport } from './routes/+chadgdp/+route'
@@ -100,6 +101,12 @@ const GbRoute = GbImport.update({
 const FontExplorerRouteRoute = FontExplorerRouteImport.update({
   id: '/font-explorer',
   path: '/font-explorer',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FakerRoute = FakerImport.update({
+  id: '/faker',
+  path: '/faker',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -265,6 +272,13 @@ declare module '@tanstack/solid-router' {
       path: '/demo'
       fullPath: '/demo'
       preLoaderRoute: typeof DemoImport
+      parentRoute: typeof rootRoute
+    }
+    '/faker': {
+      id: '/faker'
+      path: '/faker'
+      fullPath: '/faker'
+      preLoaderRoute: typeof FakerImport
       parentRoute: typeof rootRoute
     }
     '/font-explorer': {
@@ -459,6 +473,7 @@ export interface FileRoutesByFullPath {
   '/chadgdp': typeof ChadgdpRouteRoute
   '/cv': typeof CvRoute
   '/demo': typeof DemoRoute
+  '/faker': typeof FakerRoute
   '/font-explorer': typeof FontExplorerRouteRouteWithChildren
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
@@ -491,6 +506,7 @@ export interface FileRoutesByTo {
   '/chadgdp': typeof ChadgdpRouteRoute
   '/cv': typeof CvRoute
   '/demo': typeof DemoRoute
+  '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
   '/jesus': typeof JesusRoute
@@ -523,6 +539,7 @@ export interface FileRoutesById {
   '/chadgdp': typeof ChadgdpRouteRoute
   '/cv': typeof CvRoute
   '/demo': typeof DemoRoute
+  '/faker': typeof FakerRoute
   '/font-explorer': typeof FontExplorerRouteRouteWithChildren
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
@@ -557,6 +574,7 @@ export interface FileRouteTypes {
     | '/chadgdp'
     | '/cv'
     | '/demo'
+    | '/faker'
     | '/font-explorer'
     | '/gb'
     | '/iso'
@@ -588,6 +606,7 @@ export interface FileRouteTypes {
     | '/chadgdp'
     | '/cv'
     | '/demo'
+    | '/faker'
     | '/gb'
     | '/iso'
     | '/jesus'
@@ -618,6 +637,7 @@ export interface FileRouteTypes {
     | '/chadgdp'
     | '/cv'
     | '/demo'
+    | '/faker'
     | '/font-explorer'
     | '/gb'
     | '/iso'
@@ -651,6 +671,7 @@ export interface RootRouteChildren {
   ChadgdpRouteRoute: typeof ChadgdpRouteRoute
   CvRoute: typeof CvRoute
   DemoRoute: typeof DemoRoute
+  FakerRoute: typeof FakerRoute
   FontExplorerRouteRoute: typeof FontExplorerRouteRouteWithChildren
   GbRoute: typeof GbRoute
   IsoRoute: typeof IsoRoute
@@ -678,6 +699,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChadgdpRouteRoute: ChadgdpRouteRoute,
   CvRoute: CvRoute,
   DemoRoute: DemoRoute,
+  FakerRoute: FakerRoute,
   FontExplorerRouteRoute: FontExplorerRouteRouteWithChildren,
   GbRoute: GbRoute,
   IsoRoute: IsoRoute,
@@ -714,6 +736,7 @@ export const routeTree = rootRoute
         "/chadgdp",
         "/cv",
         "/demo",
+        "/faker",
         "/font-explorer",
         "/gb",
         "/iso",
@@ -751,6 +774,9 @@ export const routeTree = rootRoute
     },
     "/demo": {
       "filePath": "+demo.tsx"
+    },
+    "/faker": {
+      "filePath": "+faker.tsx"
     },
     "/font-explorer": {
       "filePath": "+font-explorer/+route.tsx",

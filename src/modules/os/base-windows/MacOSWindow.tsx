@@ -1,21 +1,21 @@
-import { ComponentProps, JSX } from "solid-js";
+import { ComponentProps, JSX, useContext } from "solid-js";
 import { ResizableFrame } from "~/modules/desktop-environment";
 import { useSquircle } from "~/utils/squircle";
+import { OSContext, useOSContext } from "../sonoma/provider";
 
-export type MacOSWindowProps = Omit<ComponentProps<"div">, "onMouseDown"> & {
+export type MacOSWindowProps = ComponentProps<"div"> & {
   minWidth?: number;
   minHeight?: number;
   initialWidth: number;
   initialHeight: number;
   maxWidth?: number;
   maxHeight?: number;
-  onClose?: () => void;
   trafficLights?: number;
-  active?: boolean;
-  onMouseDown?: () => void;
+  applicationId: string;
 };
 
 export function MacOSWindow(props: MacOSWindowProps) {
+  const { bringToFront } = useOSContext();
   return (
     <ResizableFrame
       initialHeight={props.initialHeight}
@@ -25,7 +25,7 @@ export function MacOSWindow(props: MacOSWindowProps) {
       minHeight={props.minHeight}
       minWidth={props.minWidth}
       style={props.style as JSX.CSSProperties}
-      onMouseDown={props.onMouseDown}
+      onMouseDown={() => bringToFront(props.applicationId)}
     >
       <div
         css={{
@@ -58,7 +58,7 @@ export function MacOSWindow(props: MacOSWindowProps) {
                 : undefined,
             }}
           >
-            <TrafficLights onClose={props.onClose} />
+            <TrafficLights applicationId={props.applicationId} />
           </div>
 
           {props.children}
@@ -68,7 +68,9 @@ export function MacOSWindow(props: MacOSWindowProps) {
   );
 }
 
-export function TrafficLights(props: { onClose?: () => void }) {
+export function TrafficLights(props: { applicationId: string }) {
+  const { closeApplication } = useContext(OSContext);
+  const close = () => closeApplication(props.applicationId);
   return (
     <div
       css={{
@@ -77,7 +79,7 @@ export function TrafficLights(props: { onClose?: () => void }) {
       }}
     >
       <button
-        onClick={props.onClose}
+        onClick={close}
         css={{
           w: 12,
           h: 12,
@@ -100,7 +102,7 @@ export function TrafficLights(props: { onClose?: () => void }) {
         </svg>
       </button>
       <button
-        onClick={props.onClose}
+        onClick={close}
         css={{
           w: 12,
           h: 12,
@@ -123,7 +125,7 @@ export function TrafficLights(props: { onClose?: () => void }) {
         </svg>
       </button>
       <button
-        onClick={props.onClose}
+        onClick={close}
         css={{
           w: 12,
           h: 12,

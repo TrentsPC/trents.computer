@@ -1,16 +1,10 @@
 import { styled } from "@hypergood/css";
-import { ComponentProps, createSignal, For, Show } from "solid-js";
+import { ComponentProps, createSignal, For } from "solid-js";
 import { Bot, Group, Message, useChatbots } from "~/modules/chatbots";
 import { FrameDragArea } from "~/modules/desktop-environment";
 import { colors } from "~/theme.styles";
 import { MacOSWindow, MacOSWindowProps } from "../../base-windows/MacOSWindow";
-import {
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarPortal,
-  MenubarTrigger,
-} from "../sonoma-ui/menubar";
+import { useMenuBar, useOSContext } from "../provider";
 
 const [conversations, setConversations] = useChatbots();
 
@@ -19,18 +13,29 @@ export function MessagesWindow(props: MacOSWindowProps) {
   const selectedGroup = () =>
     conversations[selectedGroupId()] as Group | undefined;
 
+  const { closeApplication } = useOSContext();
+
+  useMenuBar("messages", () => [
+    {
+      title: "Messages",
+      items: [
+        {
+          label: "Quit Messages",
+          action: () => {
+            closeApplication("messages");
+          },
+        },
+      ],
+    },
+  ]);
   return (
-    <MacOSWindow {...props}>
-      <Show when={props.active}>
-        <MenubarPortal>
-          <MenubarMenu>
-            <MenubarTrigger>Messages</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onSelect={props.onClose}>Quit Messages</MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-        </MenubarPortal>
-      </Show>
+    <MacOSWindow
+      initialWidth={1024}
+      initialHeight={820}
+      minWidth={660}
+      minHeight={320}
+      applicationId="messages"
+    >
       <div
         css={{
           d: "flex",

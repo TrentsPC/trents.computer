@@ -43,6 +43,7 @@ export type FrameProps = {
   children?: JSX.Element;
   style?: JSX.CSSProperties;
   onMouseDown?: () => void;
+  ref?: (ref: FrameContextType) => void;
 };
 export function Frame(props: FrameProps) {
   const ctx = useContext(DesktopContext);
@@ -88,6 +89,17 @@ export function Frame(props: FrameProps) {
     setRectBeforeDrag(addRect(rectBeforeDrag(), boundedDragDelta()));
     setUnboundedDragDelta({ x: 0, y: 0, width: 0, height: 0 });
   }
+
+  props.ref &&
+    props.ref({
+      rect: () => rect(),
+      setRect: (rect: Rect) => {
+        setRectBeforeDrag(rect);
+        setUnboundedDragDelta({ x: 0, y: 0, width: 0, height: 0 });
+      },
+      dragRectBy,
+      commitDrag,
+    });
 
   return (
     <FrameContext.Provider

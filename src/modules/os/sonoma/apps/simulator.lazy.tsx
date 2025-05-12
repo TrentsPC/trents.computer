@@ -1,17 +1,7 @@
-import {
-  createSignal,
-  JSX,
-  onCleanup,
-  onMount,
-  Show,
-  useContext,
-} from "solid-js";
+import { createSignal, JSX, onCleanup, onMount, useContext } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { Frame, FrameDragArea } from "~/modules/desktop-environment";
-import {
-  FrameContext,
-  FrameContextType,
-} from "~/modules/desktop-environment/frame";
+import { FrameContextType } from "~/modules/desktop-environment/frame";
 import { createGameBoy } from "~/modules/game-boy/gameBoy";
 import "~/modules/zork";
 import { useSquircle } from "~/utils/squircle";
@@ -19,13 +9,7 @@ import {
   MacOSWindowProps,
   TrafficLights,
 } from "../../base-windows/MacOSWindow";
-import {
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarPortal,
-  MenubarTrigger,
-} from "../sonoma-ui/menubar";
+import { OSContext, useMenuBar } from "../provider";
 
 const TOOLBAR_HEIGHT = 52;
 
@@ -56,64 +40,69 @@ const GAME_BOY: Device = {
 const DEVICES: Device[] = [IPHONE, GAME_BOY];
 
 export function SimulatorWindow(props: MacOSWindowProps) {
+  const { closeApplication } = useContext(OSContext);
   const [activeDeviceId, setActiveDeviceId] = createSignal("iphone-16");
   const activeDevice = () =>
     DEVICES.find((device) => device.id === activeDeviceId())!;
   const ActiveDeviceComponent = () => activeDevice().component;
+  let ref: FrameContextType;
+
+  useMenuBar("simulator", () => [
+    {
+      title: "Simulator",
+      items: [
+        {
+          label: "Quit Simulator",
+          action: () => {
+            closeApplication("simulator");
+          },
+        },
+      ],
+    },
+    {
+      title: "File",
+      items: [
+        {
+          label: "Open Simulator",
+          submenu: [
+            {
+              label: "iPhone 16",
+              action: () => {
+                const { setRect, rect } = ref;
+                setActiveDeviceId(IPHONE.id);
+                setRect({
+                  width: IPHONE.width,
+                  height: IPHONE.height + TOOLBAR_HEIGHT,
+                  x: rect().x,
+                  y: rect().y,
+                });
+              },
+            },
+            {
+              label: "Game Boy",
+              action: () => {
+                const { setRect, rect } = ref;
+                setActiveDeviceId(GAME_BOY.id);
+                setRect({
+                  width: GAME_BOY.width,
+                  height: GAME_BOY.height + TOOLBAR_HEIGHT,
+                  x: rect().x,
+                  y: rect().y,
+                });
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ]);
+
   return (
     <Frame
       initialHeight={activeDevice().height + TOOLBAR_HEIGHT + 20}
       initialWidth={activeDevice().width}
-      onMouseDown={props.onMouseDown}
-      style={props.style as JSX.CSSProperties}
+      ref={(v) => (ref = v)}
     >
-      <Show when={props.active}>
-        <MenubarPortal>
-          <MenubarMenu>
-            <MenubarTrigger>Simulator</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onSelect={props.onClose}>Quit Simulator</MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-          <FrameContextConsumer>
-            {(ctx) => (
-              <MenubarMenu>
-                <MenubarTrigger>File</MenubarTrigger>
-                <MenubarContent>
-                  <MenubarItem
-                    onSelect={() => {
-                      const { setRect, rect } = ctx;
-                      setActiveDeviceId(IPHONE.id);
-                      setRect({
-                        width: IPHONE.width,
-                        height: IPHONE.height + TOOLBAR_HEIGHT,
-                        x: rect().x,
-                        y: rect().y,
-                      });
-                    }}
-                  >
-                    iPhone 16
-                  </MenubarItem>
-                  <MenubarItem
-                    onSelect={() => {
-                      const { setRect, rect } = ctx;
-                      setActiveDeviceId(GAME_BOY.id);
-                      setRect({
-                        width: GAME_BOY.width,
-                        height: GAME_BOY.height + TOOLBAR_HEIGHT,
-                        x: rect().x,
-                        y: rect().y,
-                      });
-                    }}
-                  >
-                    Game Boy
-                  </MenubarItem>
-                </MenubarContent>
-              </MenubarMenu>
-            )}
-          </FrameContextConsumer>
-        </MenubarPortal>
-      </Show>
       <FrameDragArea
         css={{
           display: "flex",
@@ -127,7 +116,7 @@ export function SimulatorWindow(props: MacOSWindowProps) {
         }}
       >
         <div css={{ padding: 20 }}>
-          <TrafficLights onClose={props.onClose} />
+          <TrafficLights applicationId="simulator" />
         </div>
         {activeDevice().title}
       </FrameDragArea>
@@ -143,13 +132,6 @@ export function SimulatorWindow(props: MacOSWindowProps) {
       </div>
     </Frame>
   );
-}
-
-function FrameContextConsumer(props: {
-  children: (context: FrameContextType) => JSX.Element;
-}) {
-  const context = useContext(FrameContext);
-  return props.children(context);
 }
 
 function IPhone() {

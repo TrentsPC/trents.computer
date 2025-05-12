@@ -94,6 +94,27 @@ export function MenubarContent(props: ComponentProps<typeof Menubar.Content>) {
     </Menubar.Portal>
   );
 }
+export const MenubarSub = Menubar.Sub;
+export function MenubarSubContent(
+  props: ComponentProps<typeof Menubar.SubContent>
+) {
+  return (
+    <Menubar.Portal>
+      <Menubar.SubContent
+        {...props}
+        css={{
+          backgroundColor: "rgba(246, 246, 246, 0.6)",
+          padding: 5,
+          outline: "none",
+          borderRadius: 6,
+          backdropFilter: "blur(80px)",
+          boxShadow:
+            "0 0 1px rgba(0,0,0,0.4), 0 0 1.5px rgba(0,0,0,0.3), 0 7px 22px rgba(0,0,0,0.25)",
+        }}
+      ></Menubar.SubContent>
+    </Menubar.Portal>
+  );
+}
 
 export function MenubarItem(props: ComponentProps<typeof Menubar.Item>) {
   return (
@@ -118,6 +139,34 @@ export function MenubarItem(props: ComponentProps<typeof Menubar.Item>) {
         },
       }}
     ></Menubar.Item>
+  );
+}
+
+export function MenubarSubTrigger(
+  props: ComponentProps<typeof Menubar.SubTrigger>
+) {
+  return (
+    <Menubar.SubTrigger
+      {...props}
+      css={{
+        height: 22,
+        fontSize: 13,
+        lineHeight: "16px",
+        px: 10,
+        display: "flex",
+        alignItems: "center",
+        outline: "none",
+        borderRadius: 4,
+        cursor: "default",
+        "&[data-disabled]": {
+          color: "rgba(0,0,0,0.25)",
+        },
+        "&[data-highlighted]": {
+          backgroundColor: "#0A82FF",
+          color: "white",
+        },
+      }}
+    ></Menubar.SubTrigger>
   );
 }
 
