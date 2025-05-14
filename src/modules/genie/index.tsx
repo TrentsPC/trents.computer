@@ -1,5 +1,7 @@
 import html2canvas from "html2canvas";
 // TODO: Switch to `modern-screenshot`
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { render } from "solid-js/web";
 import { bezier } from "./bezier";
 const getNewPage = () =>
   import("~/modules/os/sonoma/sonoma").then((m) => m.TrentOS);
@@ -25,7 +27,14 @@ export async function genieMinimise() {
   // Mount canvas
   const container = document.getElementById("app")!;
   container.innerHTML = "";
-  container.appendChild(Component() as Element);
+  render(
+    () => (
+      <QueryClientProvider client={new QueryClient()}>
+        <Component />
+      </QueryClientProvider>
+    ),
+    container
+  );
   container.appendChild(canvas);
 
   const squishEasing = bezier(0.42, 0, 0.58, 1);

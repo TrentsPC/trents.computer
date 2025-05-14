@@ -1,9 +1,9 @@
 import { ComponentProps, createMemo, createSignal, For, Show } from "solid-js";
 import { useSquircle } from "~/utils/squircle";
-import noIcon from "./ios-apps/app-icons/no-icon.png";
-import background from "./ios-apps/ios-background.jpg";
-import { SAFARI } from "./ios-apps/safari";
-import { FakeIOSApplication } from "./ios-apps/types";
+import noIcon from "./app-icons/no-icon.png";
+import background from "./ios-background.jpg";
+import { SAFARI } from "./safari";
+import { FakeIOSApplication } from "./types";
 
 const APPLICATIONS: FakeIOSApplication[] = [
   SAFARI,

@@ -33,9 +33,15 @@ export type OSContextValue = {
   ) => Destructor;
 };
 
-export const OSContext = createContext<OSContextValue>(
-  undefined as unknown as OSContextValue
-);
+export const OSContext = createContext<OSContextValue>({
+  openedApplicationIds: () => [],
+  openApplication: () => {},
+  closeApplication: () => {},
+  bringToFront: () => {},
+
+  menuBar: () => [],
+  registerMenuBar: () => () => {},
+});
 
 export const useOSContext = () => useContext(OSContext);
 
