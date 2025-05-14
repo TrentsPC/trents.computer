@@ -1,6 +1,6 @@
 import { ComponentProps, createMemo, createSignal, For, Show } from "solid-js";
 import { useSquircle } from "~/utils/squircle";
-import noIcon from "./app-icons/no-icon.png";
+import noIcon from "./icons/no-icon.png";
 import background from "./ios-background.jpg";
 import { SAFARI } from "./safari";
 import { FakeIOSApplication } from "./types";

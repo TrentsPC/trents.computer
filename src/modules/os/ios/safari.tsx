@@ -1,4 +1,4 @@
-import safari from "./app-icons/safari.png";
+import safari from "./icons/safari.png";
 import { FakeIOSApplication } from "./types";
 
 export const SAFARI: FakeIOSApplication = {
