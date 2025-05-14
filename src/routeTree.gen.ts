@@ -30,6 +30,7 @@ import { Route as BoggleImport } from './routes/+boggle'
 import { Route as IndexImport } from './routes/+index'
 import { Route as OsWin98Import } from './routes/+os/+win98'
 import { Route as OsSonomaImport } from './routes/+os/+sonoma'
+import { Route as OsIos3Import } from './routes/+os/+ios3'
 import { Route as OsIosImport } from './routes/+os/+ios'
 import { Route as FontExplorerHexImport } from './routes/+font-explorer/+hex'
 import { Route as PantryIndexImport } from './routes/+pantry/+index'
@@ -155,6 +156,12 @@ const OsWin98Route = OsWin98Import.update({
 const OsSonomaRoute = OsSonomaImport.update({
   id: '/os/sonoma',
   path: '/os/sonoma',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OsIos3Route = OsIos3Import.update({
+  id: '/os/ios3',
+  path: '/os/ios3',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -379,6 +386,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof OsIosImport
       parentRoute: typeof rootRoute
     }
+    '/os/ios3': {
+      id: '/os/ios3'
+      path: '/os/ios3'
+      fullPath: '/os/ios3'
+      preLoaderRoute: typeof OsIos3Import
+      parentRoute: typeof rootRoute
+    }
     '/os/sonoma': {
       id: '/os/sonoma'
       path: '/os/sonoma'
@@ -488,6 +502,7 @@ export interface FileRoutesByFullPath {
   '/pantry': typeof PantryIndexRoute
   '/font-explorer/hex': typeof FontExplorerHexRoute
   '/os/ios': typeof OsIosRoute
+  '/os/ios3': typeof OsIos3Route
   '/os/sonoma': typeof OsSonomaRoute
   '/os/win98': typeof OsWin98Route
   '/font-explorer/tables': typeof FontExplorerTablesIndexRoute
@@ -520,6 +535,7 @@ export interface FileRoutesByTo {
   '/pantry': typeof PantryIndexRoute
   '/font-explorer/hex': typeof FontExplorerHexRoute
   '/os/ios': typeof OsIosRoute
+  '/os/ios3': typeof OsIos3Route
   '/os/sonoma': typeof OsSonomaRoute
   '/os/win98': typeof OsWin98Route
   '/font-explorer/tables': typeof FontExplorerTablesIndexRoute
@@ -554,6 +570,7 @@ export interface FileRoutesById {
   '/pantry/': typeof PantryIndexRoute
   '/font-explorer/hex': typeof FontExplorerHexRoute
   '/os/ios': typeof OsIosRoute
+  '/os/ios3': typeof OsIos3Route
   '/os/sonoma': typeof OsSonomaRoute
   '/os/win98': typeof OsWin98Route
   '/font-explorer/tables/': typeof FontExplorerTablesIndexRoute
@@ -589,6 +606,7 @@ export interface FileRouteTypes {
     | '/pantry'
     | '/font-explorer/hex'
     | '/os/ios'
+    | '/os/ios3'
     | '/os/sonoma'
     | '/os/win98'
     | '/font-explorer/tables'
@@ -620,6 +638,7 @@ export interface FileRouteTypes {
     | '/pantry'
     | '/font-explorer/hex'
     | '/os/ios'
+    | '/os/ios3'
     | '/os/sonoma'
     | '/os/win98'
     | '/font-explorer/tables'
@@ -652,6 +671,7 @@ export interface FileRouteTypes {
     | '/pantry/'
     | '/font-explorer/hex'
     | '/os/ios'
+    | '/os/ios3'
     | '/os/sonoma'
     | '/os/win98'
     | '/font-explorer/tables/'
@@ -684,6 +704,7 @@ export interface RootRouteChildren {
   WordsRoute: typeof WordsRoute
   PantryIndexRoute: typeof PantryIndexRoute
   OsIosRoute: typeof OsIosRoute
+  OsIos3Route: typeof OsIos3Route
   OsSonomaRoute: typeof OsSonomaRoute
   OsWin98Route: typeof OsWin98Route
   PantryBooksIndexRoute: typeof PantryBooksIndexRoute
@@ -712,6 +733,7 @@ const rootRouteChildren: RootRouteChildren = {
   WordsRoute: WordsRoute,
   PantryIndexRoute: PantryIndexRoute,
   OsIosRoute: OsIosRoute,
+  OsIos3Route: OsIos3Route,
   OsSonomaRoute: OsSonomaRoute,
   OsWin98Route: OsWin98Route,
   PantryBooksIndexRoute: PantryBooksIndexRoute,
@@ -749,6 +771,7 @@ export const routeTree = rootRoute
         "/words",
         "/pantry/",
         "/os/ios",
+        "/os/ios3",
         "/os/sonoma",
         "/os/win98",
         "/pantry/books/",
@@ -828,6 +851,9 @@ export const routeTree = rootRoute
     },
     "/os/ios": {
       "filePath": "+os/+ios.tsx"
+    },
+    "/os/ios3": {
+      "filePath": "+os/+ios3.tsx"
     },
     "/os/sonoma": {
       "filePath": "+os/+sonoma.tsx"

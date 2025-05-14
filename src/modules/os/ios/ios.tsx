@@ -1,12 +1,16 @@
 import { ComponentProps, createMemo, createSignal, For, Show } from "solid-js";
 import { useSquircle } from "~/utils/squircle";
+import { GAME_BOY } from "./apps/game-boy";
+import { MESSAGES } from "./apps/messages";
+import { SAFARI } from "./apps/safari";
 import noIcon from "./icons/no-icon.png";
-import background from "./ios-background.jpg";
-import { SAFARI } from "./safari";
+import background from "./ios-background.png";
 import { FakeIOSApplication } from "./types";
 
 const APPLICATIONS: FakeIOSApplication[] = [
   SAFARI,
+  MESSAGES,
+  GAME_BOY,
   {
     id: "com.apple.Empty",
     name: "",
@@ -15,10 +19,10 @@ const APPLICATIONS: FakeIOSApplication[] = [
   },
 ];
 
-export function FakeIOS() {
-  if (document?.body) {
-    document.body.style.overflow = "hidden";
-  }
+export function FakeIOSGen3(props: { cornerRadius?: number }) {
+  // if (document?.body) {
+  //   document.body.style.overflow = "hidden";
+  // }
 
   const [currentAppId, setCurrentAppId] = createSignal<string | undefined>(
     undefined
@@ -33,9 +37,9 @@ export function FakeIOS() {
   return (
     <div
       css={{
-        position: "fixed",
-        top: 0,
-        left: 0,
+        position: "relative",
+        overflow: "hidden",
+
         w: "100%",
         h: "100%",
         minH: "100%",
@@ -43,10 +47,21 @@ export function FakeIOS() {
         fontFamily: "system-ui",
         backgroundColor: "white",
       }}
+      style={{
+        "--safe-area-inset-top": "62px",
+        "--safe-area-inset-right": "0px",
+        "--safe-area-inset-bottom": "34px",
+        "--safe-area-inset-left": "0px",
+      }}
     >
       <Show
         when={currentApp()}
-        fallback={<HomeScreen onAppClick={setCurrentAppId} />}
+        fallback={
+          <HomeScreen
+            onAppClick={setCurrentAppId}
+            cornerRadius={props.cornerRadius}
+          />
+        }
       >
         <Component />
         <HomeIndicator onClick={() => setCurrentAppId(undefined)} />
@@ -56,7 +71,13 @@ export function FakeIOS() {
   );
 }
 
-function HomeScreen({ onAppClick }: { onAppClick: (id: string) => void }) {
+function HomeScreen({
+  onAppClick,
+  cornerRadius,
+}: {
+  onAppClick: (id: string) => void;
+  cornerRadius?: number;
+}) {
   return (
     <>
       <img
@@ -82,7 +103,7 @@ function HomeScreen({ onAppClick }: { onAppClick: (id: string) => void }) {
           // width: (60 + 30) * 4,
           pt: 26,
           mx: "auto",
-          px: `calc((100vw - ${60 * 4}px) / 10)`,
+          px: `calc((100% - ${60 * 4}px) / 10)`,
           width: "100%",
         }}
       >
@@ -90,8 +111,11 @@ function HomeScreen({ onAppClick }: { onAppClick: (id: string) => void }) {
           appId="com.apple.Safari"
           onClick={() => onAppClick("com.apple.Safari")}
         />
-        <AppButton appId="com.apple.Empty" onClick={() => {}} />
-        <AppButton appId="com.apple.Empty" onClick={() => {}} />
+        <AppButton
+          appId="com.apple.Messages"
+          onClick={() => onAppClick("com.apple.Messages")}
+        />
+        <AppButton appId="game-boy" onClick={() => onAppClick("game-boy")} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
@@ -101,16 +125,19 @@ function HomeScreen({ onAppClick }: { onAppClick: (id: string) => void }) {
       <div
         ref={useSquircle()}
         css={{
-          backgroundColor: "rgba(191, 191, 191, 0.44)",
           backdropFilter: "blur(50px)",
           position: "absolute",
           bottom: 12,
           left: 12,
           right: 12,
           height: 98,
-          borderRadius: 55 - 12,
           display: "flex",
           alignItems: "center",
+          backgroundColor: "rgba(191, 191, 191, 0.44)",
+          // mixBlendMode: "luminosity",
+        }}
+        style={{
+          "border-radius": `${(cornerRadius || 55) - 12}px`,
         }}
       >
         <div
@@ -118,7 +145,7 @@ function HomeScreen({ onAppClick }: { onAppClick: (id: string) => void }) {
             display: "grid",
             gridCols: 4,
             mx: "auto",
-            px: `calc((100vw - ${60 * 4}px) / 10 - 12px)`,
+            px: `calc((100% - ${60 * 4}px) / 10 - 12px)`,
             width: "100%",
           }}
         >
