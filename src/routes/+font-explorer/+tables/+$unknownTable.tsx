@@ -5,5 +5,5 @@ export const Route = createFileRoute("/font-explorer/tables/$unknownTable")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/font-explorer/tables/$unknownTable"!</div>;
+  return <div>Unknown table :/</div>;
 }

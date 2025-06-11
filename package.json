@@ -12,42 +12,42 @@
   "dependencies": {
     "@hypergood/css": "^0.0.6",
     "@hypergood/spring": "^0.0.1",
-    "@kobalte/core": "^0.13.3",
+    "@kobalte/core": "^0.13.10",
     "@solidjs/start": "^1.1.4",
-    "@tanstack/solid-query": "^5.76.0",
-    "@tanstack/solid-router": "^1.120.3",
-    "@trpc/client": "^11.1.2",
-    "@trpc/server": "^11.1.2",
+    "@tanstack/solid-query": "^5.80.6",
+    "@tanstack/solid-router": "^1.121.0",
+    "@trpc/client": "^11.3.1",
+    "@trpc/server": "^11.3.1",
     "@types/sql.js": "^1.4.9",
     "@use-gesture/core": "^10.3.1",
     "csv": "^6.3.11",
     "dotenv": "^16.5.0",
-    "drizzle-orm": "^0.43.1",
+    "drizzle-orm": "^0.44.2",
     "figma-squircle": "^1.1.0",
     "fuzzysort": "^3.1.0",
     "html2canvas": "^1.4.1",
     "is-hotkey": "^0.2.0",
-    "marked": "^15.0.11",
+    "marked": "^15.0.12",
     "ofetch": "^1.4.1",
-    "pixi.js": "^8.9.2",
-    "solid-js": "1.9.6",
+    "pixi.js": "^8.10.1",
+    "solid-js": "1.9.7",
     "solid-radix-icons": "^1.0.0",
     "sql.js": "^1.13.0",
     "valibot": "1.1.0",
-    "vinxi": "^0.5.3",
-    "wrangler": "^4.14.4"
+    "vinxi": "^0.5.5",
+    "wrangler": "^4.19.1"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250513.0",
-    "@tanstack/router-plugin": "^1.120.3",
+    "@cloudflare/workers-types": "^4.20250610.0",
+    "@tanstack/router-plugin": "^1.121.0",
     "@types/is-hotkey": "^0.1.10",
     "@vinxi/rollup-plugin-visualizer": "^5.7.1",
     "drizzle-kit": "^0.31.1",
-    "rollup-plugin-visualizer": "^5.14.0",
+    "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.19.4",
-    "vite-plugin-inspect": "^11.0.1"
+    "vite-plugin-inspect": "^11.1.0"
   }
 }

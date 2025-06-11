@@ -8,477 +8,197 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/+__root'
+import { Route as WordsRouteImport } from './routes/+words'
+import { Route as TwoHardThingsRouteImport } from './routes/+two-hard-things'
+import { Route as TicTacToeRouteImport } from './routes/+tic-tac-toe'
+import { Route as SokobanRouteImport } from './routes/+sokoban'
+import { Route as SecretWordRouteImport } from './routes/+secret-word'
+import { Route as NestedRouteRouteImport } from './routes/+nested/+route'
+import { Route as JesusRouteImport } from './routes/+jesus'
+import { Route as IsoRouteImport } from './routes/+iso'
+import { Route as GbRouteImport } from './routes/+gb'
+import { Route as FontExplorerRouteRouteImport } from './routes/+font-explorer/+route'
+import { Route as FakerRouteImport } from './routes/+faker'
+import { Route as DemoRouteImport } from './routes/+demo'
+import { Route as CvRouteImport } from './routes/+cv'
+import { Route as ChadgdpRouteRouteImport } from './routes/+chadgdp/+route'
+import { Route as CalendarRouteImport } from './routes/+calendar'
+import { Route as BoggleRouteImport } from './routes/+boggle'
+import { Route as IndexRouteImport } from './routes/+index'
+import { Route as OsWin98RouteImport } from './routes/+os/+win98'
+import { Route as OsSonomaRouteImport } from './routes/+os/+sonoma'
+import { Route as OsIos3RouteImport } from './routes/+os/+ios3'
+import { Route as OsIosRouteImport } from './routes/+os/+ios'
+import { Route as FontExplorerHexRouteImport } from './routes/+font-explorer/+hex'
+import { Route as PantryIndexRouteImport } from './routes/+pantry/+index'
+import { Route as FontExplorerIndexRouteImport } from './routes/+font-explorer/+index'
+import { Route as FontExplorerTablesFFTMRouteImport } from './routes/+font-explorer/+tables/+FFTM'
+import { Route as FontExplorerTablesUnknownTableRouteImport } from './routes/+font-explorer/+tables/+$unknownTable'
+import { Route as PantryBooksIndexRouteImport } from './routes/+pantry/+books/+index'
+import { Route as FontExplorerTablesIndexRouteImport } from './routes/+font-explorer/+tables/+index'
+import { Route as PantryRecipesRecipeIdEditRouteRouteImport } from './routes/+pantry/+recipes/+$recipeId/+edit/+route'
+import { Route as PantryRecipesRecipeIdIndexRouteImport } from './routes/+pantry/+recipes/+$recipeId/+index'
+import { Route as PantryBooksBookIdIndexRouteImport } from './routes/+pantry/+books/+$bookId/+index'
 
-import { Route as rootRoute } from './routes/+__root'
-import { Route as WordsImport } from './routes/+words'
-import { Route as TwoHardThingsImport } from './routes/+two-hard-things'
-import { Route as TicTacToeImport } from './routes/+tic-tac-toe'
-import { Route as SokobanImport } from './routes/+sokoban'
-import { Route as SecretWordImport } from './routes/+secret-word'
-import { Route as NestedRouteImport } from './routes/+nested/+route'
-import { Route as JesusImport } from './routes/+jesus'
-import { Route as IsoImport } from './routes/+iso'
-import { Route as GbImport } from './routes/+gb'
-import { Route as FontExplorerRouteImport } from './routes/+font-explorer/+route'
-import { Route as FakerImport } from './routes/+faker'
-import { Route as DemoImport } from './routes/+demo'
-import { Route as CvImport } from './routes/+cv'
-import { Route as ChadgdpRouteImport } from './routes/+chadgdp/+route'
-import { Route as CalendarImport } from './routes/+calendar'
-import { Route as BoggleImport } from './routes/+boggle'
-import { Route as IndexImport } from './routes/+index'
-import { Route as OsWin98Import } from './routes/+os/+win98'
-import { Route as OsSonomaImport } from './routes/+os/+sonoma'
-import { Route as OsIos3Import } from './routes/+os/+ios3'
-import { Route as OsIosImport } from './routes/+os/+ios'
-import { Route as FontExplorerHexImport } from './routes/+font-explorer/+hex'
-import { Route as PantryIndexImport } from './routes/+pantry/+index'
-import { Route as FontExplorerIndexImport } from './routes/+font-explorer/+index'
-import { Route as FontExplorerTablesFFTMImport } from './routes/+font-explorer/+tables/+FFTM'
-import { Route as FontExplorerTablesUnknownTableImport } from './routes/+font-explorer/+tables/+$unknownTable'
-import { Route as PantryBooksIndexImport } from './routes/+pantry/+books/+index'
-import { Route as FontExplorerTablesIndexImport } from './routes/+font-explorer/+tables/+index'
-import { Route as PantryRecipesRecipeIdEditRouteImport } from './routes/+pantry/+recipes/+$recipeId/+edit/+route'
-import { Route as PantryRecipesRecipeIdIndexImport } from './routes/+pantry/+recipes/+$recipeId/+index'
-import { Route as PantryBooksBookIdIndexImport } from './routes/+pantry/+books/+$bookId/+index'
-
-// Create/Update Routes
-
-const WordsRoute = WordsImport.update({
+const WordsRoute = WordsRouteImport.update({
   id: '/words',
   path: '/words',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const TwoHardThingsRoute = TwoHardThingsImport.update({
+const TwoHardThingsRoute = TwoHardThingsRouteImport.update({
   id: '/two-hard-things',
   path: '/two-hard-things',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const TicTacToeRoute = TicTacToeImport.update({
+const TicTacToeRoute = TicTacToeRouteImport.update({
   id: '/tic-tac-toe',
   path: '/tic-tac-toe',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SokobanRoute = SokobanImport.update({
+const SokobanRoute = SokobanRouteImport.update({
   id: '/sokoban',
   path: '/sokoban',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SecretWordRoute = SecretWordImport.update({
+const SecretWordRoute = SecretWordRouteImport.update({
   id: '/secret-word',
   path: '/secret-word',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const NestedRouteRoute = NestedRouteImport.update({
+const NestedRouteRoute = NestedRouteRouteImport.update({
   id: '/nested',
   path: '/nested',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const JesusRoute = JesusImport.update({
+const JesusRoute = JesusRouteImport.update({
   id: '/jesus',
   path: '/jesus',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IsoRoute = IsoImport.update({
+const IsoRoute = IsoRouteImport.update({
   id: '/iso',
   path: '/iso',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GbRoute = GbImport.update({
+const GbRoute = GbRouteImport.update({
   id: '/gb',
   path: '/gb',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const FontExplorerRouteRoute = FontExplorerRouteImport.update({
+const FontExplorerRouteRoute = FontExplorerRouteRouteImport.update({
   id: '/font-explorer',
   path: '/font-explorer',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const FakerRoute = FakerImport.update({
+const FakerRoute = FakerRouteImport.update({
   id: '/faker',
   path: '/faker',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DemoRoute = DemoImport.update({
+const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CvRoute = CvImport.update({
+const CvRoute = CvRouteImport.update({
   id: '/cv',
   path: '/cv',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ChadgdpRouteRoute = ChadgdpRouteImport.update({
+const ChadgdpRouteRoute = ChadgdpRouteRouteImport.update({
   id: '/chadgdp',
   path: '/chadgdp',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CalendarRoute = CalendarImport.update({
+const CalendarRoute = CalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const BoggleRoute = BoggleImport.update({
+const BoggleRoute = BoggleRouteImport.update({
   id: '/boggle',
   path: '/boggle',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const OsWin98Route = OsWin98Import.update({
+const OsWin98Route = OsWin98RouteImport.update({
   id: '/os/win98',
   path: '/os/win98',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const OsSonomaRoute = OsSonomaImport.update({
+const OsSonomaRoute = OsSonomaRouteImport.update({
   id: '/os/sonoma',
   path: '/os/sonoma',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const OsIos3Route = OsIos3Import.update({
+const OsIos3Route = OsIos3RouteImport.update({
   id: '/os/ios3',
   path: '/os/ios3',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const OsIosRoute = OsIosImport.update({
+const OsIosRoute = OsIosRouteImport.update({
   id: '/os/ios',
   path: '/os/ios',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const FontExplorerHexRoute = FontExplorerHexImport.update({
+const FontExplorerHexRoute = FontExplorerHexRouteImport.update({
   id: '/hex',
   path: '/hex',
   getParentRoute: () => FontExplorerRouteRoute,
 } as any)
-
-const PantryIndexRoute = PantryIndexImport.update({
+const PantryIndexRoute = PantryIndexRouteImport.update({
   id: '/pantry/',
   path: '/pantry/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const FontExplorerIndexRoute = FontExplorerIndexImport.update({
+const FontExplorerIndexRoute = FontExplorerIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => FontExplorerRouteRoute,
 } as any)
-
-const FontExplorerTablesFFTMRoute = FontExplorerTablesFFTMImport.update({
+const FontExplorerTablesFFTMRoute = FontExplorerTablesFFTMRouteImport.update({
   id: '/tables/FFTM',
   path: '/tables/FFTM',
   getParentRoute: () => FontExplorerRouteRoute,
 } as any)
-
 const FontExplorerTablesUnknownTableRoute =
-  FontExplorerTablesUnknownTableImport.update({
+  FontExplorerTablesUnknownTableRouteImport.update({
     id: '/tables/$unknownTable',
     path: '/tables/$unknownTable',
     getParentRoute: () => FontExplorerRouteRoute,
   } as any)
-
-const PantryBooksIndexRoute = PantryBooksIndexImport.update({
+const PantryBooksIndexRoute = PantryBooksIndexRouteImport.update({
   id: '/pantry/books/',
   path: '/pantry/books/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const FontExplorerTablesIndexRoute = FontExplorerTablesIndexImport.update({
+const FontExplorerTablesIndexRoute = FontExplorerTablesIndexRouteImport.update({
   id: '/tables/',
   path: '/tables/',
   getParentRoute: () => FontExplorerRouteRoute,
 } as any)
-
 const PantryRecipesRecipeIdEditRouteRoute =
-  PantryRecipesRecipeIdEditRouteImport.update({
+  PantryRecipesRecipeIdEditRouteRouteImport.update({
     id: '/pantry/recipes/$recipeId/edit',
     path: '/pantry/recipes/$recipeId/edit',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any)
-
-const PantryRecipesRecipeIdIndexRoute = PantryRecipesRecipeIdIndexImport.update(
-  {
+const PantryRecipesRecipeIdIndexRoute =
+  PantryRecipesRecipeIdIndexRouteImport.update({
     id: '/pantry/recipes/$recipeId/',
     path: '/pantry/recipes/$recipeId/',
-    getParentRoute: () => rootRoute,
-  } as any,
-)
-
-const PantryBooksBookIdIndexRoute = PantryBooksBookIdIndexImport.update({
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PantryBooksBookIdIndexRoute = PantryBooksBookIdIndexRouteImport.update({
   id: '/pantry/books/$bookId/',
   path: '/pantry/books/$bookId/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/solid-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/boggle': {
-      id: '/boggle'
-      path: '/boggle'
-      fullPath: '/boggle'
-      preLoaderRoute: typeof BoggleImport
-      parentRoute: typeof rootRoute
-    }
-    '/calendar': {
-      id: '/calendar'
-      path: '/calendar'
-      fullPath: '/calendar'
-      preLoaderRoute: typeof CalendarImport
-      parentRoute: typeof rootRoute
-    }
-    '/chadgdp': {
-      id: '/chadgdp'
-      path: '/chadgdp'
-      fullPath: '/chadgdp'
-      preLoaderRoute: typeof ChadgdpRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/cv': {
-      id: '/cv'
-      path: '/cv'
-      fullPath: '/cv'
-      preLoaderRoute: typeof CvImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo': {
-      id: '/demo'
-      path: '/demo'
-      fullPath: '/demo'
-      preLoaderRoute: typeof DemoImport
-      parentRoute: typeof rootRoute
-    }
-    '/faker': {
-      id: '/faker'
-      path: '/faker'
-      fullPath: '/faker'
-      preLoaderRoute: typeof FakerImport
-      parentRoute: typeof rootRoute
-    }
-    '/font-explorer': {
-      id: '/font-explorer'
-      path: '/font-explorer'
-      fullPath: '/font-explorer'
-      preLoaderRoute: typeof FontExplorerRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/gb': {
-      id: '/gb'
-      path: '/gb'
-      fullPath: '/gb'
-      preLoaderRoute: typeof GbImport
-      parentRoute: typeof rootRoute
-    }
-    '/iso': {
-      id: '/iso'
-      path: '/iso'
-      fullPath: '/iso'
-      preLoaderRoute: typeof IsoImport
-      parentRoute: typeof rootRoute
-    }
-    '/jesus': {
-      id: '/jesus'
-      path: '/jesus'
-      fullPath: '/jesus'
-      preLoaderRoute: typeof JesusImport
-      parentRoute: typeof rootRoute
-    }
-    '/nested': {
-      id: '/nested'
-      path: '/nested'
-      fullPath: '/nested'
-      preLoaderRoute: typeof NestedRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/secret-word': {
-      id: '/secret-word'
-      path: '/secret-word'
-      fullPath: '/secret-word'
-      preLoaderRoute: typeof SecretWordImport
-      parentRoute: typeof rootRoute
-    }
-    '/sokoban': {
-      id: '/sokoban'
-      path: '/sokoban'
-      fullPath: '/sokoban'
-      preLoaderRoute: typeof SokobanImport
-      parentRoute: typeof rootRoute
-    }
-    '/tic-tac-toe': {
-      id: '/tic-tac-toe'
-      path: '/tic-tac-toe'
-      fullPath: '/tic-tac-toe'
-      preLoaderRoute: typeof TicTacToeImport
-      parentRoute: typeof rootRoute
-    }
-    '/two-hard-things': {
-      id: '/two-hard-things'
-      path: '/two-hard-things'
-      fullPath: '/two-hard-things'
-      preLoaderRoute: typeof TwoHardThingsImport
-      parentRoute: typeof rootRoute
-    }
-    '/words': {
-      id: '/words'
-      path: '/words'
-      fullPath: '/words'
-      preLoaderRoute: typeof WordsImport
-      parentRoute: typeof rootRoute
-    }
-    '/font-explorer/': {
-      id: '/font-explorer/'
-      path: '/'
-      fullPath: '/font-explorer/'
-      preLoaderRoute: typeof FontExplorerIndexImport
-      parentRoute: typeof FontExplorerRouteImport
-    }
-    '/pantry/': {
-      id: '/pantry/'
-      path: '/pantry'
-      fullPath: '/pantry'
-      preLoaderRoute: typeof PantryIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/font-explorer/hex': {
-      id: '/font-explorer/hex'
-      path: '/hex'
-      fullPath: '/font-explorer/hex'
-      preLoaderRoute: typeof FontExplorerHexImport
-      parentRoute: typeof FontExplorerRouteImport
-    }
-    '/os/ios': {
-      id: '/os/ios'
-      path: '/os/ios'
-      fullPath: '/os/ios'
-      preLoaderRoute: typeof OsIosImport
-      parentRoute: typeof rootRoute
-    }
-    '/os/ios3': {
-      id: '/os/ios3'
-      path: '/os/ios3'
-      fullPath: '/os/ios3'
-      preLoaderRoute: typeof OsIos3Import
-      parentRoute: typeof rootRoute
-    }
-    '/os/sonoma': {
-      id: '/os/sonoma'
-      path: '/os/sonoma'
-      fullPath: '/os/sonoma'
-      preLoaderRoute: typeof OsSonomaImport
-      parentRoute: typeof rootRoute
-    }
-    '/os/win98': {
-      id: '/os/win98'
-      path: '/os/win98'
-      fullPath: '/os/win98'
-      preLoaderRoute: typeof OsWin98Import
-      parentRoute: typeof rootRoute
-    }
-    '/font-explorer/tables/': {
-      id: '/font-explorer/tables/'
-      path: '/tables'
-      fullPath: '/font-explorer/tables'
-      preLoaderRoute: typeof FontExplorerTablesIndexImport
-      parentRoute: typeof FontExplorerRouteImport
-    }
-    '/pantry/books/': {
-      id: '/pantry/books/'
-      path: '/pantry/books'
-      fullPath: '/pantry/books'
-      preLoaderRoute: typeof PantryBooksIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/font-explorer/tables/$unknownTable': {
-      id: '/font-explorer/tables/$unknownTable'
-      path: '/tables/$unknownTable'
-      fullPath: '/font-explorer/tables/$unknownTable'
-      preLoaderRoute: typeof FontExplorerTablesUnknownTableImport
-      parentRoute: typeof FontExplorerRouteImport
-    }
-    '/font-explorer/tables/FFTM': {
-      id: '/font-explorer/tables/FFTM'
-      path: '/tables/FFTM'
-      fullPath: '/font-explorer/tables/FFTM'
-      preLoaderRoute: typeof FontExplorerTablesFFTMImport
-      parentRoute: typeof FontExplorerRouteImport
-    }
-    '/pantry/books/$bookId/': {
-      id: '/pantry/books/$bookId/'
-      path: '/pantry/books/$bookId'
-      fullPath: '/pantry/books/$bookId'
-      preLoaderRoute: typeof PantryBooksBookIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/pantry/recipes/$recipeId/': {
-      id: '/pantry/recipes/$recipeId/'
-      path: '/pantry/recipes/$recipeId'
-      fullPath: '/pantry/recipes/$recipeId'
-      preLoaderRoute: typeof PantryRecipesRecipeIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/pantry/recipes/$recipeId/edit': {
-      id: '/pantry/recipes/$recipeId/edit'
-      path: '/pantry/recipes/$recipeId/edit'
-      fullPath: '/pantry/recipes/$recipeId/edit'
-      preLoaderRoute: typeof PantryRecipesRecipeIdEditRouteImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
-
-interface FontExplorerRouteRouteChildren {
-  FontExplorerIndexRoute: typeof FontExplorerIndexRoute
-  FontExplorerHexRoute: typeof FontExplorerHexRoute
-  FontExplorerTablesIndexRoute: typeof FontExplorerTablesIndexRoute
-  FontExplorerTablesUnknownTableRoute: typeof FontExplorerTablesUnknownTableRoute
-  FontExplorerTablesFFTMRoute: typeof FontExplorerTablesFFTMRoute
-}
-
-const FontExplorerRouteRouteChildren: FontExplorerRouteRouteChildren = {
-  FontExplorerIndexRoute: FontExplorerIndexRoute,
-  FontExplorerHexRoute: FontExplorerHexRoute,
-  FontExplorerTablesIndexRoute: FontExplorerTablesIndexRoute,
-  FontExplorerTablesUnknownTableRoute: FontExplorerTablesUnknownTableRoute,
-  FontExplorerTablesFFTMRoute: FontExplorerTablesFFTMRoute,
-}
-
-const FontExplorerRouteRouteWithChildren =
-  FontExplorerRouteRoute._addFileChildren(FontExplorerRouteRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -513,7 +233,6 @@ export interface FileRoutesByFullPath {
   '/pantry/recipes/$recipeId': typeof PantryRecipesRecipeIdIndexRoute
   '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/boggle': typeof BoggleRoute
@@ -546,9 +265,8 @@ export interface FileRoutesByTo {
   '/pantry/recipes/$recipeId': typeof PantryRecipesRecipeIdIndexRoute
   '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
@@ -581,7 +299,6 @@ export interface FileRoutesById {
   '/pantry/recipes/$recipeId/': typeof PantryRecipesRecipeIdIndexRoute
   '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -683,7 +400,6 @@ export interface FileRouteTypes {
     | '/pantry/recipes/$recipeId/edit'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BoggleRoute: typeof BoggleRoute
@@ -713,6 +429,247 @@ export interface RootRouteChildren {
   PantryRecipesRecipeIdEditRouteRoute: typeof PantryRecipesRecipeIdEditRouteRoute
 }
 
+declare module '@tanstack/solid-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boggle': {
+      id: '/boggle'
+      path: '/boggle'
+      fullPath: '/boggle'
+      preLoaderRoute: typeof BoggleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chadgdp': {
+      id: '/chadgdp'
+      path: '/chadgdp'
+      fullPath: '/chadgdp'
+      preLoaderRoute: typeof ChadgdpRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cv': {
+      id: '/cv'
+      path: '/cv'
+      fullPath: '/cv'
+      preLoaderRoute: typeof CvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faker': {
+      id: '/faker'
+      path: '/faker'
+      fullPath: '/faker'
+      preLoaderRoute: typeof FakerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer': {
+      id: '/font-explorer'
+      path: '/font-explorer'
+      fullPath: '/font-explorer'
+      preLoaderRoute: typeof FontExplorerRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gb': {
+      id: '/gb'
+      path: '/gb'
+      fullPath: '/gb'
+      preLoaderRoute: typeof GbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/iso': {
+      id: '/iso'
+      path: '/iso'
+      fullPath: '/iso'
+      preLoaderRoute: typeof IsoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jesus': {
+      id: '/jesus'
+      path: '/jesus'
+      fullPath: '/jesus'
+      preLoaderRoute: typeof JesusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nested': {
+      id: '/nested'
+      path: '/nested'
+      fullPath: '/nested'
+      preLoaderRoute: typeof NestedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/secret-word': {
+      id: '/secret-word'
+      path: '/secret-word'
+      fullPath: '/secret-word'
+      preLoaderRoute: typeof SecretWordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sokoban': {
+      id: '/sokoban'
+      path: '/sokoban'
+      fullPath: '/sokoban'
+      preLoaderRoute: typeof SokobanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tic-tac-toe': {
+      id: '/tic-tac-toe'
+      path: '/tic-tac-toe'
+      fullPath: '/tic-tac-toe'
+      preLoaderRoute: typeof TicTacToeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/two-hard-things': {
+      id: '/two-hard-things'
+      path: '/two-hard-things'
+      fullPath: '/two-hard-things'
+      preLoaderRoute: typeof TwoHardThingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/words': {
+      id: '/words'
+      path: '/words'
+      fullPath: '/words'
+      preLoaderRoute: typeof WordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer/': {
+      id: '/font-explorer/'
+      path: '/'
+      fullPath: '/font-explorer/'
+      preLoaderRoute: typeof FontExplorerIndexRouteImport
+      parentRoute: typeof FontExplorerRouteRoute
+    }
+    '/pantry/': {
+      id: '/pantry/'
+      path: '/pantry'
+      fullPath: '/pantry'
+      preLoaderRoute: typeof PantryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer/hex': {
+      id: '/font-explorer/hex'
+      path: '/hex'
+      fullPath: '/font-explorer/hex'
+      preLoaderRoute: typeof FontExplorerHexRouteImport
+      parentRoute: typeof FontExplorerRouteRoute
+    }
+    '/os/ios': {
+      id: '/os/ios'
+      path: '/os/ios'
+      fullPath: '/os/ios'
+      preLoaderRoute: typeof OsIosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/os/ios3': {
+      id: '/os/ios3'
+      path: '/os/ios3'
+      fullPath: '/os/ios3'
+      preLoaderRoute: typeof OsIos3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/os/sonoma': {
+      id: '/os/sonoma'
+      path: '/os/sonoma'
+      fullPath: '/os/sonoma'
+      preLoaderRoute: typeof OsSonomaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/os/win98': {
+      id: '/os/win98'
+      path: '/os/win98'
+      fullPath: '/os/win98'
+      preLoaderRoute: typeof OsWin98RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer/tables/': {
+      id: '/font-explorer/tables/'
+      path: '/tables'
+      fullPath: '/font-explorer/tables'
+      preLoaderRoute: typeof FontExplorerTablesIndexRouteImport
+      parentRoute: typeof FontExplorerRouteRoute
+    }
+    '/pantry/books/': {
+      id: '/pantry/books/'
+      path: '/pantry/books'
+      fullPath: '/pantry/books'
+      preLoaderRoute: typeof PantryBooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer/tables/$unknownTable': {
+      id: '/font-explorer/tables/$unknownTable'
+      path: '/tables/$unknownTable'
+      fullPath: '/font-explorer/tables/$unknownTable'
+      preLoaderRoute: typeof FontExplorerTablesUnknownTableRouteImport
+      parentRoute: typeof FontExplorerRouteRoute
+    }
+    '/font-explorer/tables/FFTM': {
+      id: '/font-explorer/tables/FFTM'
+      path: '/tables/FFTM'
+      fullPath: '/font-explorer/tables/FFTM'
+      preLoaderRoute: typeof FontExplorerTablesFFTMRouteImport
+      parentRoute: typeof FontExplorerRouteRoute
+    }
+    '/pantry/books/$bookId/': {
+      id: '/pantry/books/$bookId/'
+      path: '/pantry/books/$bookId'
+      fullPath: '/pantry/books/$bookId'
+      preLoaderRoute: typeof PantryBooksBookIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pantry/recipes/$recipeId/': {
+      id: '/pantry/recipes/$recipeId/'
+      path: '/pantry/recipes/$recipeId'
+      fullPath: '/pantry/recipes/$recipeId'
+      preLoaderRoute: typeof PantryRecipesRecipeIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pantry/recipes/$recipeId/edit': {
+      id: '/pantry/recipes/$recipeId/edit'
+      path: '/pantry/recipes/$recipeId/edit'
+      fullPath: '/pantry/recipes/$recipeId/edit'
+      preLoaderRoute: typeof PantryRecipesRecipeIdEditRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
+}
+
+interface FontExplorerRouteRouteChildren {
+  FontExplorerIndexRoute: typeof FontExplorerIndexRoute
+  FontExplorerHexRoute: typeof FontExplorerHexRoute
+  FontExplorerTablesIndexRoute: typeof FontExplorerTablesIndexRoute
+  FontExplorerTablesUnknownTableRoute: typeof FontExplorerTablesUnknownTableRoute
+  FontExplorerTablesFFTMRoute: typeof FontExplorerTablesFFTMRoute
+}
+
+const FontExplorerRouteRouteChildren: FontExplorerRouteRouteChildren = {
+  FontExplorerIndexRoute: FontExplorerIndexRoute,
+  FontExplorerHexRoute: FontExplorerHexRoute,
+  FontExplorerTablesIndexRoute: FontExplorerTablesIndexRoute,
+  FontExplorerTablesUnknownTableRoute: FontExplorerTablesUnknownTableRoute,
+  FontExplorerTablesFFTMRoute: FontExplorerTablesFFTMRoute,
+}
+
+const FontExplorerRouteRouteWithChildren =
+  FontExplorerRouteRoute._addFileChildren(FontExplorerRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoggleRoute: BoggleRoute,
@@ -741,150 +698,6 @@ const rootRouteChildren: RootRouteChildren = {
   PantryRecipesRecipeIdIndexRoute: PantryRecipesRecipeIdIndexRoute,
   PantryRecipesRecipeIdEditRouteRoute: PantryRecipesRecipeIdEditRouteRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "+__root.tsx",
-      "children": [
-        "/",
-        "/boggle",
-        "/calendar",
-        "/chadgdp",
-        "/cv",
-        "/demo",
-        "/faker",
-        "/font-explorer",
-        "/gb",
-        "/iso",
-        "/jesus",
-        "/nested",
-        "/secret-word",
-        "/sokoban",
-        "/tic-tac-toe",
-        "/two-hard-things",
-        "/words",
-        "/pantry/",
-        "/os/ios",
-        "/os/ios3",
-        "/os/sonoma",
-        "/os/win98",
-        "/pantry/books/",
-        "/pantry/books/$bookId/",
-        "/pantry/recipes/$recipeId/",
-        "/pantry/recipes/$recipeId/edit"
-      ]
-    },
-    "/": {
-      "filePath": "+index.tsx"
-    },
-    "/boggle": {
-      "filePath": "+boggle.tsx"
-    },
-    "/calendar": {
-      "filePath": "+calendar.tsx"
-    },
-    "/chadgdp": {
-      "filePath": "+chadgdp/+route.tsx"
-    },
-    "/cv": {
-      "filePath": "+cv.tsx"
-    },
-    "/demo": {
-      "filePath": "+demo.tsx"
-    },
-    "/faker": {
-      "filePath": "+faker.tsx"
-    },
-    "/font-explorer": {
-      "filePath": "+font-explorer/+route.tsx",
-      "children": [
-        "/font-explorer/",
-        "/font-explorer/hex",
-        "/font-explorer/tables/",
-        "/font-explorer/tables/$unknownTable",
-        "/font-explorer/tables/FFTM"
-      ]
-    },
-    "/gb": {
-      "filePath": "+gb.tsx"
-    },
-    "/iso": {
-      "filePath": "+iso.tsx"
-    },
-    "/jesus": {
-      "filePath": "+jesus.tsx"
-    },
-    "/nested": {
-      "filePath": "+nested/+route.tsx"
-    },
-    "/secret-word": {
-      "filePath": "+secret-word.tsx"
-    },
-    "/sokoban": {
-      "filePath": "+sokoban.tsx"
-    },
-    "/tic-tac-toe": {
-      "filePath": "+tic-tac-toe.tsx"
-    },
-    "/two-hard-things": {
-      "filePath": "+two-hard-things.tsx"
-    },
-    "/words": {
-      "filePath": "+words.tsx"
-    },
-    "/font-explorer/": {
-      "filePath": "+font-explorer/+index.tsx",
-      "parent": "/font-explorer"
-    },
-    "/pantry/": {
-      "filePath": "+pantry/+index.tsx"
-    },
-    "/font-explorer/hex": {
-      "filePath": "+font-explorer/+hex.tsx",
-      "parent": "/font-explorer"
-    },
-    "/os/ios": {
-      "filePath": "+os/+ios.tsx"
-    },
-    "/os/ios3": {
-      "filePath": "+os/+ios3.tsx"
-    },
-    "/os/sonoma": {
-      "filePath": "+os/+sonoma.tsx"
-    },
-    "/os/win98": {
-      "filePath": "+os/+win98.tsx"
-    },
-    "/font-explorer/tables/": {
-      "filePath": "+font-explorer/+tables/+index.tsx",
-      "parent": "/font-explorer"
-    },
-    "/pantry/books/": {
-      "filePath": "+pantry/+books/+index.tsx"
-    },
-    "/font-explorer/tables/$unknownTable": {
-      "filePath": "+font-explorer/+tables/+$unknownTable.tsx",
-      "parent": "/font-explorer"
-    },
-    "/font-explorer/tables/FFTM": {
-      "filePath": "+font-explorer/+tables/+FFTM.tsx",
-      "parent": "/font-explorer"
-    },
-    "/pantry/books/$bookId/": {
-      "filePath": "+pantry/+books/+$bookId/+index.tsx"
-    },
-    "/pantry/recipes/$recipeId/": {
-      "filePath": "+pantry/+recipes/+$recipeId/+index.tsx"
-    },
-    "/pantry/recipes/$recipeId/edit": {
-      "filePath": "+pantry/+recipes/+$recipeId/+edit/+route.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

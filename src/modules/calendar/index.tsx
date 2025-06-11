@@ -74,7 +74,7 @@ function createEvents() {
   return events;
 }
 
-const EVENTS = createEvents();
+export const CALENDAR_EVENTS = createEvents();
 
 const MONTHS = [
   "January",
@@ -186,7 +186,9 @@ export function Calendar() {
         <For each={days()}>
           {(item) => {
             const events = () =>
-              EVENTS.filter((event) => sameDate(event.date, item.date));
+              CALENDAR_EVENTS.filter((event) =>
+                sameDate(event.date, item.date)
+              );
             return (
               <div css={{ bg: "white" }}>
                 <div

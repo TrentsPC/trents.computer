@@ -1,5 +1,12 @@
-import { ComponentProps, createMemo, createSignal, For, Show } from "solid-js";
+import {
+  ComponentProps,
+  createMemo,
+  createSignal,
+  Show,
+  Suspense,
+} from "solid-js";
 import { useSquircle } from "~/utils/squircle";
+import { CALENDAR } from "./apps/calendar";
 import { GAME_BOY } from "./apps/game-boy";
 import { MESSAGES } from "./apps/messages";
 import { SAFARI } from "./apps/safari";
@@ -8,9 +15,10 @@ import background from "./ios-background.png";
 import { FakeIOSApplication } from "./types";
 
 const APPLICATIONS: FakeIOSApplication[] = [
-  SAFARI,
-  MESSAGES,
+  CALENDAR,
   GAME_BOY,
+  MESSAGES,
+  SAFARI,
   {
     id: "com.apple.Empty",
     name: "",
@@ -25,7 +33,7 @@ export function FakeIOSGen3(props: { cornerRadius?: number }) {
   // }
 
   const [currentAppId, setCurrentAppId] = createSignal<string | undefined>(
-    undefined
+    "calendar"
   );
 
   const currentApp = createMemo(() =>
@@ -63,8 +71,10 @@ export function FakeIOSGen3(props: { cornerRadius?: number }) {
           />
         }
       >
-        <Component />
-        <HomeIndicator onClick={() => setCurrentAppId(undefined)} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Component />
+          <HomeIndicator onClick={() => setCurrentAppId(undefined)} />
+        </Suspense>
       </Show>
       <DynamicIsland />
     </div>
@@ -116,7 +126,7 @@ function HomeScreen({
           onClick={() => onAppClick("com.apple.Messages")}
         />
         <AppButton appId="game-boy" onClick={() => onAppClick("game-boy")} />
-        <AppButton appId="com.apple.Empty" onClick={() => {}} />
+        <AppButton appId="calendar" onClick={() => onAppClick("calendar")} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
@@ -147,32 +157,21 @@ function HomeScreen({
             mx: "auto",
             px: `calc((100% - ${60 * 4}px) / 10 - 12px)`,
             width: "100%",
+            alignItems: "center",
           }}
         >
-          <For each={[1, 2, 3, 4]}>
-            {(i) => (
-              <div>
-                <div
-                  ref={useSquircle()}
-                  css={{
-                    height: 60,
-                    width: 60,
-                    borderRadius: 60 * 0.225,
-                    justifySelf: "center",
-                    backgroundColor: "white",
-                  }}
-                >
-                  <img
-                    css={{ width: "100%", height: "100%" }}
-                    src={
-                      APPLICATIONS.find((a) => a.id === "com.apple.Empty")
-                        ?.iconSrc || ""
-                    }
-                  />
-                </div>
-              </div>
-            )}
-          </For>
+          <span />
+          {/* <DockButton appId="com.apple.Empty" onClick={() => {}} /> */}
+          <DockButton
+            appId="com.apple.Safari"
+            onClick={() => onAppClick("com.apple.Safari")}
+          />
+          <DockButton
+            appId="com.apple.Messages"
+            onClick={() => onAppClick("com.apple.Messages")}
+          />
+          <span />
+          {/* <DockButton appId="com.apple.Empty" onClick={() => {}} /> */}
         </div>
       </div>
     </>
@@ -246,6 +245,30 @@ function AppButton({ appId, onClick }: { appId: string; onClick: () => void }) {
       >
         <span>{app()?.name || ""}</span>
       </div>
+    </button>
+  );
+}
+function DockButton({
+  appId,
+  onClick,
+}: {
+  appId: string;
+  onClick: () => void;
+}) {
+  const app = () => APPLICATIONS.find((a) => a.id === appId);
+  return (
+    <button
+      onClick={onClick}
+      ref={useSquircle()}
+      css={{
+        height: 60,
+        width: 60,
+        borderRadius: 60 * 0.225,
+        justifySelf: "center",
+        backgroundColor: "white",
+      }}
+    >
+      <img css={{ width: "100%", height: "100%" }} src={app()?.iconSrc || ""} />
     </button>
   );
 }

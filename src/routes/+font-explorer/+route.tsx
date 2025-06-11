@@ -1,9 +1,14 @@
 import { styled } from "@hypergood/css";
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/solid-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useNavigate,
+} from "@tanstack/solid-router";
 import { For, onMount, Show } from "solid-js";
 import {
-  createTableDirectory,
-  createTableRecords,
+  Font,
+  parsedFont,
   setFontFile,
   useFontFile,
 } from "~/modules/font-explorer";
@@ -24,48 +29,14 @@ function Inner() {
     setFontFile(file);
   });
 
-  const tableDirectory = createTableDirectory();
-
   return (
     <>
       <div
         css={{
-          display: "flex",
           position: "fixed",
           top: 0,
           left: 0,
-          right: 0,
-          height: 64,
-          items: "center",
-          backgroundColor: "white",
-          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-          px: 16,
-        }}
-      >
-        <h1>Font Explorer</h1>
-        <input
-          type="file"
-          onChange={(e) => {
-            const files = e.target.files;
-            if (!files) return;
-            const file = files[0];
-            if (!file) return;
-            setFontFile(file);
-            navigate({
-              to: "/font-explorer/tables",
-            });
-          }}
-        />
-        {fontFile()?.name}
-      </div>
-      <div
-        css={{
-          position: "fixed",
-          top: 64,
-          left: 0,
           bottom: 0,
-          padding: 8,
-          pt: 16,
           width: 240,
         }}
       >
@@ -73,30 +44,44 @@ function Inner() {
           css={{
             w: "100%",
             h: "100%",
-            borderRadius: 12,
             padding: 16,
             backgroundColor: colors.gray2,
           }}
         >
-          <Ul>
-            <Li>
-              <a href="/font-explorer/hex">Hex</a>
-            </Li>
-            <Show when={tableDirectory()}>
-              {(tableDirectory) => (
+          <input
+            type="file"
+            onChange={(e) => {
+              const files = e.target.files;
+              if (!files) return;
+              const file = files[0];
+              if (!file) return;
+              setFontFile(file);
+              navigate({
+                to: "/font-explorer/tables",
+              });
+            }}
+          />
+          {fontFile()?.name}
+          <Show when={parsedFont()}>
+            {(font) => (
+              <Ul>
+                <Li>
+                  <a href="/font-explorer/hex">Hex</a>
+                </Li>
+
                 <Li>
                   <a href="/font-explorer/tables">
-                    {tableDirectory().numTables} tables
+                    {font().offsetTable.numTables} tables
                   </a>
 
-                  <TableList numTables={tableDirectory().numTables} />
+                  <TableList font={font()} />
                 </Li>
-              )}
-            </Show>
-          </Ul>
+              </Ul>
+            )}
+          </Show>
         </div>
       </div>
-      <div css={{ pt: 64, pl: 240 }}>
+      <div css={{ pl: 240 }}>
         <div css={{ p: 16 }}>
           <Outlet />
         </div>
@@ -105,16 +90,20 @@ function Inner() {
   );
 }
 
-function TableList(props: { numTables: number }) {
-  const tables = createTableRecords(() => props.numTables);
+function TableList(props: { font: Font }) {
+  const tables = () => props.font.tableDirectory;
   return (
     <Ul>
       <For each={tables()}>
         {(table) => (
           <Li>
-            <a href={`/font-explorer/tables/${encodeURIComponent(table.tag)}`}>
+            <Link
+              to={
+                `/font-explorer/tables/${encodeURIComponent(table.tag)}` as any
+              }
+            >
               {table.tag}
-            </a>
+            </Link>
           </Li>
         )}
       </For>
