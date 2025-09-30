@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/+__root'
 import { Route as WordsRouteImport } from './routes/+words'
 import { Route as TwoHardThingsRouteImport } from './routes/+two-hard-things'
 import { Route as TicTacToeRouteImport } from './routes/+tic-tac-toe'
+import { Route as SpringRouteImport } from './routes/+spring'
 import { Route as SokobanRouteImport } from './routes/+sokoban'
 import { Route as SecretWordRouteImport } from './routes/+secret-word'
 import { Route as NestedRouteRouteImport } from './routes/+nested/+route'
@@ -53,6 +54,11 @@ const TwoHardThingsRoute = TwoHardThingsRouteImport.update({
 const TicTacToeRoute = TicTacToeRouteImport.update({
   id: '/tic-tac-toe',
   path: '/tic-tac-toe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpringRoute = SpringRouteImport.update({
+  id: '/spring',
+  path: '/spring',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SokobanRoute = SokobanRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/nested': typeof NestedRouteRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
+  '/spring': typeof SpringRoute
   '/tic-tac-toe': typeof TicTacToeRoute
   '/two-hard-things': typeof TwoHardThingsRoute
   '/words': typeof WordsRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/nested': typeof NestedRouteRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
+  '/spring': typeof SpringRoute
   '/tic-tac-toe': typeof TicTacToeRoute
   '/two-hard-things': typeof TwoHardThingsRoute
   '/words': typeof WordsRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/nested': typeof NestedRouteRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
+  '/spring': typeof SpringRoute
   '/tic-tac-toe': typeof TicTacToeRoute
   '/two-hard-things': typeof TwoHardThingsRoute
   '/words': typeof WordsRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/nested'
     | '/secret-word'
     | '/sokoban'
+    | '/spring'
     | '/tic-tac-toe'
     | '/two-hard-things'
     | '/words'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/nested'
     | '/secret-word'
     | '/sokoban'
+    | '/spring'
     | '/tic-tac-toe'
     | '/two-hard-things'
     | '/words'
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '/nested'
     | '/secret-word'
     | '/sokoban'
+    | '/spring'
     | '/tic-tac-toe'
     | '/two-hard-things'
     | '/words'
@@ -402,6 +414,7 @@ export interface RootRouteChildren {
   NestedRouteRoute: typeof NestedRouteRoute
   SecretWordRoute: typeof SecretWordRoute
   SokobanRoute: typeof SokobanRoute
+  SpringRoute: typeof SpringRoute
   TicTacToeRoute: typeof TicTacToeRoute
   TwoHardThingsRoute: typeof TwoHardThingsRoute
   WordsRoute: typeof WordsRoute
@@ -507,6 +520,13 @@ declare module '@tanstack/solid-router' {
       path: '/sokoban'
       fullPath: '/sokoban'
       preLoaderRoute: typeof SokobanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spring': {
+      id: '/spring'
+      path: '/spring'
+      fullPath: '/spring'
+      preLoaderRoute: typeof SpringRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tic-tac-toe': {
@@ -664,6 +684,7 @@ const rootRouteChildren: RootRouteChildren = {
   NestedRouteRoute: NestedRouteRoute,
   SecretWordRoute: SecretWordRoute,
   SokobanRoute: SokobanRoute,
+  SpringRoute: SpringRoute,
   TicTacToeRoute: TicTacToeRoute,
   TwoHardThingsRoute: TwoHardThingsRoute,
   WordsRoute: WordsRoute,
