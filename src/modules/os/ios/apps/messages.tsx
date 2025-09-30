@@ -1,5 +1,5 @@
 import { lazy } from "solid-js";
-import safari from "../icons/messages.png";
+import safari from "../icons/Messages.png";
 import { FakeIOSApplication } from "../types";
 
 export const MESSAGES: FakeIOSApplication = {
