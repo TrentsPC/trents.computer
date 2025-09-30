@@ -23,7 +23,7 @@ function getSpringParameters(period: number, dampingRatio: number) {
 
 function RouteComponent() {
   return (
-    <div>
+    <div css={{ padding: 20 }}>
       <div
         css={{
           display: "flex",
