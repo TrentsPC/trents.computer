@@ -15,7 +15,6 @@ import { Route as TicTacToeRouteImport } from './routes/+tic-tac-toe'
 import { Route as SokobanRouteImport } from './routes/+sokoban'
 import { Route as SecretWordRouteImport } from './routes/+secret-word'
 import { Route as NestedRouteRouteImport } from './routes/+nested/+route'
-import { Route as JesusRouteImport } from './routes/+jesus'
 import { Route as IsoRouteImport } from './routes/+iso'
 import { Route as GbRouteImport } from './routes/+gb'
 import { Route as FontExplorerRouteRouteImport } from './routes/+font-explorer/+route'
@@ -69,11 +68,6 @@ const SecretWordRoute = SecretWordRouteImport.update({
 const NestedRouteRoute = NestedRouteRouteImport.update({
   id: '/nested',
   path: '/nested',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JesusRoute = JesusRouteImport.update({
-  id: '/jesus',
-  path: '/jesus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IsoRoute = IsoRouteImport.update({
@@ -211,7 +205,6 @@ export interface FileRoutesByFullPath {
   '/font-explorer': typeof FontExplorerRouteRouteWithChildren
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
-  '/jesus': typeof JesusRoute
   '/nested': typeof NestedRouteRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
@@ -243,7 +236,6 @@ export interface FileRoutesByTo {
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
-  '/jesus': typeof JesusRoute
   '/nested': typeof NestedRouteRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
@@ -277,7 +269,6 @@ export interface FileRoutesById {
   '/font-explorer': typeof FontExplorerRouteRouteWithChildren
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
-  '/jesus': typeof JesusRoute
   '/nested': typeof NestedRouteRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
@@ -312,7 +303,6 @@ export interface FileRouteTypes {
     | '/font-explorer'
     | '/gb'
     | '/iso'
-    | '/jesus'
     | '/nested'
     | '/secret-word'
     | '/sokoban'
@@ -344,7 +334,6 @@ export interface FileRouteTypes {
     | '/faker'
     | '/gb'
     | '/iso'
-    | '/jesus'
     | '/nested'
     | '/secret-word'
     | '/sokoban'
@@ -377,7 +366,6 @@ export interface FileRouteTypes {
     | '/font-explorer'
     | '/gb'
     | '/iso'
-    | '/jesus'
     | '/nested'
     | '/secret-word'
     | '/sokoban'
@@ -411,7 +399,6 @@ export interface RootRouteChildren {
   FontExplorerRouteRoute: typeof FontExplorerRouteRouteWithChildren
   GbRoute: typeof GbRoute
   IsoRoute: typeof IsoRoute
-  JesusRoute: typeof JesusRoute
   NestedRouteRoute: typeof NestedRouteRoute
   SecretWordRoute: typeof SecretWordRoute
   SokobanRoute: typeof SokobanRoute
@@ -499,13 +486,6 @@ declare module '@tanstack/solid-router' {
       path: '/iso'
       fullPath: '/iso'
       preLoaderRoute: typeof IsoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jesus': {
-      id: '/jesus'
-      path: '/jesus'
-      fullPath: '/jesus'
-      preLoaderRoute: typeof JesusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nested': {
@@ -681,7 +661,6 @@ const rootRouteChildren: RootRouteChildren = {
   FontExplorerRouteRoute: FontExplorerRouteRouteWithChildren,
   GbRoute: GbRoute,
   IsoRoute: IsoRoute,
-  JesusRoute: JesusRoute,
   NestedRouteRoute: NestedRouteRoute,
   SecretWordRoute: SecretWordRoute,
   SokobanRoute: SokobanRoute,
