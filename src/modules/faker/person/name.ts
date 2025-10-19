@@ -306,7 +306,7 @@ export function generateSingleSyllableFirstName() {
 }
 
 export function generateFirstName() {
-  if (Math.random() < 0) {
+  if (Math.random() < 0.3) {
     // Generate a single-syllable first name
     return generateSingleSyllableFirstName();
   } else {

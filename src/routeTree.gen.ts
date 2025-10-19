@@ -26,6 +26,7 @@ import { Route as ChadgdpRouteRouteImport } from './routes/+chadgdp/+route'
 import { Route as CalendarRouteImport } from './routes/+calendar'
 import { Route as BoggleRouteImport } from './routes/+boggle'
 import { Route as IndexRouteImport } from './routes/+index'
+import { Route as UxAlphaRouteRouteImport } from './routes/+ux/+alpha/+route'
 import { Route as OsWin98RouteImport } from './routes/+os/+win98'
 import { Route as OsSonomaRouteImport } from './routes/+os/+sonoma'
 import { Route as OsIos3RouteImport } from './routes/+os/+ios3'
@@ -124,6 +125,11 @@ const BoggleRoute = BoggleRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UxAlphaRouteRoute = UxAlphaRouteRouteImport.update({
+  id: '/ux/alpha',
+  path: '/ux/alpha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OsWin98Route = OsWin98RouteImport.update({
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/os/ios3': typeof OsIos3Route
   '/os/sonoma': typeof OsSonomaRoute
   '/os/win98': typeof OsWin98Route
+  '/ux/alpha': typeof UxAlphaRouteRoute
   '/font-explorer/tables': typeof FontExplorerTablesIndexRoute
   '/pantry/books': typeof PantryBooksIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/os/ios3': typeof OsIos3Route
   '/os/sonoma': typeof OsSonomaRoute
   '/os/win98': typeof OsWin98Route
+  '/ux/alpha': typeof UxAlphaRouteRoute
   '/font-explorer/tables': typeof FontExplorerTablesIndexRoute
   '/pantry/books': typeof PantryBooksIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
@@ -291,6 +299,7 @@ export interface FileRoutesById {
   '/os/ios3': typeof OsIos3Route
   '/os/sonoma': typeof OsSonomaRoute
   '/os/win98': typeof OsWin98Route
+  '/ux/alpha': typeof UxAlphaRouteRoute
   '/font-explorer/tables/': typeof FontExplorerTablesIndexRoute
   '/pantry/books/': typeof PantryBooksIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
     | '/os/ios3'
     | '/os/sonoma'
     | '/os/win98'
+    | '/ux/alpha'
     | '/font-explorer/tables'
     | '/pantry/books'
     | '/font-explorer/tables/$unknownTable'
@@ -358,6 +368,7 @@ export interface FileRouteTypes {
     | '/os/ios3'
     | '/os/sonoma'
     | '/os/win98'
+    | '/ux/alpha'
     | '/font-explorer/tables'
     | '/pantry/books'
     | '/font-explorer/tables/$unknownTable'
@@ -391,6 +402,7 @@ export interface FileRouteTypes {
     | '/os/ios3'
     | '/os/sonoma'
     | '/os/win98'
+    | '/ux/alpha'
     | '/font-explorer/tables/'
     | '/pantry/books/'
     | '/font-explorer/tables/$unknownTable'
@@ -423,6 +435,7 @@ export interface RootRouteChildren {
   OsIos3Route: typeof OsIos3Route
   OsSonomaRoute: typeof OsSonomaRoute
   OsWin98Route: typeof OsWin98Route
+  UxAlphaRouteRoute: typeof UxAlphaRouteRoute
   PantryBooksIndexRoute: typeof PantryBooksIndexRoute
   PantryBooksBookIdIndexRoute: typeof PantryBooksBookIdIndexRoute
   PantryRecipesRecipeIdIndexRoute: typeof PantryRecipesRecipeIdIndexRoute
@@ -599,6 +612,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof OsWin98RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ux/alpha': {
+      id: '/ux/alpha'
+      path: '/ux/alpha'
+      fullPath: '/ux/alpha'
+      preLoaderRoute: typeof UxAlphaRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/font-explorer/tables/': {
       id: '/font-explorer/tables/'
       path: '/tables'
@@ -693,6 +713,7 @@ const rootRouteChildren: RootRouteChildren = {
   OsIos3Route: OsIos3Route,
   OsSonomaRoute: OsSonomaRoute,
   OsWin98Route: OsWin98Route,
+  UxAlphaRouteRoute: UxAlphaRouteRoute,
   PantryBooksIndexRoute: PantryBooksIndexRoute,
   PantryBooksBookIdIndexRoute: PantryBooksBookIdIndexRoute,
   PantryRecipesRecipeIdIndexRoute: PantryRecipesRecipeIdIndexRoute,
