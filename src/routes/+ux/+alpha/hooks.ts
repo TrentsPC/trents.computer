@@ -54,7 +54,9 @@ export function createOtpDatePicker() {
 
   function concat(char: string) {
     return () => {
-      setDateStr((o) => o + char);
+      if (dateStr().length < 8) {
+        setDateStr((o) => o + char);
+      }
       setDateStrIsDirty(true);
     };
   }
