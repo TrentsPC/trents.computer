@@ -13,12 +13,15 @@ export function OneTimePasswordField(props: {
       <For each={[0, 1, "", 2, 3, "", 4, 5]}>
         {(i) => {
           if (typeof i === "string") {
-            return <div css={{ width: "16px" }}>/</div>;
+            return <div css={{ width: "16px", color: "#888" }}>/</div>;
           }
           return (
             <input
               ref={(el) => {
                 inputs[i] = el;
+                if (i === 0) {
+                  setTimeout(() => el.focus(), 0);
+                }
               }}
               maxlength={1}
               autofocus={i === 0 ? true : undefined}
@@ -31,6 +34,11 @@ export function OneTimePasswordField(props: {
                 height: 52,
                 border: "1px solid #aaa",
                 borderRadius: 6,
+                "&:focus": {
+                  outline: "none",
+                  borderColor: "#0070f3",
+                  boxShadow: "0 0 0 2px #0070f3",
+                },
                 "&[data-complete]": {
                   color: "#888",
                   backgroundColor: "#f0f0f0",
