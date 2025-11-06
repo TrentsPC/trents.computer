@@ -192,12 +192,21 @@ export function BoggleGame(props: { dictionary: string[] }) {
     onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
   });
 
+  const wordsPercentage = () =>
+    validWordList.secondPass().length === 0
+      ? 0
+      : Math.trunc(
+          (foundWords().length / validWordList.secondPass().length) * 100
+        );
+
+  const pointsPercentage = () => Math.trunc((score() / maxScore()) * 100);
+
   return (
     <>
       <h1 css={{ align: "center" }}>Boogle</h1>
       <div css={{ d: "flex", items: "flex-start", justify: "center" }}>
         <div css={{ flex: "1 0 0px", maxW: 500 }}>
-          <div css={{ d: "flex", justify: "center" }}>
+          <div css={{ d: "flex", justify: "center", mb: 16 }}>
             <button
               onClick={() => {
                 setFoundWords([]);
@@ -232,45 +241,42 @@ export function BoggleGame(props: { dictionary: string[] }) {
             </button>
           </div>
           <Board board={board()} word={attempt()} rotations={rotation()} />
-          <input
-            autofocus
-            ref={(el) => {
-              useSquircle()(el);
-              inputRef = el;
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAttemptCommit();
             }}
-            value={attempt()}
-            onInput={(e) => setAttempt(e.target.value.toUpperCase())}
-            onChange={handleAttemptCommit}
-            css={{
-              r: 52 * 0.225,
-              w: "100%",
-              mt: 16,
-              bg: "rgba(0, 0, 0, 0.1)",
-              h: 52,
-              fontScale: 8,
-              align: "center",
-            }}
-          />
+          >
+            <input
+              autofocus
+              ref={(el) => {
+                useSquircle()(el);
+                inputRef = el;
+              }}
+              value={attempt()}
+              onInput={(e) => setAttempt(e.target.value.toUpperCase())}
+              css={{
+                r: 52 * 0.225,
+                w: "100%",
+                mt: 16,
+                bg: "rgba(0, 0, 0, 0.1)",
+                h: 52,
+                fontScale: 8,
+                align: "center",
+              }}
+            />
+          </form>
           <div>
-            <h2>
-              {foundWords().length} Words, {score()} points:
-            </h2>
+            <div css={{ display: "flex", mt: 16 }}>
+              <h2 css={{ flex: "1 0 0px" }}>
+                {foundWords().length} words ({wordsPercentage()}%), {score()}{" "}
+                points ({pointsPercentage()}%)
+              </h2>
+              <p>{validWordList.secondPass().length} valid words</p>
+            </div>
             <div css={{ columns: 5 }}>
               <For each={foundWords()}>{(word) => <div>{word}</div>}</For>
             </div>
-            {validWordList.secondPass().length > 0 && (
-              <h2>
-                {Math.trunc(
-                  (foundWords().length / validWordList.secondPass().length) *
-                    100
-                )}
-                % Words, {Math.trunc((score() / maxScore()) * 100)}% points:
-              </h2>
-            )}
-
-            <p>{props.dictionary.length} dictionary words</p>
-            <p>{validWordList.secondPass().length} valid words</p>
-            <p>Max. Score: {maxScore()}</p>
           </div>
         </div>
         <div
