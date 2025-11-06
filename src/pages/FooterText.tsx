@@ -30,6 +30,9 @@ export function FooterText() {
     >
       Made with{" "}
       <span
+        css={{
+          cursor: "help",
+        }}
         onClick={() => {
           setFeeling(feelings[Math.floor(Math.random() * feelings.length)]);
         }}

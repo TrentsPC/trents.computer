@@ -1,166 +1,11 @@
 import { styled } from "@hypergood/css";
 import { getRouteApi } from "@tanstack/solid-router";
 import { onMount } from "solid-js";
-import { ExternalLinkIcon } from "solid-radix-icons";
 import { useSquircle } from "~/utils/squircle";
 import { GridItem } from "./home-grid/components";
 import { FooterTextItem } from "./home-grid/FooterTextItem";
 import { MinimizeItem } from "./home-grid/MinimizeItem";
 import { SocialLinksItem } from "./home-grid/SocialLinksItem";
-
-const FACE = "face";
-const BOGGLE = "boggle";
-const CHADGDP = "chadgdp";
-const CSS = "css";
-const CV = "cv";
-const GIVENWELL = "givenwell";
-const GOODWORDS = "goodwords";
-const SECRET = "secret";
-const SOKOBAN = "sokoban";
-const SPRING = "spring";
-const TICTACTOE = "ttt";
-const NAMING = "naming";
-const RECURSION = "recursion";
-const FONTEXPLORER = "font-explorer";
-
-function fillTemplate(template: string, items: string[]) {
-  let filled = template;
-  for (let i = items.length - 1; i >= 0; i--) {
-    filled = filled.replaceAll(i.toString(), items[i]);
-  }
-  return filled;
-}
-
-const mobileGridAreaTemplate = `
-
-  "0 1"
-  "2 3"
-  "4 5"
-  "6 7"
-  "8 9"
-  "10 11"
-`;
-
-const mobileGridAreaItems = [
-  BOGGLE,
-  CHADGDP,
-  CSS,
-  CV,
-  GIVENWELL,
-  GOODWORDS,
-  SECRET,
-  // FACE,
-  SOKOBAN,
-  SPRING,
-  TICTACTOE,
-  NAMING,
-  // RECURSION,
-  FONTEXPLORER,
-];
-
-const mobileGridArea = fillTemplate(
-  mobileGridAreaTemplate,
-  mobileGridAreaItems
-);
-
-const gridArea10_16 = fillTemplate(
-  `
-  " 0  1  2"
-  " 3  4  5"
-  " 6  7  8"
-  " 9 10 11"
-`,
-  [
-    BOGGLE,
-    CHADGDP,
-    CSS,
-    CV,
-    GIVENWELL,
-    GOODWORDS,
-    SECRET,
-    SOKOBAN,
-    SPRING,
-    TICTACTOE,
-    // FACE,
-    NAMING,
-    // RECURSION,
-    FONTEXPLORER,
-  ]
-);
-
-const gridArea3_4 = fillTemplate(
-  `
-  " 0  1  2"
-  " 3  4  5"
-  " 6  7  8"
-  " 9 10 11"
-`,
-  [
-    BOGGLE,
-    CHADGDP,
-    CSS,
-    CV,
-    GIVENWELL,
-    GOODWORDS,
-    SECRET,
-    SOKOBAN,
-    SPRING,
-    TICTACTOE,
-    // FACE,
-    NAMING,
-    // RECURSION,
-    FONTEXPLORER,
-  ]
-);
-
-const gridAreaTemplate1_1 = `
-  " 0  1  2  3"
-  " 4  5  6  7"
-  " 8  9 10 11"
-`;
-
-const gridAreaItems1_1 = [
-  BOGGLE,
-  CHADGDP,
-  CSS,
-  CV,
-  GIVENWELL,
-  GOODWORDS,
-  SECRET,
-  SOKOBAN,
-  SPRING,
-  TICTACTOE,
-  // FACE,
-  NAMING,
-  // RECURSION,
-  FONTEXPLORER,
-];
-
-const gridArea1_1 = fillTemplate(gridAreaTemplate1_1, gridAreaItems1_1);
-
-const gridArea4_3 = fillTemplate(
-  `
-  " 0  1  2  3"
-  " 4  5  6  7"
-  " 8  9 10 11"
-`,
-  [
-    BOGGLE,
-    CHADGDP,
-    CSS,
-    CV,
-    GIVENWELL,
-    GOODWORDS,
-    SECRET,
-    SOKOBAN,
-    SPRING,
-    TICTACTOE,
-    // FACE,
-    NAMING,
-    // RECURSION,
-    FONTEXPLORER,
-  ]
-);
 
 const route = getRouteApi("/");
 
@@ -186,16 +31,7 @@ export function HomePageGrid() {
       }}
     >
       <div css={{ minH: 12 }} />
-      <Grid
-        ref={ref!}
-        style={{
-          "--grid-areas": mobileGridArea,
-          "--grid-areas-10-16": gridArea10_16,
-          "--grid-areas-3-4": gridArea3_4,
-          "--grid-areas-1-1": gridArea1_1,
-          "--grid-areas-4-3": gridArea4_3,
-        }}
-      >
+      <Grid ref={ref!}>
         {/* <GridItem
           component="div"
           css={{
@@ -220,68 +56,33 @@ export function HomePageGrid() {
         </GridItem> */}
 
         <GridItem
-          style={{
-            "grid-area": BOGGLE,
-          }}
-          href="/boggle"
-        >
-          Boogle
-        </GridItem>
-        <GridItem
-          style={{
-            "grid-area": CHADGDP,
-          }}
-          href="/chadgdp"
-        >
-          ChadGDP
-        </GridItem>
-        <GridItem style={{ "grid-area": CSS }} href="https://hypergood.app/css">
-          Hypergood CSS
-          <ExternalLinkIcon />
-        </GridItem>
-        <GridItem style={{ "grid-area": CV }} href="/cv">
-          Curriculum Vitae
-        </GridItem>
-        <GridItem
           css={{
             backgroundColor: "#F8F4EF",
             ":hover": {
               backgroundColor: "#F8F4EF",
             },
           }}
-          style={{ "grid-area": GIVENWELL }}
           href="https://givenwell.com/"
         >
           <GivenwellLogoIcon />
         </GridItem>
-        <GridItem style={{ "grid-area": GOODWORDS }} href="/words">
-          Good Words
-        </GridItem>
-        <GridItem style={{ "grid-area": SECRET }} href="/secret-word">
-          Secret Word
-        </GridItem>
-        <GridItem style={{ "grid-area": SOKOBAN }} href="/sokoban">
-          Sokoban
-        </GridItem>
-        <GridItem
-          style={{ "grid-area": SPRING }}
-          href="https://hypergood.app/spring"
-        >
-          Hypergood Spring
-          <ExternalLinkIcon />
-        </GridItem>
-        <GridItem style={{ "grid-area": TICTACTOE }} href="/tic-tac-toe">
-          Tic-tac-toc
-        </GridItem>
-        <GridItem style={{ "grid-area": NAMING }} href="/two-hard-things">
+        <GridItem href="/gb">Game Boy</GridItem>
+        <GridItem href="/boggle">Boogle</GridItem>
+        <GridItem href="/chadgdp">ChadGDP</GridItem>
+        <GridItem href="https://hypergood.app/css">Weave CSS</GridItem>
+        <GridItem href="/words">Yummy Words</GridItem>
+        <GridItem href="/secret-word">Secret Word</GridItem>
+        <GridItem href="/sokoban">Sokoban</GridItem>
+        <GridItem href="https://hypergood.app/spring">Spring Physics</GridItem>
+        <GridItem href="/tic-tac-toe">Tic-tac-tock</GridItem>
+        {/* <GridItem style={{ "grid-area": NAMING }} href="/two-hard-things">
           Two Hard Things
-        </GridItem>
-        {/* <GridItem style={{ "grid-area": RECURSION }} href="/#">
-          Trents.Computer
-        </GridItem> */}
-        <GridItem style={{ "grid-area": FONTEXPLORER }} href="/font-explorer">
+          </GridItem> */}
+        <GridItem href="/#">Trents.Computer</GridItem>
+        <GridItem href="/cv">Curriculum Vitae (Old, lol)</GridItem>
+        {/* <GridItem style={{ "grid-area": FONTEXPLORER }} href="/font-explorer">
           Font Explorer
-        </GridItem>
+        </GridItem> */}
       </Grid>
       <div css={{ p: 12 }}>
         <div
@@ -320,31 +121,31 @@ const Grid = styled("div", {
   gap: 12,
   display: "grid",
   // grid-auto-columns: minmax(0, 1fr);
-
-  gridTemplateAreas: "var(--grid-areas)",
-  // gridAutoColumns: "minmax(0, 1fr)",
-  // gridAutoRows: "minmax(0, 1fr)",
+  gridAutoRows: "minmax(0, 1fr)",
 
   "@sm": {
     "@media (min-aspect-ratio: 9/64)": {},
     "@media (min-aspect-ratio: 9/32)": {},
     "@media (min-aspect-ratio: 9/21)": {},
     "@media (min-aspect-ratio: 10/16)": {
-      gridTemplateAreas: "var(--grid-areas-10-16)",
+      gridCols: 2,
+      // gridRows: "repeat(auto, 1fr)",
     },
     "@media (min-aspect-ratio: 3/4)": {
-      gridTemplateAreas: "var(--grid-areas-3-4)",
+      gridCols: 2,
+      // gridRows: "repeat(auto, 1fr)",
     },
     "@media (min-aspect-ratio: 1/1)": {
-      // gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr",
-      // gridTemplateRows: "2fr 0.5fr 0.5fr 1fr 0.5fr 0.5fr 2fr",
-      gridTemplateAreas: "var(--grid-areas-1-1)",
+      gridCols: 3,
+      // gridRows: "repeat(auto, 1fr)",
     },
     "@media (min-aspect-ratio: 4/3)": {
-      // gridTemplateAreas: "var(--grid-areas-4-3)",
+      gridCols: 4,
+      // gridRows: "repeat(auto, 1fr)",
     },
     "@media (min-aspect-ratio: 16/10)": {
-      gridTemplateAreas: "var(--grid-areas-4-3)",
+      gridCols: 4,
+      // gridRows: "repeat(auto, 1fr)",
     },
     "@media (min-aspect-ratio: 21/9)": {},
     "@media (min-aspect-ratio: 32/9)": {},

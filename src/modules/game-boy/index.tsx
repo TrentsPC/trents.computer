@@ -74,11 +74,12 @@ export function GameBoyEmulator() {
   }
 
   return (
-    <div css={{ spaceY: 24 }}>
+    <div css={{}}>
       <div
         css={{
           d: "flex",
           justifyContent: "center",
+          pb: 48,
         }}
       >
         <div
@@ -107,18 +108,24 @@ export function GameBoyEmulator() {
           </div>
         </div>
       </div>
-      <div css={{ spaceX: 10 }}>
-        <button
-          onClick={() => {
-            restartWithRom(CPU_INSTR);
-          }}
-        >
-          full test
-        </button>
+      <p css={{ textAlign: "center", pb: 12 }}>
+        WASD {"->"} arrows
+        <br />Z / X {"->"} A / B<br /> Shift {"->"} Select
+        <br /> Enter {"->"} Start
+      </p>
+      <p css={{ textAlign: "center", pb: 12 }}>
+        This runs best in Firefox. Like, significantly faster than other engines
+        (on mac at least).
+      </p>
+
+      <p css={{ textAlign: "center", pb: 12 }}>
+        Drag and drop your own .gb files onto the screen to load them, or use
+        the buttons below to load a few examples.
+      </p>
+      <div css={{ spaceX: 10, display: "flex", justifyContent: "center" }}>
         <button
           onClick={() => {
             restartWithRom(TETRIS);
-            // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
           }}
         >
           Tetris
@@ -126,7 +133,6 @@ export function GameBoyEmulator() {
         <button
           onClick={() => {
             restartWithRom(SUPER_MARIO_LAND);
-            // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
           }}
         >
           Super Mario Land
@@ -134,7 +140,6 @@ export function GameBoyEmulator() {
         <button
           onClick={() => {
             restartWithRom(POKEMON_RED);
-            // gameBoy.gameBoy.cpu.getRegisters().pc.set(0x100);
           }}
         >
           Pokemon Red
@@ -148,6 +153,15 @@ export function GameBoyEmulator() {
         >
           Prehistorik Man
         </button>
+      </div>
+      <div css={{ spaceX: 10, display: "flex", justifyContent: "center" }}>
+        <button
+          onClick={() => {
+            restartWithRom(CPU_INSTR);
+          }}
+        >
+          Blargg Test ROM
+        </button>
         <button
           onClick={() => {
             fetch(dmgAcid)
@@ -155,47 +169,34 @@ export function GameBoyEmulator() {
               .then(restartWithRom);
           }}
         >
-          DMG Acid
+          DMG Acid Test ROM
         </button>
       </div>
-      <div css={{ spaceX: 10 }}>
-        <button
-          onClick={() => {
-            gameBoy.advanceFrame();
-            console.log(gameBoy.logs());
-          }}
-        >
-          Step by 1 frame
-        </button>
-        <button
-          onClick={async () => {
-            for (let i = 0; i < 10; i++) {
+      <details>
+        <summary>Shitty Devtools</summary>
+
+        <div css={{ spaceX: 10 }}>
+          <button
+            onClick={() => {
               gameBoy.advanceFrame();
-              await raf();
-            }
-            console.log(gameBoy.logs());
-          }}
-        >
-          Step by 10 frames
-        </button>
-        <button
-          onClick={async () => {
-            const initialPoint = performance.now();
-            for (let i = 0; i < 60; i++) {
-              gameBoy.advanceFrame();
-              await raf();
-            }
-            const endPoint = performance.now();
-            const fps = 60 / ((endPoint - initialPoint) / 1000);
-            setFPS(fps);
-          }}
-        >
-          Step by 60 frames
-        </button>
-        <button
-          onClick={async () => {
-            setRunning(true);
-            while (running()) {
+              console.log(gameBoy.logs());
+            }}
+          >
+            Step by 1 frame
+          </button>
+          <button
+            onClick={async () => {
+              for (let i = 0; i < 10; i++) {
+                gameBoy.advanceFrame();
+                await raf();
+              }
+              console.log(gameBoy.logs());
+            }}
+          >
+            Step by 10 frames
+          </button>
+          <button
+            onClick={async () => {
               const initialPoint = performance.now();
               for (let i = 0; i < 60; i++) {
                 gameBoy.advanceFrame();
@@ -204,19 +205,36 @@ export function GameBoyEmulator() {
               const endPoint = performance.now();
               const fps = 60 / ((endPoint - initialPoint) / 1000);
               setFPS(fps);
-            }
-          }}
-        >
-          Run forever
-        </button>
-        <Show when={running()}>
-          <button onClick={() => setRunning(false)}>stop</button>
-        </Show>
-      </div>
-      <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
-      <OAMMap gameBoy={() => gameBoy.gameBoy} />
-      <TileMap gameBoy={() => gameBoy.gameBoy} />
-      <TileData gameBoy={() => gameBoy.gameBoy} />
+            }}
+          >
+            Step by 60 frames
+          </button>
+          <button
+            onClick={async () => {
+              setRunning(true);
+              while (running()) {
+                const initialPoint = performance.now();
+                for (let i = 0; i < 60; i++) {
+                  gameBoy.advanceFrame();
+                  await raf();
+                }
+                const endPoint = performance.now();
+                const fps = 60 / ((endPoint - initialPoint) / 1000);
+                setFPS(fps);
+              }
+            }}
+          >
+            Run forever
+          </button>
+          <Show when={running()}>
+            <button onClick={() => setRunning(false)}>stop</button>
+          </Show>
+        </div>
+        <EnabledInterrupts gameBoy={gameBoy.gameBoy} />
+        <OAMMap gameBoy={() => gameBoy.gameBoy} />
+        <TileMap gameBoy={() => gameBoy.gameBoy} />
+        <TileData gameBoy={() => gameBoy.gameBoy} />
+      </details>
     </div>
   );
 }
