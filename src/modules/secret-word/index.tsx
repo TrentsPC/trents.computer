@@ -23,7 +23,8 @@ export function SecretWordGame(props: { cards: Card[] }) {
         <Card
           card={{
             title: "Click to pick up a card",
-            description: "",
+            description:
+              "Get someone to guess the secret word, without saying any of the words on the card.",
             points: "",
             genre: "",
             from: "",

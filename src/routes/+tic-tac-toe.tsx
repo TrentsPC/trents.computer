@@ -51,7 +51,7 @@ function Page() {
           items: "center",
         }}
       >
-        <h1>tic tac toc</h1>
+        <h1>tic tac tock</h1>
         <div
           css={{
             display: "grid",
@@ -72,6 +72,11 @@ function Page() {
                     aspectRatio: 1,
                     backgroundColor: "white",
                     fontSize: 48,
+                    cursor: "default",
+                  },
+                  !square() && {
+                    cursor: "pointer",
+                    "&:hover": { backgroundColor: "#f0f0f0" },
                   },
                   i === 0 && { rtl: 32 },
                   i === 2 && { rtr: 32 },

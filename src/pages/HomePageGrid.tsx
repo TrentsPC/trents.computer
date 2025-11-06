@@ -67,14 +67,14 @@ export function HomePageGrid() {
           <GivenwellLogoIcon />
         </GridItem>
         <GridItem href="/gb">Game Boy</GridItem>
+        <GridItem href="https://hypergood.app/css">Weave CSS</GridItem>
         <GridItem href="/boggle">Boogle</GridItem>
         <GridItem href="/chadgdp">ChadGDP</GridItem>
-        <GridItem href="https://hypergood.app/css">Weave CSS</GridItem>
-        <GridItem href="/words">Yummy Words</GridItem>
-        <GridItem href="/secret-word">Secret Word</GridItem>
         <GridItem href="/sokoban">Sokoban</GridItem>
         <GridItem href="https://hypergood.app/spring">Spring Physics</GridItem>
         <GridItem href="/tic-tac-toe">Tic-tac-tock</GridItem>
+        <GridItem href="/secret-word">Secret Word</GridItem>
+        <GridItem href="/words">Yummy Words</GridItem>
         {/* <GridItem style={{ "grid-area": NAMING }} href="/two-hard-things">
           Two Hard Things
           </GridItem> */}
