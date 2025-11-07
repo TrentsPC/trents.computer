@@ -109,7 +109,7 @@ export function GameBoyEmulator() {
         </div>
       </div>
       <p css={{ textAlign: "center", pb: 12 }}>
-        WASD {"->"} arrows
+        arrows {"->"} arrows
         <br />Z / X {"->"} A / B<br /> Shift {"->"} Select
         <br /> Enter {"->"} Start
       </p>
