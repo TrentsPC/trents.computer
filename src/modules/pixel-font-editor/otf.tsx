@@ -1,20 +1,20 @@
-import { FontData } from "./types";
+import { FontData, FontDataGlyph } from "./types";
 
 // ─── Binary buffer writer ──────────────────────────────────────────────────
 function mkBuf() {
-  const b: any = [];
+  const b: number[] = [];
   const w = {
-    u8: (v: any) => b.push(v & 0xff),
-    u16: (v: any) => {
+    u8: (v: number) => b.push(v & 0xff),
+    u16: (v: number) => {
       w.u8(v >> 8);
       w.u8(v);
     },
-    i16: (v: any) => w.u16(v < 0 ? v + 0x10000 : v),
-    u32: (v: any) => {
+    i16: (v: number) => w.u16(v < 0 ? v + 0x10000 : v),
+    u32: (v: number) => {
       w.u16((v >>> 16) & 0xffff);
       w.u16(v & 0xffff);
     },
-    tag: (s: any) => {
+    tag: (s: string) => {
       for (let i = 0; i < 4; i++) w.u8(s.charCodeAt(i) || 0x20);
     },
     buf: () => new Uint8Array(b),
@@ -45,15 +45,15 @@ export function buildTTF(fontData: FontData) {
   const sc = (v: any) => Math.round((v * UPM) / pixH);
 
   // Each lit pixel → a clockwise square contour (Y-up math coords)
-  function toContours(g: any) {
+  function toContours(g: FontDataGlyph) {
     const cs = [];
     for (let r = 0; r < g.height; r++)
       for (let c = 0; c < g.width; c++) {
         if (!g.bitmap[r][c]) continue;
-        const xL = sc(g.bearingLeft + c),
-          xR = sc(g.bearingLeft + c + 1);
-        const yT = sc(g.bearingTop - r),
-          yB = sc(g.bearingTop - r - 1);
+        const xL = sc(-g.width / 2 + c),
+          xR = sc(-g.width / 2 + c + 1);
+        const yT = sc(g.height / 2 - r),
+          yB = sc(g.height / 2 - r - 1);
         cs.push([
           { x: xL, y: yB },
           { x: xR, y: yB },
@@ -124,11 +124,12 @@ export function buildTTF(fontData: FontData) {
   ]);
   const grecs = [
     { cp: -1, rec: notdefRec, advW: nW, lsb: sc(1) },
-    ...sorted.map((g: any) => ({
+    ...sorted.map((g) => ({
       cp: g.codePoint,
       rec: serGlyph(toContours(g)),
       advW: sc(g.advanceWidth),
-      lsb: sc(g.bearingLeft),
+      // lsb: sc(-g.width / 2),
+      lsb: sc(0),
     })),
   ];
   const N = grecs.length;
@@ -154,30 +155,98 @@ export function buildTTF(fontData: FontData) {
     hmtxB.i16(gr.lsb || 0);
   });
 
-  // cmap — format 4, single segment [32,126] → glyphIndex = cp−31
-  // segCount=2: [32,126]+terminator; length=32 bytes
+  // cmap — format 12 for full Unicode support (including emoji > U+FFFF)
+  // Build mapping from codepoint to glyph index
+  const cpToGid: Map<number, number> = new Map();
+  grecs.forEach((gr, idx) => {
+    if (gr.cp >= 0) cpToGid.set(gr.cp, idx);
+  });
+
+  // Build format 12 groups (sequential ranges where gid = cp - startCharCode + startGlyphID)
+  const sortedCps = [...cpToGid.keys()].sort((a, b) => a - b);
+  const groups: { start: number; end: number; gid: number }[] = [];
+  for (const cp of sortedCps) {
+    const gid = cpToGid.get(cp)!;
+    const last = groups[groups.length - 1];
+    // Check if this extends the previous group
+    if (last && cp === last.end + 1 && gid === last.gid + (cp - last.start)) {
+      last.end = cp;
+    } else {
+      groups.push({ start: cp, end: cp, gid });
+    }
+  }
+
   const cmapB = mkBuf();
-  cmapB.u16(0);
-  cmapB.u16(1); // version, numTables
+  const numTables = 2; // format 4 for BMP compat + format 12 for full Unicode
+  cmapB.u16(0); // version
+  cmapB.u16(numTables);
+
+  // Encoding records
+  const headerSize = 4 + numTables * 8;
+
+  // Build format 4 subtable for BMP characters only
+  const bmpGroups = groups.filter((g) => g.end <= 0xffff);
+  const segCount = bmpGroups.length + 1; // +1 for terminator
+  const segCountX2 = segCount * 2;
+  const searchRange = 2 * Math.pow(2, Math.floor(Math.log2(segCount)));
+  const entrySelector = Math.floor(Math.log2(segCount));
+  const rangeShift = segCountX2 - searchRange;
+
+  const fmt4B = mkBuf();
+  fmt4B.u16(4); // format
+  const fmt4LenPos = fmt4B.len;
+  fmt4B.u16(0); // length placeholder
+  fmt4B.u16(0); // language
+  fmt4B.u16(segCountX2);
+  fmt4B.u16(searchRange);
+  fmt4B.u16(entrySelector);
+  fmt4B.u16(rangeShift);
+
+  // endCount
+  for (const g of bmpGroups) fmt4B.u16(g.end);
+  fmt4B.u16(0xffff);
+  // reservedPad
+  fmt4B.u16(0);
+  // startCount
+  for (const g of bmpGroups) fmt4B.u16(g.start);
+  fmt4B.u16(0xffff);
+  // idDelta (gid - startCharCode, mod 65536)
+  for (const g of bmpGroups) fmt4B.i16((g.gid - g.start) & 0xffff);
+  fmt4B.i16(1);
+  // idRangeOffset (all zeros - we use idDelta)
+  for (let i = 0; i < segCount; i++) fmt4B.u16(0);
+
+  const fmt4Bytes = fmt4B.buf();
+  // Patch length
+  fmt4Bytes[fmt4LenPos] = (fmt4Bytes.length >> 8) & 0xff;
+  fmt4Bytes[fmt4LenPos + 1] = fmt4Bytes.length & 0xff;
+
+  // Build format 12 subtable
+  const fmt12B = mkBuf();
+  fmt12B.u16(12); // format
+  fmt12B.u16(0); // reserved
+  fmt12B.u32(16 + groups.length * 12); // length
+  fmt12B.u32(0); // language
+  fmt12B.u32(groups.length); // numGroups
+  for (const g of groups) {
+    fmt12B.u32(g.start);
+    fmt12B.u32(g.end);
+    fmt12B.u32(g.gid);
+  }
+
+  // Encoding record 1: Platform 3 (Windows), Encoding 1 (Unicode BMP) -> format 4
   cmapB.u16(3);
   cmapB.u16(1);
-  cmapB.u32(12); // Windows Unicode BMP, offset=12
-  cmapB.u16(4);
-  cmapB.u16(32);
-  cmapB.u16(0); // format, length, language
-  cmapB.u16(4);
-  cmapB.u16(4);
-  cmapB.u16(1);
-  cmapB.u16(0); // segCountX2, searchRange, entrySelector, rangeShift
-  cmapB.u16(126);
-  cmapB.u16(0xffff); // endCount
-  cmapB.u16(0); // reservedPad
-  cmapB.u16(32);
-  cmapB.u16(0xffff); // startCount
-  cmapB.i16(-31);
-  cmapB.i16(1); // idDelta  (cp+(-31) → glyphIndex)
-  cmapB.u16(0);
-  cmapB.u16(0); // idRangeOffset
+  cmapB.u32(headerSize);
+
+  // Encoding record 2: Platform 3 (Windows), Encoding 10 (Unicode full) -> format 12
+  cmapB.u16(3);
+  cmapB.u16(10);
+  cmapB.u32(headerSize + fmt4Bytes.length);
+
+  // Append subtables
+  for (const b of fmt4Bytes) cmapB.u8(b);
+  for (const b of fmt12B.buf()) cmapB.u8(b);
 
   // global bbox
   let gxMin = 0,
@@ -270,6 +339,18 @@ export function buildTTF(fontData: FontData) {
     desc = sc(fontData.metrics.descender);
   const xH = sc(fontData.metrics.xHeight),
     capH = sc(fontData.metrics.capHeight);
+
+  // Calculate actual first/last char indices
+  const validCps = grecs.filter((g) => g.cp >= 0).map((g) => g.cp);
+  const firstCharIndex = validCps.length > 0 ? Math.min(...validCps) : 0;
+  const lastCharIndex = validCps.length > 0 ? Math.max(...validCps) : 0;
+  // usFirstCharIndex and usLastCharIndex are UInt16, cap at 0xFFFF
+  const usFirstChar = Math.min(firstCharIndex, 0xffff);
+  const usLastChar = Math.min(lastCharIndex, 0xffff);
+
+  // Set bit 57 (Supplementary Private Use Area-A) if we have chars > 0xFFFF
+  const hasSupplementary = lastCharIndex > 0xffff;
+
   const os2B = mkBuf();
   os2B.u16(4);
   os2B.i16(avgW);
@@ -289,13 +370,13 @@ export function buildTTF(fontData: FontData) {
   os2B.i16(0);
   [0, 2, 0, 0, 0, 0, 0, 0, 0, 0].forEach((v) => os2B.u8(v));
   os2B.u32(0x00000003);
-  os2B.u32(0);
+  os2B.u32(hasSupplementary ? 0x02000000 : 0); // ulUnicodeRange2: bit 57 = Supplementary
   os2B.u32(0);
   os2B.u32(0);
   os2B.tag("PYXL");
   os2B.u16(0x0040);
-  os2B.u16(32);
-  os2B.u16(126);
+  os2B.u16(usFirstChar);
+  os2B.u16(usLastChar);
   os2B.i16(asc);
   os2B.i16(desc);
   os2B.i16(sc(fontData.metrics.lineGap));

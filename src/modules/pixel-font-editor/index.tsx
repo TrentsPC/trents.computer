@@ -3,7 +3,12 @@ import { buildTTF } from "./otf";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
 
 const CHARSET =
-  " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+  " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~😎";
+const CHARSET_AS_ARRAY: string[] = [];
+for (const ch of CHARSET) {
+  CHARSET_AS_ARRAY.push(ch);
+}
+
 const cpKey = (cp: number) =>
   `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
 const emptyBm = (w: number, h: number) =>
@@ -50,6 +55,21 @@ function makeFont(): FontData {
     glyphs,
   };
 }
+
+const colors = {
+  background: "#a3a3a3",
+  text: "#000000",
+  text2: "#475569",
+  border: "#5e5e5e",
+
+  canvas: {
+    bg1: "#a3a3a3",
+    bg2: "#b0b0b0",
+    border: "#909090",
+    guideline: "#333333",
+    fill: "#000000",
+  },
+};
 
 // ─── UI helpers ────────────────────────────────────────────────────────────
 type BtnProps = {
@@ -102,7 +122,7 @@ const NumInput = (props: NumInputProps) => (
     <span
       style={{
         flex: 1,
-        color: "#64748b",
+        color: colors.text,
         "font-size": "11px",
         overflow: "hidden",
         "text-overflow": "ellipsis",
@@ -117,10 +137,10 @@ const NumInput = (props: NumInputProps) => (
       onInput={(e) => props.onChange(e.target.value)}
       style={{
         width: (props.w || 50) + "px",
-        background: "#0f172a",
-        border: "1px solid #334155",
+        background: colors.background,
+        border: `1px solid ${colors.border}`,
         "border-radius": "3px",
-        color: "#f8fafc",
+        color: colors.text,
         padding: "2px 4px",
         "font-size": "11px",
       }}
@@ -138,8 +158,8 @@ export function PixelFontEditor() {
   const [previewScale, setPreviewScale] = createSignal(3);
   let drawing = false;
   let drawVal = 1;
-  let gridRef = null as any;
-  let previewRef = null as any;
+  let gridRef: HTMLCanvasElement = null!;
+  let previewRef: HTMLCanvasElement = null!;
 
   const glyph = () => font().glyphs[selKey()];
 
@@ -157,7 +177,7 @@ export function PixelFontEditor() {
   const fontHorizontalGuidelines = () => {
     const guides: FontDataGuideline[] = [
       { name: "baseline", y: 0, color: "#ef4444" },
-      { name: "capHeight", y: glyph().advanceWidth, color: "#3b82f6" },
+      { name: "width", y: glyph().advanceWidth, color: "#3b82f6" },
     ];
 
     return guides;
@@ -256,12 +276,68 @@ export function PixelFontEditor() {
     }
   };
 
+  // Grid canvas
+  createEffect(() => {
+    const canvas = gridRef;
+    const g = glyph();
+    if (!canvas || !g) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const z = zoom();
+    const dpr = window.devicePixelRatio || 1;
+    const w = g.width * z;
+    const h = g.height * z;
+
+    // Set canvas size accounting for device pixel ratio
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    ctx.scale(dpr, dpr);
+
+    // Draw checkerboard background
+    for (let r = 0; r < g.height; r++) {
+      for (let c = 0; c < g.width; c++) {
+        ctx.fillStyle =
+          (r + c) % 2 === 0 ? colors.canvas.bg2 : colors.canvas.bg1;
+        ctx.fillRect(c * z, r * z, z, z);
+      }
+    }
+
+    // Draw grid lines (1 physical pixel wide)
+    ctx.strokeStyle = colors.canvas.border;
+    ctx.lineWidth = 1 / dpr;
+    for (let r = 1; r < g.height; r++) {
+      const y = Math.round(r * z * dpr) / dpr + 0.5 / dpr;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+    for (let c = 1; c < g.width; c++) {
+      const x = Math.round(c * z * dpr) / dpr + 0.5 / dpr;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+    // Draw filled pixels
+    ctx.fillStyle = colors.canvas.fill;
+    for (let r = 0; r < g.height; r++) {
+      for (let c = 0; c < g.width; c++) {
+        if (g.bitmap[r][c]) {
+          ctx.fillRect(c * z, r * z, z, z);
+        }
+      }
+    }
+  });
+
   // Preview canvas
   createEffect(() => {
     const canvas = previewRef;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d"),
-      scale = previewScale();
+    const ctx = canvas.getContext("2d")!;
+    const scale = previewScale();
     const ascender = font().metrics.ascender;
     const decender = font().metrics.descender;
     const lineH = (ascender - decender + 2) * scale,
@@ -274,7 +350,7 @@ export function PixelFontEditor() {
     canvas.width = Math.max(totalW, 300);
     canvas.height = lineH;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#ef444430";
+    ctx.strokeStyle = colors.border;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, baselineY);
@@ -288,7 +364,7 @@ export function PixelFontEditor() {
         continue;
       }
       const top = baselineY - GLYPH_CANVAS_MIDPOINT * scale;
-      ctx.fillStyle = "#f8fafc";
+      ctx.fillStyle = colors.text;
       for (let canvasRow = 0; canvasRow < glyph.height; canvasRow++)
         for (let canvasColumn = 0; canvasColumn < glyph.width; canvasColumn++)
           if (glyph.bitmap[canvasRow][canvasColumn])
@@ -308,7 +384,7 @@ export function PixelFontEditor() {
       style={{
         width: "1px",
         height: "20px",
-        background: "#334155",
+        background: colors.border,
         margin: "0 2px",
       }}
     />
@@ -320,8 +396,8 @@ export function PixelFontEditor() {
         display: "flex",
         "flex-direction": "column",
         height: "100vh",
-        background: "#0f172a",
-        color: "#f8fafc",
+        background: colors.background,
+        color: colors.text,
         "font-family": "monospace",
         "user-select": "none",
         overflow: "hidden",
@@ -334,8 +410,8 @@ export function PixelFontEditor() {
           "align-items": "center",
           gap: "6px",
           padding: "6px 12px",
-          background: "#0d1829",
-          "border-bottom": "1px solid #1e293b",
+          background: colors.background,
+          "border-bottom": `1px solid ${colors.border}`,
           "flex-shrink": 0,
           "flex-wrap": "wrap",
         }}
@@ -352,9 +428,9 @@ export function PixelFontEditor() {
           placeholder="Font name…"
           style={{
             background: "transparent",
-            border: "1px solid #334155",
+            border: `1px solid ${colors.border}`,
             "border-radius": "4px",
-            color: "#f8fafc",
+            color: colors.text,
             padding: "3px 8px",
             "font-size": "13px",
             width: "140px",
@@ -425,9 +501,9 @@ export function PixelFontEditor() {
         {/* Left: char list */}
         <div
           style={{
-            width: "170px",
-            background: "#0d1829",
-            "border-right": "1px solid #1e293b",
+            width: "220px",
+            background: colors.background,
+            "border-right": `1px solid ${colors.border}`,
             display: "flex",
             "flex-direction": "column",
             overflow: "hidden",
@@ -437,7 +513,7 @@ export function PixelFontEditor() {
             style={{
               padding: "6px 8px 4px",
               "font-size": "10px",
-              color: "#475569",
+              color: colors.text2,
               "letter-spacing": "1px",
             }}
           >
@@ -447,17 +523,46 @@ export function PixelFontEditor() {
             <div
               style={{
                 display: "grid",
-                "grid-template-columns": "repeat(6,1fr)",
+                "grid-template-columns": "repeat(8,1fr)",
                 gap: "2px",
               }}
             >
-              <For each={Object.entries(font().glyphs)}>
-                {([key, g]) => {
-                  const filled = () => g.bitmap.some((r) => r.some((v) => v));
-                  const sel = () => key === selKey();
+              <For each={CHARSET_AS_ARRAY}>
+                {(character) => {
+                  const codepoint = () => character.codePointAt(0)!;
+                  const key = () => cpKey(codepoint());
+                  const filled = () =>
+                    font().glyphs[
+                      cpKey(character.codePointAt(0)!)
+                    ]?.bitmap.some((r) => r.some((v) => v));
+                  const sel = () => key() === selKey();
                   return (
                     <div
-                      onClick={() => setSelKey(key)}
+                      onClick={() => {
+                        const codepoint = character.codePointAt(0)!;
+                        const key = cpKey(codepoint);
+                        const glyph = font().glyphs[key];
+                        if (!glyph) {
+                          setFont((prev) => ({
+                            ...prev,
+                            glyphs: {
+                              ...prev.glyphs,
+                              [key]: {
+                                name: character === " " ? "space" : character,
+                                codePoint: codepoint,
+                                advanceWidth: font().metrics.capHeight,
+                                width: GLYPH_CANVAS_SIZE,
+                                height: GLYPH_CANVAS_SIZE,
+                                bitmap: emptyBm(
+                                  GLYPH_CANVAS_SIZE,
+                                  GLYPH_CANVAS_SIZE,
+                                ),
+                              },
+                            },
+                          }));
+                        }
+                        setSelKey(key);
+                      }}
                       style={{
                         "aspect-ratio": "1",
                         display: "flex",
@@ -479,7 +584,7 @@ export function PixelFontEditor() {
                             : "#334155",
                       }}
                     >
-                      {g.name === "space" ? "·" : g.name}
+                      {character === " " ? "·" : character}
                     </div>
                   );
                 }}
@@ -494,11 +599,7 @@ export function PixelFontEditor() {
             flex: 1,
             display: "flex",
             "flex-direction": "column",
-            "align-items": "center",
-            "justify-content": "center",
-            overflow: "auto",
-            padding: "20px",
-            gap: "10px",
+            overflow: "hidden",
           }}
         >
           <div
@@ -508,21 +609,26 @@ export function PixelFontEditor() {
               "align-items": "center",
               "flex-wrap": "wrap",
               "justify-content": "center",
+              padding: "12px 20px",
+              background: colors.background,
+              "border-bottom": `1px solid ${colors.border}`,
+              "flex-shrink": 0,
             }}
           >
             <span
               style={{
                 "font-size": "13px",
-                color: "#475569",
+                color: colors.text,
                 "min-width": "60px",
                 "text-align": "center",
               }}
             >
               {glyph()?.name === "space" ? "SPACE" : `'${glyph()?.name}'`}
+              {glyph()?.codePoint}
               <span
                 style={{
                   "font-size": "10px",
-                  color: "#334155",
+                  color: colors.text,
                   "margin-left": "4px",
                 }}
               >
@@ -535,7 +641,7 @@ export function PixelFontEditor() {
             <div
               style={{ display: "flex", "align-items": "center", gap: "5px" }}
             >
-              <span style={{ "font-size": "11px", color: "#475569" }}>
+              <span style={{ "font-size": "11px", color: colors.text }}>
                 zoom
               </span>
               <input
@@ -547,7 +653,11 @@ export function PixelFontEditor() {
                 style={{ width: "70px" }}
               />
               <span
-                style={{ "font-size": "11px", color: "#334155", width: "26px" }}
+                style={{
+                  "font-size": "11px",
+                  color: colors.text,
+                  width: "26px",
+                }}
               >
                 {zoom()}px
               </span>
@@ -555,123 +665,108 @@ export function PixelFontEditor() {
           </div>
 
           {glyph() && (
-            <div style={{ position: "relative", "margin-left": "52px" }}>
-              <Show when={showGuides()}>
-                <For each={fontVerticalGuidelines()}>
-                  {(guide) => {
-                    const row = guideRow(guide.y);
-                    if (row < 0 || row > glyph().height) return null;
-                    return (
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          right: 0,
-                          top: `${row * zoom() - 0.5}px`,
-                          "border-top": `1.5px dashed ${guide.color}55`,
-                          "z-index": 5,
-                          "pointer-events": "none",
-                        }}
-                      >
-                        <span
-                          style={{
-                            position: "absolute",
-                            right: "100%",
-                            top: "-8px",
-                            "padding-right": "6px",
-                            "font-size": "9px",
-                            color: guide.color,
-                            "white-space": "nowrap",
-                          }}
-                        >
-                          {guide.name}
-                        </span>
-                      </div>
-                    );
-                  }}
-                </For>
-                <For each={fontHorizontalGuidelines()}>
-                  {(guide) => {
-                    const row = guideRow(guide.y);
-                    if (row < 0 || row > glyph().height) return null;
-                    return (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          bottom: 0,
-                          left:
-                            (GLYPH_CANVAS_MIDPOINT + guide.y) * zoom() -
-                            0.5 +
-                            "px",
-                          "border-left": `1.5px dashed ${guide.color}55`,
-                          "z-index": 5,
-                          "pointer-events": "none",
-                        }}
-                      >
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: "100%",
-                            left: 4 + "px",
-                            "padding-top": 3 + "px",
-                            "font-size": 9 + "px",
-                            color: guide.color,
-                            "white-space": "nowrap",
-                          }}
-                        >
-                          baseline
-                        </span>
-                      </div>
-                    );
-                  }}
-                </For>
-              </Show>
+            <div
+              style={{
+                flex: 1,
+                overflow: "hidden",
+                display: "flex",
+                "align-items": "center",
+                "justify-content": "center",
+                padding: "20px",
+              }}
+            >
               <div
-                ref={gridRef}
-                onPointerDown={onGridDown}
-                onPointerMove={onGridMove}
-                onPointerUp={() => {
-                  drawing = false;
-                }}
                 style={{
-                  display: "grid",
-                  "grid-template-columns": `repeat(${glyph().width},${zoom()}px)`,
-                  "grid-template-rows": `repeat(${glyph().height},${zoom()}px)`,
-                  border: "1px solid #1e293b",
-                  cursor: "crosshair",
-                  "touch-action": "none",
-                  "box-shadow": "0 0 30px #0000009a",
+                  position: "relative",
+                  transform: `translate(${(glyph().advanceWidth * zoom()) / -2}px, ${(font().metrics.capHeight * zoom()) / 2}px)`,
                 }}
               >
-                <For each={glyph().bitmap}>
-                  {(row, r) => (
-                    <For each={row}>
-                      {(px, c) => (
+                <Show when={showGuides()}>
+                  <For each={fontVerticalGuidelines()}>
+                    {(guide) => {
+                      const row = guideRow(guide.y);
+                      if (row < 0 || row > glyph().height) return null;
+                      return (
                         <div
                           style={{
-                            width: zoom() + "px",
-                            height: zoom() + "px",
-                            "box-sizing": "border-box",
-                            background: px
-                              ? "#f1f5f9"
-                              : (r() + c()) % 2 === 0
-                                ? "#111827"
-                                : "#0c1220",
-                            "border-right":
-                              c() < glyph().width - 1
-                                ? "1px solid #1a2535"
-                                : "none",
-                            "border-bottom":
-                              r() < glyph().height - 1
-                                ? "1px solid #1a2535"
-                                : "none",
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            top: `${row * zoom() - 0.5}px`,
+                            "border-top": `1px solid ${colors.canvas.guideline}`,
+                            "z-index": 5,
+                            "pointer-events": "none",
                           }}
-                        />
-                      )}
-                    </For>
-                  )}
-                </For>
+                        >
+                          <span
+                            style={{
+                              position: "absolute",
+                              right: "100%",
+                              top: "-8px",
+                              "padding-right": "6px",
+                              "font-size": "9px",
+                              color: colors.canvas.guideline,
+                              "white-space": "nowrap",
+                            }}
+                          >
+                            {guide.name}
+                          </span>
+                        </div>
+                      );
+                    }}
+                  </For>
+                  <For each={fontHorizontalGuidelines()}>
+                    {(guide) => {
+                      const row = guideRow(guide.y);
+                      if (row < 0 || row > glyph().height) return null;
+                      return (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            bottom: 0,
+                            left:
+                              (GLYPH_CANVAS_MIDPOINT + guide.y) * zoom() -
+                              0.5 +
+                              "px",
+                            "border-left": `1px solid ${colors.canvas.guideline}`,
+                            "z-index": 5,
+                            "pointer-events": "none",
+                          }}
+                        >
+                          <span
+                            style={{
+                              position: "absolute",
+                              top: "100%",
+                              left: 4 + "px",
+                              "padding-top": 3 + "px",
+                              "font-size": 9 + "px",
+                              color: colors.canvas.guideline,
+                              "white-space": "nowrap",
+                            }}
+                          >
+                            {guide.name}
+                          </span>
+                        </div>
+                      );
+                    }}
+                  </For>
+                </Show>
+                <canvas
+                  ref={gridRef}
+                  onPointerDown={onGridDown}
+                  onPointerMove={onGridMove}
+                  onPointerUp={() => {
+                    drawing = false;
+                  }}
+                  style={{
+                    border: `1px solid ${colors.canvas.border}`,
+                    cursor: "crosshair",
+                    "touch-action": "none",
+                    "box-shadow": `0 0 0 4px #808080, 4px 4px 0 4px #808080`,
+                    "image-rendering": "pixelated",
+                  }}
+                />
               </div>
             </div>
           )}
@@ -681,8 +776,8 @@ export function PixelFontEditor() {
         <div
           style={{
             width: 190 + "px",
-            background: "#0d1829",
-            "border-left": "1px solid #1e293b",
+            background: colors.background,
+            "border-left": `1px solid ${colors.border}`,
             overflow: "auto",
             padding: "8px 12px",
             "font-size": 12 + "px",
@@ -691,7 +786,7 @@ export function PixelFontEditor() {
           <div
             style={{
               "font-size": 10 + "px",
-              color: "#475569",
+              color: colors.text2,
               "letter-spacing": 1 + "px",
               "margin-bottom": 8 + "px",
             }}
@@ -709,7 +804,7 @@ export function PixelFontEditor() {
           <div
             style={{
               "font-size": 10 + "px",
-              color: "#475569",
+              color: colors.text2,
               "letter-spacing": 1 + "px",
               margin: "14px 0 8px",
             }}
@@ -731,8 +826,8 @@ export function PixelFontEditor() {
       {/* Bottom: preview */}
       <div
         style={{
-          background: "#0d1829",
-          "border-top": "1px solid #1e293b",
+          background: colors.background,
+          "border-top": `1px solid ${colors.border}`,
           padding: "7px 12px",
           "flex-shrink": 0,
         }}
@@ -748,7 +843,7 @@ export function PixelFontEditor() {
           <span
             style={{
               "font-size": 10 + "px",
-              color: "#475569",
+              color: colors.text2,
               "letter-spacing": 1 + "px",
               "white-space": "nowrap",
             }}
@@ -760,15 +855,15 @@ export function PixelFontEditor() {
             onInput={(e) => setPreviewText(e.target.value)}
             style={{
               flex: 1,
-              background: "#0f172a",
-              border: "1px solid #334155",
+              background: colors.background,
+              border: `1px solid ${colors.border}`,
               "border-radius": 4 + "px",
-              color: "#f8fafc",
+              color: colors.text,
               padding: "2px 8px",
               "font-size": 12 + "px",
             }}
           />
-          <span style={{ "font-size": 11 + "px", color: "#475569" }}>
+          <span style={{ "font-size": 11 + "px", color: colors.text2 }}>
             scale
           </span>
           <input
@@ -782,7 +877,7 @@ export function PixelFontEditor() {
           <span
             style={{
               "font-size": 11 + "px",
-              color: "#334155",
+              color: colors.text2,
               width: 20 + "px",
             }}
           >
@@ -792,7 +887,7 @@ export function PixelFontEditor() {
         <div
           style={{
             overflow: "auto",
-            background: "#050a14",
+            background: "#c0c0c0",
             "border-radius": 4 + "px",
             padding: "4px 0",
             "max-height": 90 + "px",
