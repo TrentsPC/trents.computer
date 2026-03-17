@@ -50,7 +50,6 @@ function makeFont(): FontData {
       xHeight: 6,
       capHeight: 8,
       lineGap: 2,
-      defaultAdvanceWidth: 9,
     },
     glyphs,
   };
@@ -403,102 +402,7 @@ export function PixelFontEditor() {
         overflow: "hidden",
       }}
     >
-      {/* Top bar */}
-      <div
-        style={{
-          display: "flex",
-          "align-items": "center",
-          gap: "6px",
-          padding: "6px 12px",
-          background: colors.background,
-          "border-bottom": `1px solid ${colors.border}`,
-          "flex-shrink": 0,
-          "flex-wrap": "wrap",
-        }}
-      >
-        <span style={{ "font-size": "16px", "margin-right": "4px" }}>🔲</span>
-        <input
-          value={font().meta.name}
-          onInput={(e) =>
-            setFont((f) => ({
-              ...f,
-              meta: { ...f.meta, name: e.target.value },
-            }))
-          }
-          placeholder="Font name…"
-          style={{
-            background: "transparent",
-            border: `1px solid ${colors.border}`,
-            "border-radius": "4px",
-            color: colors.text,
-            padding: "3px 8px",
-            "font-size": "13px",
-            width: "140px",
-          }}
-        />
-        {divider}
-        <Btn
-          onClick={() => setShowGuides((v) => !v)}
-          active={showGuides()}
-          accent="#0ea5e9"
-        >
-          📏 Guides
-        </Btn>
-        <div style={{ flex: 1 }} />
-        <button
-          onClick={exportOTF}
-          style={{
-            padding: "3px 12px",
-            "font-size": "12px",
-            "border-radius": "4px",
-            cursor: "pointer",
-            border: "none",
-            background: "#7c3aed",
-            color: "#fff",
-            "font-weight": "bold",
-          }}
-        >
-          ⬇ Export OTF
-        </button>
-        <button
-          onClick={saveFont}
-          style={{
-            padding: "3px 12px",
-            "font-size": "12px",
-            "border-radius": "4px",
-            cursor: "pointer",
-            border: "none",
-            background: "#16a34a",
-            color: "#fff",
-            "font-weight": "bold",
-          }}
-        >
-          💾 Save JSON
-        </button>
-        <label
-          style={{
-            padding: "3px 12px",
-            "font-size": "12px",
-            "border-radius": "4px",
-            cursor: "pointer",
-            background: "#1e293b",
-            color: "#f8fafc",
-            "font-weight": "bold",
-          }}
-        >
-          📂 Load JSON
-          <input
-            type="file"
-            accept=".json"
-            onInput={loadFont}
-            style={{ display: "none" }}
-          />
-        </label>
-      </div>
-
-      {/* Middle */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        {/* Left: char list */}
         <div
           style={{
             width: "220px",
@@ -510,14 +414,151 @@ export function PixelFontEditor() {
           }}
         >
           <div
-            style={{
-              padding: "6px 8px 4px",
-              "font-size": "10px",
-              color: colors.text2,
-              "letter-spacing": "1px",
+            css={{
+              height: 52,
+              padding: 10,
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            CHARACTERS
+            <input
+              value={font().meta.name}
+              onInput={(e) =>
+                setFont((f) => ({
+                  ...f,
+                  meta: { ...f.meta, name: e.target.value },
+                }))
+              }
+              placeholder="Font name…"
+              style={{
+                background: "transparent",
+                border: `1px solid ${colors.border}`,
+                "border-radius": "4px",
+                color: colors.text,
+                padding: "3px 8px",
+                "font-size": "13px",
+                "min-width": 0,
+                height: "32px",
+                width: "100%",
+              }}
+            />
+          </div>
+          {/* <div
+            style={{
+              "font-size": 10 + "px",
+              color: colors.text2,
+              "letter-spacing": 1 + "px",
+              margin: "0px 19px 8px",
+            }}
+          >
+            FONT METRICS
+          </div> */}
+          <div css={{ pl: 19, pr: 10 }}>
+            {Object.entries(font().metrics).map(([k, v]) => (
+              <NumInput
+                label={k}
+                value={v}
+                onChange={(val) =>
+                  setFont((f) => ({
+                    ...f,
+                    metrics: { ...f.metrics, [k]: +val },
+                  }))
+                }
+              />
+            ))}
+          </div>
+
+          <div css={{ flex: "1 0 0px" }} />
+
+          <div
+            css={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              px: 19,
+              pb: 19,
+            }}
+          >
+            <button
+              onClick={exportOTF}
+              style={{
+                padding: "3px 12px",
+                "font-size": "12px",
+                "border-radius": "4px",
+                cursor: "pointer",
+                border: "none",
+                background: "#7c3aed",
+                color: "#fff",
+                "font-weight": "bold",
+              }}
+            >
+              ⬇ Export OTF
+            </button>
+            <button
+              onClick={saveFont}
+              style={{
+                padding: "3px 12px",
+                "font-size": "12px",
+                "border-radius": "4px",
+                cursor: "pointer",
+                border: "none",
+                background: "#16a34a",
+                color: "#fff",
+                "font-weight": "bold",
+              }}
+            >
+              💾 Save JSON
+            </button>
+            <label
+              style={{
+                padding: "3px 12px",
+                "font-size": "12px",
+                "border-radius": "4px",
+                cursor: "pointer",
+                background: "#1e293b",
+                color: "#f8fafc",
+                "font-weight": "bold",
+                "text-align": "center",
+              }}
+            >
+              📂 Load JSON
+              <input
+                type="file"
+                accept=".json"
+                onInput={loadFont}
+                style={{ display: "none" }}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div
+          style={{
+            width: "220px",
+            background: colors.background,
+            "border-right": `1px solid ${colors.border}`,
+            display: "flex",
+            "flex-direction": "column",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            css={{
+              height: 52,
+              display: "flex",
+              alignItems: "center",
+              px: 16,
+            }}
+          >
+            <div
+              style={{
+                "font-size": "10px",
+                color: colors.text2,
+                "letter-spacing": "1px",
+              }}
+            >
+              CHARACTERS
+            </div>
           </div>
           <div style={{ flex: 1, overflow: "auto", padding: "0 8px 8px" }}>
             <div
@@ -593,7 +634,6 @@ export function PixelFontEditor() {
           </div>
         </div>
 
-        {/* Center: grid editor */}
         <div
           style={{
             flex: 1,
@@ -605,62 +645,94 @@ export function PixelFontEditor() {
           <div
             style={{
               display: "flex",
-              gap: "5px",
-              "align-items": "center",
-              "flex-wrap": "wrap",
-              "justify-content": "center",
-              padding: "12px 20px",
               background: colors.background,
+              height: "53px",
               "border-bottom": `1px solid ${colors.border}`,
               "flex-shrink": 0,
+              "align-items": "center",
+              padding: "0px 16px",
             }}
           >
-            <span
+            <div
               style={{
-                "font-size": "13px",
-                color: colors.text,
-                "min-width": "60px",
-                "text-align": "center",
+                display: "flex",
+                gap: "5px",
+                "align-items": "center",
+                flex: "1 0 0px",
               }}
             >
-              {glyph()?.name === "space" ? "SPACE" : `'${glyph()?.name}'`}
-              {glyph()?.codePoint}
               <span
                 style={{
-                  "font-size": "10px",
+                  "font-size": "13px",
                   color: colors.text,
-                  "margin-left": "4px",
+                  "min-width": "60px",
+                  "text-align": "center",
                 }}
               >
-                {selKey()}
+                {glyph()?.name === "space" ? "SPACE" : `'${glyph()?.name}'`}
+                {glyph()?.codePoint}
+                <span
+                  style={{
+                    "font-size": "10px",
+                    color: colors.text,
+                    "margin-left": "4px",
+                  }}
+                >
+                  {selKey()}
+                </span>
               </span>
-            </span>
+            </div>
             <Btn onClick={clearGlyph} accent="#ef4444">
               Clear
             </Btn>
-            <div
-              style={{ display: "flex", "align-items": "center", gap: "5px" }}
-            >
-              <span style={{ "font-size": "11px", color: colors.text }}>
-                zoom
-              </span>
-              <input
-                type="range"
-                min={14}
-                max={52}
-                value={zoom()}
-                onInput={(e) => setZoom(+e.target.value)}
-                style={{ width: "70px" }}
+            <Show when={glyph()}>
+              <NumInput
+                label="Width"
+                value={glyph().advanceWidth}
+                onChange={(v) => updateGlyph(selKey(), { advanceWidth: +v })}
               />
-              <span
-                style={{
-                  "font-size": "11px",
-                  color: colors.text,
-                  width: "26px",
-                }}
+            </Show>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "5px",
+                "align-items": "center",
+                "justify-content": "flex-end",
+                flex: "1 0 0px",
+              }}
+            >
+              <div
+                style={{ display: "flex", "align-items": "center", gap: "5px" }}
               >
-                {zoom()}px
-              </span>
+                <span style={{ "font-size": "11px", color: colors.text }}>
+                  zoom
+                </span>
+                <input
+                  type="range"
+                  min={14}
+                  max={52}
+                  value={zoom()}
+                  onInput={(e) => setZoom(+e.target.value)}
+                  style={{ width: "70px" }}
+                />
+                <span
+                  style={{
+                    "font-size": "11px",
+                    color: colors.text,
+                    width: "26px",
+                  }}
+                >
+                  {zoom()}px
+                </span>
+              </div>
+              <Btn
+                onClick={() => setShowGuides((v) => !v)}
+                active={showGuides()}
+                accent="#0ea5e9"
+              >
+                📏 Guides
+              </Btn>
             </div>
           </div>
 
@@ -698,7 +770,7 @@ export function PixelFontEditor() {
                             "pointer-events": "none",
                           }}
                         >
-                          <span
+                          {/* <span
                             style={{
                               position: "absolute",
                               right: "100%",
@@ -710,7 +782,7 @@ export function PixelFontEditor() {
                             }}
                           >
                             {guide.name}
-                          </span>
+                          </span> */}
                         </div>
                       );
                     }}
@@ -734,7 +806,7 @@ export function PixelFontEditor() {
                             "pointer-events": "none",
                           }}
                         >
-                          <span
+                          {/* <span
                             style={{
                               position: "absolute",
                               top: "100%",
@@ -746,7 +818,7 @@ export function PixelFontEditor() {
                             }}
                           >
                             {guide.name}
-                          </span>
+                          </span> */}
                         </div>
                       );
                     }}
@@ -770,134 +842,140 @@ export function PixelFontEditor() {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Right: properties */}
-        <div
-          style={{
-            width: 190 + "px",
-            background: colors.background,
-            "border-left": `1px solid ${colors.border}`,
-            overflow: "auto",
-            padding: "8px 12px",
-            "font-size": 12 + "px",
-          }}
-        >
-          <div
-            style={{
-              "font-size": 10 + "px",
-              color: colors.text2,
-              "letter-spacing": 1 + "px",
-              "margin-bottom": 8 + "px",
-            }}
-          >
-            GLYPH
-          </div>
-          <Show when={glyph()}>
-            <NumInput
-              label="Width"
-              value={glyph().advanceWidth}
-              onChange={(v) => updateGlyph(selKey(), { advanceWidth: +v })}
-            />
-          </Show>
-
-          <div
-            style={{
-              "font-size": 10 + "px",
-              color: colors.text2,
-              "letter-spacing": 1 + "px",
-              margin: "14px 0 8px",
-            }}
-          >
-            FONT METRICS
-          </div>
-          {Object.entries(font().metrics).map(([k, v]) => (
-            <NumInput
-              label={k}
-              value={v}
-              onChange={(val) =>
-                setFont((f) => ({ ...f, metrics: { ...f.metrics, [k]: +val } }))
-              }
-            />
-          ))}
+          <PreviewSection font={font()} />
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Bottom: preview */}
+function PreviewSection(props: { font: FontData }) {
+  const font = () => props.font;
+  const [previewText, setPreviewText] = createSignal("ABCDEFG");
+  const [previewScale, setPreviewScale] = createSignal(3);
+  let previewRef: HTMLCanvasElement = null!;
+
+  // Preview canvas
+  createEffect(() => {
+    const canvas = previewRef;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    const scale = previewScale();
+    const ascender = font().metrics.ascender;
+    const decender = font().metrics.descender;
+    const lineH = (ascender - decender + 2) * scale,
+      baselineY = (ascender + 1) * scale;
+    let totalW = 8;
+    for (const ch of previewText()) {
+      const g = font().glyphs[cpKey(ch.codePointAt(0)!)];
+      totalW += g ? g.advanceWidth * scale : 4 * scale;
+    }
+    canvas.width = Math.max(totalW, 300);
+    canvas.height = lineH;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = colors.border;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, baselineY);
+    ctx.lineTo(canvas.width, baselineY);
+    ctx.stroke();
+    let x = 4;
+    for (const ch of previewText()) {
+      const glyph = font().glyphs[cpKey(ch.codePointAt(0)!)];
+      if (!glyph) {
+        x += 4 * scale;
+        continue;
+      }
+      const top = baselineY - GLYPH_CANVAS_MIDPOINT * scale;
+      ctx.fillStyle = colors.text;
+      for (let canvasRow = 0; canvasRow < glyph.height; canvasRow++)
+        for (let canvasColumn = 0; canvasColumn < glyph.width; canvasColumn++)
+          if (glyph.bitmap[canvasRow][canvasColumn])
+            ctx.fillRect(
+              x + (-GLYPH_CANVAS_MIDPOINT + canvasColumn) * scale,
+              top + canvasRow * scale,
+              scale,
+              scale,
+            );
+      x += glyph.advanceWidth * scale;
+    }
+  });
+
+  return (
+    <div
+      style={{
+        background: colors.background,
+        "border-top": `1px solid ${colors.border}`,
+        padding: "7px 12px",
+        "flex-shrink": 0,
+      }}
+    >
       <div
         style={{
-          background: colors.background,
-          "border-top": `1px solid ${colors.border}`,
-          padding: "7px 12px",
-          "flex-shrink": 0,
+          display: "flex",
+          "align-items": "center",
+          gap: 8 + "px",
+          "margin-bottom": 6 + "px",
         }}
       >
-        <div
+        <span
           style={{
-            display: "flex",
-            "align-items": "center",
-            gap: 8 + "px",
-            "margin-bottom": 6 + "px",
+            "font-size": 10 + "px",
+            color: colors.text2,
+            "letter-spacing": 1 + "px",
+            "white-space": "nowrap",
           }}
         >
-          <span
-            style={{
-              "font-size": 10 + "px",
-              color: colors.text2,
-              "letter-spacing": 1 + "px",
-              "white-space": "nowrap",
-            }}
-          >
-            PREVIEW
-          </span>
-          <input
-            value={previewText()}
-            onInput={(e) => setPreviewText(e.target.value)}
-            style={{
-              flex: 1,
-              background: colors.background,
-              border: `1px solid ${colors.border}`,
-              "border-radius": 4 + "px",
-              color: colors.text,
-              padding: "2px 8px",
-              "font-size": 12 + "px",
-            }}
-          />
-          <span style={{ "font-size": 11 + "px", color: colors.text2 }}>
-            scale
-          </span>
-          <input
-            type="range"
-            min={1}
-            max={8}
-            value={previewScale()}
-            onInput={(e) => setPreviewScale(+e.target.value)}
-            style={{ width: 70 + "px" }}
-          />
-          <span
-            style={{
-              "font-size": 11 + "px",
-              color: colors.text2,
-              width: 20 + "px",
-            }}
-          >
-            {previewScale()}×
-          </span>
-        </div>
-        <div
+          PREVIEW
+        </span>
+        <input
+          value={previewText()}
+          onInput={(e) => setPreviewText(e.target.value)}
           style={{
-            overflow: "auto",
-            background: "#c0c0c0",
+            flex: 1,
+            background: colors.background,
+            border: `1px solid ${colors.border}`,
             "border-radius": 4 + "px",
-            padding: "4px 0",
-            "max-height": 90 + "px",
+            color: colors.text,
+            padding: "2px 8px",
+            "font-size": 12 + "px",
+          }}
+        />
+        <span style={{ "font-size": 11 + "px", color: colors.text2 }}>
+          scale
+        </span>
+        <input
+          type="range"
+          min={1}
+          max={8}
+          value={previewScale()}
+          onInput={(e) => setPreviewScale(+e.target.value)}
+          style={{ width: 70 + "px" }}
+        />
+        <span
+          style={{
+            "font-size": 11 + "px",
+            color: colors.text2,
+            width: 20 + "px",
           }}
         >
-          <canvas
-            ref={previewRef}
-            style={{ display: "block", "image-rendering": "pixelated" }}
-          />
-        </div>
+          {previewScale()}×
+        </span>
+      </div>
+      <div
+        style={{
+          overflow: "auto",
+          background: "#c0c0c0",
+          "border-radius": 4 + "px",
+          padding: "4px 0",
+          "max-height": 90 + "px",
+        }}
+      >
+        <canvas
+          ref={previewRef}
+          style={{ display: "block", "image-rendering": "pixelated" }}
+        />
       </div>
     </div>
   );

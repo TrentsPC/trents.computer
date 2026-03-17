@@ -112,7 +112,10 @@ export function buildTTF(fontData: FontData) {
   const sorted = Object.values(fontData.glyphs).sort(
     (a: any, b: any) => a.codePoint - b.codePoint,
   );
-  const nW = sc(fontData.metrics.defaultAdvanceWidth);
+  /**
+   * notdef width
+   */
+  const nW = sc(fontData.metrics.capHeight);
   // .notdef: solid rectangle
   const notdefRec = serGlyph([
     [

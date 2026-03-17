@@ -19,7 +19,6 @@ export type FontDataMetrics = {
   xHeight: number;
   capHeight: number;
   lineGap: number;
-  defaultAdvanceWidth: number;
 };
 export type FontDataGuideline = {
   name: string;
