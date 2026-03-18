@@ -13,7 +13,6 @@ export type FontDataMeta = {
   modified: string;
 };
 export type FontDataMetrics = {
-  unitsPerEm: number;
   ascender: number;
   descender: number;
   xHeight: number;
@@ -22,8 +21,7 @@ export type FontDataMetrics = {
 };
 export type FontDataGuideline = {
   name: string;
-  y: number;
-  color: string;
+  offset: number;
 };
 export type FontDataGlyph = {
   name: string;

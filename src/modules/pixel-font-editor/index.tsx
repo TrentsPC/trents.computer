@@ -1,4 +1,5 @@
 import { createEffect, createSignal, For, JSX, Show } from "solid-js";
+import newYork from "./new-york.pxfont.json";
 import { buildTTF } from "./otf";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
 
@@ -44,14 +45,13 @@ function makeFont(): FontData {
       modified: new Date().toISOString(),
     },
     metrics: {
-      unitsPerEm: 16,
       ascender: 10,
       descender: -2,
       xHeight: 6,
       capHeight: 8,
       lineGap: 2,
     },
-    glyphs,
+    glyphs: {},
   };
 }
 
@@ -147,42 +147,29 @@ const NumInput = (props: NumInputProps) => (
   </div>
 );
 
-// ─── App ───────────────────────────────────────────────────────────────────
+type EditorState = {
+  selectedGlyphId: string;
+  zoom: number;
+  showGuides: boolean;
+};
+
+const initialEditorState: EditorState = {
+  selectedGlyphId: "U+0041",
+  zoom: 14,
+  showGuides: true,
+};
+
 export function PixelFontEditor() {
-  const [font, setFont] = createSignal(makeFont());
-  const [selKey, setSelKey] = createSignal("U+0041");
-  const [zoom, setZoom] = createSignal(14);
-  const [showGuides, setShowGuides] = createSignal(true);
-  const [previewText, setPreviewText] = createSignal("ABCDEFG");
-  const [previewScale, setPreviewScale] = createSignal(3);
-  let drawing = false;
-  let drawVal = 1;
-  let gridRef: HTMLCanvasElement = null!;
-  let previewRef: HTMLCanvasElement = null!;
+  const [font, setFont] = createSignal(newYork as FontData);
+  const [editorState, setEditorState] = createSignal(initialEditorState);
+  const selectedGlyphId = () => editorState().selectedGlyphId;
 
-  const glyph = () => font().glyphs[selKey()];
+  const glyph = () => font().glyphs[selectedGlyphId()];
 
-  const fontVerticalGuidelines = () => {
-    const guides: FontDataGuideline[] = [
-      { name: "baseline", y: 0, color: "#ef4444" },
-      { name: "xHeight", y: font().metrics.xHeight, color: "#22c55e" },
-      { name: "capHeight", y: font().metrics.capHeight, color: "#3b82f6" },
-      { name: "ascender", y: font().metrics.ascender, color: "#a855f7" },
-      { name: "descender", y: font().metrics.descender, color: "#a855f7" },
-    ];
-
-    return guides;
-  };
-  const fontHorizontalGuidelines = () => {
-    const guides: FontDataGuideline[] = [
-      { name: "baseline", y: 0, color: "#ef4444" },
-      { name: "width", y: glyph().advanceWidth, color: "#3b82f6" },
-    ];
-
-    return guides;
-  };
-
-  const updateGlyph = (key: any, updater: any) => {
+  const updateGlyph = (
+    key: any,
+    updater: FontDataGlyph | ((prev: FontDataGlyph) => FontDataGlyph),
+  ) => {
     setFont((f) => {
       const g = f.glyphs[key];
       const next =
@@ -195,8 +182,526 @@ export function PixelFontEditor() {
     });
   };
 
+  return (
+    <div
+      style={{
+        display: "flex",
+        "flex-direction": "column",
+        height: "100vh",
+        background: colors.background,
+        color: colors.text,
+        "font-family": "monospace",
+        "user-select": "none",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        <FontSection font={font()} onFontChange={setFont} />
+
+        <GlyphSelectorSection
+          font={font()}
+          onFontChange={setFont}
+          editorState={editorState()}
+          onEditorStateChange={setEditorState}
+        />
+
+        <Show when={glyph()}>
+          <GlyphEditor
+            font={font()}
+            glyph={glyph()}
+            onGlyphChange={(updater) => updateGlyph(selectedGlyphId(), updater)}
+            editorState={editorState()}
+            onEditorStateChange={setEditorState}
+          />
+        </Show>
+      </div>
+    </div>
+  );
+}
+
+function FontSection(props: {
+  font: FontData;
+  onFontChange: (font: FontData) => void;
+}) {
+  const font = () => props.font;
+
+  const saveFont = () => {
+    const blob = new Blob([JSON.stringify(font())], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob),
+      a = document.createElement("a");
+    a.href = url;
+    a.download = `${font().meta.name.replace(/\s+/g, "_") || "font"}.pxfont.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const loadFont: JSX.InputEventHandler<HTMLInputElement, InputEvent> = (e) => {
+    const f = e.target.files![0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = (ev) => {
+      try {
+        props.onFontChange(JSON.parse(ev.target!.result! as any));
+      } catch {
+        alert("Invalid font file");
+      }
+    };
+    r.readAsText(f);
+    e.target.value = "";
+  };
+  const exportOTF = () => {
+    try {
+      const buf = buildTTF(font());
+      const blob = new Blob([buf], { type: "font/otf" });
+      const url = URL.createObjectURL(blob),
+        a = document.createElement("a");
+      a.href = url;
+      a.download = `${font().meta.name.replace(/\s+/g, "_") || "font"}.otf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      alert("OTF export failed: " + e.message);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        width: "220px",
+        background: colors.background,
+        "border-right": `1px solid ${colors.border}`,
+        display: "flex",
+        "flex-direction": "column",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        css={{
+          height: 52,
+          padding: 10,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <input
+          value={font().meta.name}
+          onInput={(e) =>
+            props.onFontChange({
+              ...props.font,
+              meta: { ...props.font.meta, name: e.target.value },
+            })
+          }
+          placeholder="Font name…"
+          style={{
+            background: "transparent",
+            border: `1px solid ${colors.border}`,
+            "border-radius": "4px",
+            color: colors.text,
+            padding: "3px 8px",
+            "font-size": "13px",
+            "min-width": 0,
+            height: "32px",
+            width: "100%",
+          }}
+        />
+      </div>
+      <div css={{ pl: 19, pr: 10 }}>
+        {Object.entries(font().metrics).map(([k, v]) => (
+          <NumInput
+            label={k}
+            value={v}
+            onChange={(val) =>
+              props.onFontChange({
+                ...props.font,
+                metrics: { ...props.font.metrics, [k]: +val },
+              })
+            }
+          />
+        ))}
+      </div>
+
+      <div css={{ flex: "1 0 0px" }} />
+
+      <div
+        css={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          px: 19,
+          pb: 19,
+        }}
+      >
+        <button
+          onClick={exportOTF}
+          style={{
+            padding: "3px 12px",
+            "font-size": "12px",
+            "border-radius": "4px",
+            cursor: "pointer",
+            border: "none",
+            background: "#7c3aed",
+            color: "#fff",
+            "font-weight": "bold",
+          }}
+        >
+          ⬇ Export OTF
+        </button>
+        <button
+          onClick={saveFont}
+          style={{
+            padding: "3px 12px",
+            "font-size": "12px",
+            "border-radius": "4px",
+            cursor: "pointer",
+            border: "none",
+            background: "#16a34a",
+            color: "#fff",
+            "font-weight": "bold",
+          }}
+        >
+          💾 Save JSON
+        </button>
+        <label
+          style={{
+            padding: "3px 12px",
+            "font-size": "12px",
+            "border-radius": "4px",
+            cursor: "pointer",
+            background: "#1e293b",
+            color: "#f8fafc",
+            "font-weight": "bold",
+            "text-align": "center",
+          }}
+        >
+          📂 Load JSON
+          <input
+            type="file"
+            accept=".json"
+            onInput={loadFont}
+            style={{ display: "none" }}
+          />
+        </label>
+        <button
+          onClick={() => props.onFontChange(makeFont())}
+          style={{
+            padding: "3px 12px",
+            "font-size": "12px",
+            "border-radius": "4px",
+            cursor: "pointer",
+            border: "none",
+            background: "#ff0000",
+            color: "#fff",
+            "font-weight": "bold",
+          }}
+        >
+          New Font
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function GlyphSelectorSection(props: {
+  font: FontData;
+  onFontChange: (font: FontData) => void;
+  editorState: EditorState;
+  onEditorStateChange: (editorState: EditorState) => void;
+}) {
+  const font = () => props.font;
+  return (
+    <div
+      style={{
+        width: "220px",
+        background: colors.background,
+        "border-right": `1px solid ${colors.border}`,
+        display: "flex",
+        "flex-direction": "column",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        css={{
+          height: 52,
+          display: "flex",
+          alignItems: "center",
+          px: 16,
+        }}
+      >
+        <div
+          style={{
+            "font-size": "10px",
+            color: colors.text2,
+            "letter-spacing": "1px",
+          }}
+        >
+          CHARACTERS
+        </div>
+      </div>
+      <div style={{ flex: 1, overflow: "auto", padding: "0 8px 8px" }}>
+        <div
+          style={{
+            display: "grid",
+            "grid-template-columns": "repeat(8,1fr)",
+            gap: "2px",
+          }}
+        >
+          <For each={CHARSET_AS_ARRAY}>
+            {(character) => {
+              const codepoint = () => character.codePointAt(0)!;
+              const key = () => cpKey(codepoint());
+              const filled = () =>
+                font().glyphs[cpKey(character.codePointAt(0)!)]?.bitmap.some(
+                  (r) => r.some((v) => v),
+                );
+              const sel = () => key() === props.editorState.selectedGlyphId;
+              return (
+                <div
+                  onClick={() => {
+                    const codepoint = character.codePointAt(0)!;
+                    const key = cpKey(codepoint);
+                    const glyph = font().glyphs[key];
+                    if (!glyph) {
+                      props.onFontChange({
+                        ...props.font,
+                        glyphs: {
+                          ...props.font.glyphs,
+                          [key]: {
+                            name: character === " " ? "space" : character,
+                            codePoint: codepoint,
+                            advanceWidth: font().metrics.capHeight,
+                            width: GLYPH_CANVAS_SIZE,
+                            height: GLYPH_CANVAS_SIZE,
+                            bitmap: emptyBm(
+                              GLYPH_CANVAS_SIZE,
+                              GLYPH_CANVAS_SIZE,
+                            ),
+                          },
+                        },
+                      });
+                    }
+                    props.onEditorStateChange({
+                      ...props.editorState,
+                      selectedGlyphId: key,
+                    });
+                  }}
+                  style={{
+                    "aspect-ratio": "1",
+                    display: "flex",
+                    "align-items": "center",
+                    "justify-content": "center",
+                    "font-size": "11px",
+                    "border-radius": "3px",
+                    cursor: "pointer",
+                    border: `1px solid ${sel() ? "#6366f1" : filled() ? "#1e3a5f" : "transparent"}`,
+                    background: sel()
+                      ? "#1e1b4b"
+                      : filled()
+                        ? "#0f1e33"
+                        : "transparent",
+                    color: sel() ? "#a5b4fc" : filled() ? "#7dd3fc" : "#334155",
+                  }}
+                >
+                  {character === " " ? "·" : character}
+                </div>
+              );
+            }}
+          </For>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GlyphEditor(props: {
+  font: FontData;
+  glyph: FontDataGlyph;
+  onGlyphChange: (updater: (g: FontDataGlyph) => FontDataGlyph) => void;
+
+  editorState: EditorState;
+  onEditorStateChange: (editorState: EditorState) => void;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        "flex-direction": "column",
+        overflow: "hidden",
+      }}
+    >
+      <GlyphEditorHeader
+        glyph={props.glyph}
+        onGlyphChange={props.onGlyphChange}
+        editorState={props.editorState}
+        onEditorStateChange={props.onEditorStateChange}
+      />
+      <GlyphEditorCanvas
+        font={props.font}
+        glyph={props.glyph}
+        onGlyphChange={props.onGlyphChange}
+        editorState={props.editorState}
+        onEditorStateChange={props.onEditorStateChange}
+      />
+      <PreviewSection font={props.font} />
+    </div>
+  );
+}
+
+function GlyphEditorHeader(props: {
+  glyph: FontDataGlyph;
+  onGlyphChange: (updater: (g: FontDataGlyph) => FontDataGlyph) => void;
+  editorState: EditorState;
+  onEditorStateChange: (editorState: EditorState) => void;
+}) {
+  const glyph = () => props.glyph;
+
+  const clearGlyph = () =>
+    props.onGlyphChange((g) => ({
+      ...g,
+      bitmap: emptyBm(g.width, g.height),
+    }));
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        background: colors.background,
+        height: "53px",
+        "border-bottom": `1px solid ${colors.border}`,
+        "flex-shrink": 0,
+        "align-items": "center",
+        padding: "0px 16px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          gap: "5px",
+          "align-items": "center",
+          flex: "1 0 0px",
+        }}
+      >
+        <span
+          style={{
+            "font-size": "13px",
+            color: colors.text,
+            "min-width": "60px",
+            "text-align": "center",
+          }}
+        >
+          {glyph()?.name === "space" ? "SPACE" : `'${glyph()?.name}'`}
+          <span
+            style={{
+              "font-size": "10px",
+              color: colors.text,
+              "margin-left": "4px",
+            }}
+          >
+            {glyph()?.codePoint.toString(16).padStart(4, "0")}
+          </span>
+        </span>
+      </div>
+      <Btn onClick={clearGlyph}>Clear</Btn>
+      <Show when={glyph()}>
+        <NumInput
+          label="Width"
+          value={glyph().advanceWidth}
+          onChange={(v) =>
+            props.onGlyphChange((g) => ({ ...g, advanceWidth: +v }))
+          }
+        />
+      </Show>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "5px",
+          "align-items": "center",
+          "justify-content": "flex-end",
+          flex: "1 0 0px",
+        }}
+      >
+        <div style={{ display: "flex", "align-items": "center", gap: "5px" }}>
+          <span style={{ "font-size": "11px", color: colors.text }}>zoom</span>
+          <input
+            type="range"
+            min={14}
+            max={52}
+            value={props.editorState.zoom}
+            onInput={(e) =>
+              props.onEditorStateChange({
+                ...props.editorState,
+                zoom: +e.target.value,
+              })
+            }
+            style={{ width: "70px" }}
+          />
+          <span
+            style={{
+              "font-size": "11px",
+              color: colors.text,
+              width: "26px",
+            }}
+          >
+            {props.editorState.zoom}px
+          </span>
+        </div>
+        <Btn
+          onClick={() =>
+            props.onEditorStateChange({
+              ...props.editorState,
+              showGuides: !props.editorState.showGuides,
+            })
+          }
+          active={props.editorState.showGuides}
+          accent="#0ea5e9"
+        >
+          📏 Guides
+        </Btn>
+      </div>
+    </div>
+  );
+}
+
+function GlyphEditorCanvas(props: {
+  font: FontData;
+  glyph: FontDataGlyph;
+  onGlyphChange: (updater: (g: FontDataGlyph) => FontDataGlyph) => void;
+  editorState: EditorState;
+  onEditorStateChange: (editorState: EditorState) => void;
+}) {
+  const zoom = () => props.editorState.zoom;
+  const showGuides = () => props.editorState.showGuides;
+  const font = () => props.font;
+  const glyph = () => props.glyph;
+
+  let drawing = false;
+  let drawVal = 1;
+  let gridRef: HTMLCanvasElement = null!;
+
+  const fontVerticalGuidelines = () => {
+    const guides: FontDataGuideline[] = [
+      { name: "baseline", offset: 0 },
+      { name: "xHeight", offset: font().metrics.xHeight },
+      { name: "capHeight", offset: font().metrics.capHeight },
+      { name: "ascender", offset: font().metrics.ascender },
+      { name: "descender", offset: font().metrics.descender },
+    ];
+
+    return guides;
+  };
+  const fontHorizontalGuidelines = () => {
+    const guides: FontDataGuideline[] = [
+      { name: "baseline", offset: 0 },
+      { name: "width", offset: glyph().advanceWidth },
+    ];
+
+    return guides;
+  };
+
   const setPixel = (r: any, c: any, val: any) => {
-    updateGlyph(selKey(), (g: any) => {
+    props.onGlyphChange((g) => {
       if (g.bitmap[r]?.[c] === val) return g;
       const bm = g.bitmap.map((row: any) => [...row]);
       bm[r][c] = val;
@@ -227,52 +732,6 @@ export function PixelFontEditor() {
     const [r, c] = getCell(e);
     if (r >= 0 && r < glyph().height && c >= 0 && c < glyph().width)
       setPixel(r, c, drawVal);
-  };
-
-  const clearGlyph = () =>
-    updateGlyph(selKey(), (g: any) => ({
-      ...g,
-      bitmap: emptyBm(g.width, g.height),
-    }));
-
-  const saveFont = () => {
-    const blob = new Blob([JSON.stringify(font())], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-    a.href = url;
-    a.download = `${font().meta.name.replace(/\s+/g, "_") || "font"}.pxfont.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-  const loadFont: JSX.InputEventHandler<HTMLInputElement, InputEvent> = (e) => {
-    const f = e.target.files![0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = (ev) => {
-      try {
-        setFont(JSON.parse(ev.target!.result! as any));
-      } catch {
-        alert("Invalid font file");
-      }
-    };
-    r.readAsText(f);
-    e.target.value = "";
-  };
-  const exportOTF = () => {
-    try {
-      const buf = buildTTF(font());
-      const blob = new Blob([buf], { type: "font/otf" });
-      const url = URL.createObjectURL(blob),
-        a = document.createElement("a");
-      a.href = url;
-      a.download = `${font().meta.name.replace(/\s+/g, "_") || "font"}.otf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e: any) {
-      alert("OTF export failed: " + e.message);
-    }
   };
 
   // Grid canvas
@@ -331,521 +790,84 @@ export function PixelFontEditor() {
     }
   });
 
-  // Preview canvas
-  createEffect(() => {
-    const canvas = previewRef;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
-    const scale = previewScale();
-    const ascender = font().metrics.ascender;
-    const decender = font().metrics.descender;
-    const lineH = (ascender - decender + 2) * scale,
-      baselineY = (ascender + 1) * scale;
-    let totalW = 8;
-    for (const ch of previewText()) {
-      const g = font().glyphs[cpKey(ch.codePointAt(0)!)];
-      totalW += g ? g.advanceWidth * scale : 4 * scale;
-    }
-    canvas.width = Math.max(totalW, 300);
-    canvas.height = lineH;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = colors.border;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, baselineY);
-    ctx.lineTo(canvas.width, baselineY);
-    ctx.stroke();
-    let x = 4;
-    for (const ch of previewText()) {
-      const glyph = font().glyphs[cpKey(ch.codePointAt(0)!)];
-      if (!glyph) {
-        x += 4 * scale;
-        continue;
-      }
-      const top = baselineY - GLYPH_CANVAS_MIDPOINT * scale;
-      ctx.fillStyle = colors.text;
-      for (let canvasRow = 0; canvasRow < glyph.height; canvasRow++)
-        for (let canvasColumn = 0; canvasColumn < glyph.width; canvasColumn++)
-          if (glyph.bitmap[canvasRow][canvasColumn])
-            ctx.fillRect(
-              x + (-GLYPH_CANVAS_MIDPOINT + canvasColumn) * scale,
-              top + canvasRow * scale,
-              scale,
-              scale,
-            );
-      x += glyph.advanceWidth * scale;
-    }
-  });
-
   const guideRow = (y: number) => GLYPH_CANVAS_MIDPOINT - y;
-  const divider = (
-    <div
-      style={{
-        width: "1px",
-        height: "20px",
-        background: colors.border,
-        margin: "0 2px",
-      }}
-    />
-  );
-
   return (
     <div
       style={{
-        display: "flex",
-        "flex-direction": "column",
-        height: "100vh",
-        background: colors.background,
-        color: colors.text,
-        "font-family": "monospace",
-        "user-select": "none",
+        flex: 1,
         overflow: "hidden",
+        display: "flex",
+        "align-items": "center",
+        "justify-content": "center",
       }}
     >
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <Show when={glyph()}>
         <div
           style={{
-            width: "220px",
-            background: colors.background,
-            "border-right": `1px solid ${colors.border}`,
-            display: "flex",
-            "flex-direction": "column",
-            overflow: "hidden",
+            position: "relative",
+            transform: `translate(${(glyph().advanceWidth * zoom()) / -2}px, ${(font().metrics.capHeight * zoom()) / 2}px)`,
           }}
         >
-          <div
-            css={{
-              height: 52,
-              padding: 10,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <input
-              value={font().meta.name}
-              onInput={(e) =>
-                setFont((f) => ({
-                  ...f,
-                  meta: { ...f.meta, name: e.target.value },
-                }))
-              }
-              placeholder="Font name…"
-              style={{
-                background: "transparent",
-                border: `1px solid ${colors.border}`,
-                "border-radius": "4px",
-                color: colors.text,
-                padding: "3px 8px",
-                "font-size": "13px",
-                "min-width": 0,
-                height: "32px",
-                width: "100%",
-              }}
-            />
-          </div>
-          {/* <div
-            style={{
-              "font-size": 10 + "px",
-              color: colors.text2,
-              "letter-spacing": 1 + "px",
-              margin: "0px 19px 8px",
-            }}
-          >
-            FONT METRICS
-          </div> */}
-          <div css={{ pl: 19, pr: 10 }}>
-            {Object.entries(font().metrics).map(([k, v]) => (
-              <NumInput
-                label={k}
-                value={v}
-                onChange={(val) =>
-                  setFont((f) => ({
-                    ...f,
-                    metrics: { ...f.metrics, [k]: +val },
-                  }))
-                }
-              />
-            ))}
-          </div>
-
-          <div css={{ flex: "1 0 0px" }} />
-
-          <div
-            css={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              px: 19,
-              pb: 19,
-            }}
-          >
-            <button
-              onClick={exportOTF}
-              style={{
-                padding: "3px 12px",
-                "font-size": "12px",
-                "border-radius": "4px",
-                cursor: "pointer",
-                border: "none",
-                background: "#7c3aed",
-                color: "#fff",
-                "font-weight": "bold",
-              }}
-            >
-              ⬇ Export OTF
-            </button>
-            <button
-              onClick={saveFont}
-              style={{
-                padding: "3px 12px",
-                "font-size": "12px",
-                "border-radius": "4px",
-                cursor: "pointer",
-                border: "none",
-                background: "#16a34a",
-                color: "#fff",
-                "font-weight": "bold",
-              }}
-            >
-              💾 Save JSON
-            </button>
-            <label
-              style={{
-                padding: "3px 12px",
-                "font-size": "12px",
-                "border-radius": "4px",
-                cursor: "pointer",
-                background: "#1e293b",
-                color: "#f8fafc",
-                "font-weight": "bold",
-                "text-align": "center",
-              }}
-            >
-              📂 Load JSON
-              <input
-                type="file"
-                accept=".json"
-                onInput={loadFont}
-                style={{ display: "none" }}
-              />
-            </label>
-          </div>
-        </div>
-
-        <div
-          style={{
-            width: "220px",
-            background: colors.background,
-            "border-right": `1px solid ${colors.border}`,
-            display: "flex",
-            "flex-direction": "column",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            css={{
-              height: 52,
-              display: "flex",
-              alignItems: "center",
-              px: 16,
-            }}
-          >
-            <div
-              style={{
-                "font-size": "10px",
-                color: colors.text2,
-                "letter-spacing": "1px",
-              }}
-            >
-              CHARACTERS
-            </div>
-          </div>
-          <div style={{ flex: 1, overflow: "auto", padding: "0 8px 8px" }}>
-            <div
-              style={{
-                display: "grid",
-                "grid-template-columns": "repeat(8,1fr)",
-                gap: "2px",
-              }}
-            >
-              <For each={CHARSET_AS_ARRAY}>
-                {(character) => {
-                  const codepoint = () => character.codePointAt(0)!;
-                  const key = () => cpKey(codepoint());
-                  const filled = () =>
-                    font().glyphs[
-                      cpKey(character.codePointAt(0)!)
-                    ]?.bitmap.some((r) => r.some((v) => v));
-                  const sel = () => key() === selKey();
-                  return (
-                    <div
-                      onClick={() => {
-                        const codepoint = character.codePointAt(0)!;
-                        const key = cpKey(codepoint);
-                        const glyph = font().glyphs[key];
-                        if (!glyph) {
-                          setFont((prev) => ({
-                            ...prev,
-                            glyphs: {
-                              ...prev.glyphs,
-                              [key]: {
-                                name: character === " " ? "space" : character,
-                                codePoint: codepoint,
-                                advanceWidth: font().metrics.capHeight,
-                                width: GLYPH_CANVAS_SIZE,
-                                height: GLYPH_CANVAS_SIZE,
-                                bitmap: emptyBm(
-                                  GLYPH_CANVAS_SIZE,
-                                  GLYPH_CANVAS_SIZE,
-                                ),
-                              },
-                            },
-                          }));
-                        }
-                        setSelKey(key);
-                      }}
-                      style={{
-                        "aspect-ratio": "1",
-                        display: "flex",
-                        "align-items": "center",
-                        "justify-content": "center",
-                        "font-size": "11px",
-                        "border-radius": "3px",
-                        cursor: "pointer",
-                        border: `1px solid ${sel() ? "#6366f1" : filled() ? "#1e3a5f" : "transparent"}`,
-                        background: sel()
-                          ? "#1e1b4b"
-                          : filled()
-                            ? "#0f1e33"
-                            : "transparent",
-                        color: sel()
-                          ? "#a5b4fc"
-                          : filled()
-                            ? "#7dd3fc"
-                            : "#334155",
-                      }}
-                    >
-                      {character === " " ? "·" : character}
-                    </div>
-                  );
-                }}
-              </For>
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            "flex-direction": "column",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              background: colors.background,
-              height: "53px",
-              "border-bottom": `1px solid ${colors.border}`,
-              "flex-shrink": 0,
-              "align-items": "center",
-              padding: "0px 16px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                gap: "5px",
-                "align-items": "center",
-                flex: "1 0 0px",
-              }}
-            >
-              <span
-                style={{
-                  "font-size": "13px",
-                  color: colors.text,
-                  "min-width": "60px",
-                  "text-align": "center",
-                }}
-              >
-                {glyph()?.name === "space" ? "SPACE" : `'${glyph()?.name}'`}
-                {glyph()?.codePoint}
-                <span
-                  style={{
-                    "font-size": "10px",
-                    color: colors.text,
-                    "margin-left": "4px",
-                  }}
-                >
-                  {selKey()}
-                </span>
-              </span>
-            </div>
-            <Btn onClick={clearGlyph} accent="#ef4444">
-              Clear
-            </Btn>
-            <Show when={glyph()}>
-              <NumInput
-                label="Width"
-                value={glyph().advanceWidth}
-                onChange={(v) => updateGlyph(selKey(), { advanceWidth: +v })}
-              />
-            </Show>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "5px",
-                "align-items": "center",
-                "justify-content": "flex-end",
-                flex: "1 0 0px",
-              }}
-            >
-              <div
-                style={{ display: "flex", "align-items": "center", gap: "5px" }}
-              >
-                <span style={{ "font-size": "11px", color: colors.text }}>
-                  zoom
-                </span>
-                <input
-                  type="range"
-                  min={14}
-                  max={52}
-                  value={zoom()}
-                  onInput={(e) => setZoom(+e.target.value)}
-                  style={{ width: "70px" }}
-                />
-                <span
-                  style={{
-                    "font-size": "11px",
-                    color: colors.text,
-                    width: "26px",
-                  }}
-                >
-                  {zoom()}px
-                </span>
-              </div>
-              <Btn
-                onClick={() => setShowGuides((v) => !v)}
-                active={showGuides()}
-                accent="#0ea5e9"
-              >
-                📏 Guides
-              </Btn>
-            </div>
-          </div>
-
-          {glyph() && (
-            <div
-              style={{
-                flex: 1,
-                overflow: "hidden",
-                display: "flex",
-                "align-items": "center",
-                "justify-content": "center",
-                padding: "20px",
-              }}
-            >
-              <div
-                style={{
-                  position: "relative",
-                  transform: `translate(${(glyph().advanceWidth * zoom()) / -2}px, ${(font().metrics.capHeight * zoom()) / 2}px)`,
-                }}
-              >
-                <Show when={showGuides()}>
-                  <For each={fontVerticalGuidelines()}>
-                    {(guide) => {
-                      const row = guideRow(guide.y);
-                      if (row < 0 || row > glyph().height) return null;
-                      return (
-                        <div
-                          style={{
-                            position: "absolute",
-                            left: 0,
-                            right: 0,
-                            top: `${row * zoom() - 0.5}px`,
-                            "border-top": `1px solid ${colors.canvas.guideline}`,
-                            "z-index": 5,
-                            "pointer-events": "none",
-                          }}
-                        >
-                          {/* <span
-                            style={{
-                              position: "absolute",
-                              right: "100%",
-                              top: "-8px",
-                              "padding-right": "6px",
-                              "font-size": "9px",
-                              color: colors.canvas.guideline,
-                              "white-space": "nowrap",
-                            }}
-                          >
-                            {guide.name}
-                          </span> */}
-                        </div>
-                      );
+          <Show when={showGuides()}>
+            <For each={fontVerticalGuidelines()}>
+              {(guide) => {
+                const row = guideRow(guide.offset);
+                if (row < 0 || row > glyph().height) return null;
+                return (
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      top: `${row * zoom() - 0.5}px`,
+                      "border-top": `1px solid ${colors.canvas.guideline}`,
+                      "z-index": 5,
+                      "pointer-events": "none",
                     }}
-                  </For>
-                  <For each={fontHorizontalGuidelines()}>
-                    {(guide) => {
-                      const row = guideRow(guide.y);
-                      if (row < 0 || row > glyph().height) return null;
-                      return (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            bottom: 0,
-                            left:
-                              (GLYPH_CANVAS_MIDPOINT + guide.y) * zoom() -
-                              0.5 +
-                              "px",
-                            "border-left": `1px solid ${colors.canvas.guideline}`,
-                            "z-index": 5,
-                            "pointer-events": "none",
-                          }}
-                        >
-                          {/* <span
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              left: 4 + "px",
-                              "padding-top": 3 + "px",
-                              "font-size": 9 + "px",
-                              color: colors.canvas.guideline,
-                              "white-space": "nowrap",
-                            }}
-                          >
-                            {guide.name}
-                          </span> */}
-                        </div>
-                      );
+                  ></div>
+                );
+              }}
+            </For>
+            <For each={fontHorizontalGuidelines()}>
+              {(guide) => {
+                const row = guideRow(guide.offset);
+                if (row < 0 || row > glyph().height) return null;
+                return (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      bottom: 0,
+                      left:
+                        (GLYPH_CANVAS_MIDPOINT + guide.offset) * zoom() -
+                        0.5 +
+                        "px",
+                      "border-left": `1px solid ${colors.canvas.guideline}`,
+                      "z-index": 5,
+                      "pointer-events": "none",
                     }}
-                  </For>
-                </Show>
-                <canvas
-                  ref={gridRef}
-                  onPointerDown={onGridDown}
-                  onPointerMove={onGridMove}
-                  onPointerUp={() => {
-                    drawing = false;
-                  }}
-                  style={{
-                    border: `1px solid ${colors.canvas.border}`,
-                    cursor: "crosshair",
-                    "touch-action": "none",
-                    "box-shadow": `0 0 0 4px #808080, 4px 4px 0 4px #808080`,
-                    "image-rendering": "pixelated",
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          <PreviewSection font={font()} />
+                  ></div>
+                );
+              }}
+            </For>
+          </Show>
+          <canvas
+            ref={gridRef}
+            onPointerDown={onGridDown}
+            onPointerMove={onGridMove}
+            onPointerUp={() => {
+              drawing = false;
+            }}
+            style={{
+              border: `1px solid ${colors.canvas.border}`,
+              cursor: "crosshair",
+              "touch-action": "none",
+              "box-shadow": `0 0 0 4px #808080, 4px 4px 0 4px #808080`,
+              "image-rendering": "pixelated",
+            }}
+          />
         </div>
-      </div>
+      </Show>
     </div>
   );
 }
@@ -966,7 +988,7 @@ function PreviewSection(props: { font: FontData }) {
       <div
         style={{
           overflow: "auto",
-          background: "#c0c0c0",
+          background: colors.canvas.bg2,
           "border-radius": 4 + "px",
           padding: "4px 0",
           "max-height": 90 + "px",
