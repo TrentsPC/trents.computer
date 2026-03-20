@@ -8,13 +8,11 @@
     "modified": "2026-03-17T10:44:05.562Z"
   },
   "metrics": {
-    "unitsPerEm": 16,
     "ascender": 18,
     "descender": -4,
     "xHeight": 13,
     "capHeight": 18,
-    "lineGap": 2,
-    "defaultAdvanceWidth": 9
+    "lineGap": 0
   },
   "glyphs": {
     "U+0020": {

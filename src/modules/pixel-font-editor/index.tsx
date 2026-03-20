@@ -1,10 +1,11 @@
 import { createEffect, createSignal, For, JSX, Show } from "solid-js";
+import "./font.css";
 import newYork from "./new-york.pxfont.json";
 import { buildTTF } from "./otf";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
 
 const CHARSET =
-  " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~😎";
+  " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~𝒞😎";
 const CHARSET_AS_ARRAY: string[] = [];
 for (const ch of CHARSET) {
   CHARSET_AS_ARRAY.push(ch);
@@ -19,22 +20,6 @@ const GLYPH_CANVAS_SIZE = 64;
 const GLYPH_CANVAS_MIDPOINT = GLYPH_CANVAS_SIZE / 2;
 
 function makeFont(): FontData {
-  const DW = GLYPH_CANVAS_SIZE;
-  const DH = GLYPH_CANVAS_SIZE;
-  const glyphs: Record<string, FontDataGlyph> = {};
-  for (const ch of CHARSET) {
-    const cp = ch.codePointAt(0),
-      key = cpKey(cp!),
-      sp = ch === " ";
-    glyphs[key] = {
-      name: sp ? "space" : ch,
-      codePoint: cp!,
-      advanceWidth: sp ? 5 : 9,
-      width: sp ? 4 : DW,
-      height: DH,
-      bitmap: emptyBm(sp ? 4 : DW, DH),
-    };
-  }
   return {
     meta: {
       version: "1.0",
@@ -49,7 +34,7 @@ function makeFont(): FontData {
       descender: -2,
       xHeight: 6,
       capHeight: 8,
-      lineGap: 2,
+      lineGap: 0,
     },
     glyphs: {},
   };
