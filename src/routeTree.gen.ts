@@ -18,7 +18,6 @@ import { Route as SecretWordRouteImport } from './routes/secret-word'
 import { Route as IsoRouteImport } from './routes/iso'
 import { Route as GbRouteImport } from './routes/gb'
 import { Route as FakerRouteImport } from './routes/faker'
-import { Route as DemoRouteImport } from './routes/demo'
 import { Route as CvRouteImport } from './routes/cv'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as BoggleRouteImport } from './routes/boggle'
@@ -86,11 +85,6 @@ const GbRoute = GbRouteImport.update({
 const FakerRoute = FakerRouteImport.update({
   id: '/faker',
   path: '/faker',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoRoute = DemoRouteImport.update({
-  id: '/demo',
-  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CvRoute = CvRouteImport.update({
@@ -220,7 +214,6 @@ export interface FileRoutesByFullPath {
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
   '/cv': typeof CvRoute
-  '/demo': typeof DemoRoute
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
@@ -254,7 +247,6 @@ export interface FileRoutesByTo {
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
   '/cv': typeof CvRoute
-  '/demo': typeof DemoRoute
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
@@ -290,7 +282,6 @@ export interface FileRoutesById {
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
   '/cv': typeof CvRoute
-  '/demo': typeof DemoRoute
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
@@ -327,7 +318,6 @@ export interface FileRouteTypes {
     | '/boggle'
     | '/calendar'
     | '/cv'
-    | '/demo'
     | '/faker'
     | '/gb'
     | '/iso'
@@ -361,7 +351,6 @@ export interface FileRouteTypes {
     | '/boggle'
     | '/calendar'
     | '/cv'
-    | '/demo'
     | '/faker'
     | '/gb'
     | '/iso'
@@ -396,7 +385,6 @@ export interface FileRouteTypes {
     | '/boggle'
     | '/calendar'
     | '/cv'
-    | '/demo'
     | '/faker'
     | '/gb'
     | '/iso'
@@ -432,7 +420,6 @@ export interface RootRouteChildren {
   BoggleRoute: typeof BoggleRoute
   CalendarRoute: typeof CalendarRoute
   CvRoute: typeof CvRoute
-  DemoRoute: typeof DemoRoute
   FakerRoute: typeof FakerRoute
   GbRoute: typeof GbRoute
   IsoRoute: typeof IsoRoute
@@ -504,13 +491,6 @@ declare module '@tanstack/solid-router' {
       path: '/cv'
       fullPath: '/cv'
       preLoaderRoute: typeof CvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo': {
-      id: '/demo'
-      path: '/demo'
-      fullPath: '/demo'
-      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faker': {
@@ -718,7 +698,6 @@ const rootRouteChildren: RootRouteChildren = {
   BoggleRoute: BoggleRoute,
   CalendarRoute: CalendarRoute,
   CvRoute: CvRoute,
-  DemoRoute: DemoRoute,
   FakerRoute: FakerRoute,
   GbRoute: GbRoute,
   IsoRoute: IsoRoute,

@@ -1,5 +1,13 @@
-import { createEffect, createSignal, For, JSX, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  JSX,
+  Show,
+} from "solid-js";
 import "./font.css";
+import { GRAPHEME_DATA, GraphemeSet } from "./grapheme-data";
 import newYork from "./new-york.pxfont.json";
 import { buildTTF } from "./otf";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
@@ -423,7 +431,66 @@ function GlyphSelectorSection(props: {
           CHARACTERS
         </div>
       </div>
+
       <div style={{ flex: 1, overflow: "auto", padding: "0 8px 8px" }}>
+        <For each={GRAPHEME_DATA}>
+          {(set) => (
+            <GraphemeSetComp
+              set={set}
+              font={props.font}
+              selectedGlyphId={props.editorState.selectedGlyphId}
+              onSelect={(character) => {
+                const codepoint = character.codePointAt(0)!;
+                const key = cpKey(codepoint);
+                const glyph = font().glyphs[key];
+                if (!glyph) {
+                  props.onFontChange({
+                    ...props.font,
+                    glyphs: {
+                      ...props.font.glyphs,
+                      [key]: {
+                        name: character === " " ? "space" : character,
+                        codePoint: codepoint,
+                        advanceWidth: font().metrics.capHeight,
+                        width: GLYPH_CANVAS_SIZE,
+                        height: GLYPH_CANVAS_SIZE,
+                        bitmap: emptyBm(GLYPH_CANVAS_SIZE, GLYPH_CANVAS_SIZE),
+                      },
+                    },
+                  });
+                }
+                props.onEditorStateChange({
+                  ...props.editorState,
+                  selectedGlyphId: key,
+                });
+              }}
+            />
+          )}
+        </For>
+      </div>
+    </div>
+  );
+}
+
+function GraphemeSetComp(props: {
+  set: GraphemeSet;
+  selectedGlyphId: string;
+  onSelect: (grapheme: string) => void;
+  font: FontData;
+}) {
+  const graphemesAsArray = createMemo(() => {
+    const graphemes: string[] = [];
+    if (props.set.graphemes) {
+      for (const ch of props.set.graphemes) {
+        graphemes.push(ch);
+      }
+    }
+    return graphemes;
+  });
+  return (
+    <div>
+      {props.set.name}
+      <Show when={props.set.graphemes}>
         <div
           style={{
             display: "grid",
@@ -431,44 +498,18 @@ function GlyphSelectorSection(props: {
             gap: "2px",
           }}
         >
-          <For each={CHARSET_AS_ARRAY}>
+          <For each={graphemesAsArray()}>
             {(character) => {
               const codepoint = () => character.codePointAt(0)!;
               const key = () => cpKey(codepoint());
-              const filled = () =>
-                font().glyphs[cpKey(character.codePointAt(0)!)]?.bitmap.some(
-                  (r) => r.some((v) => v),
-                );
-              const sel = () => key() === props.editorState.selectedGlyphId;
+              const exists = () =>
+                props.font.glyphs[cpKey(character.codePointAt(0)!)]!!;
+              const selected = () => key() === props.selectedGlyphId;
+
               return (
-                <div
+                <button
                   onClick={() => {
-                    const codepoint = character.codePointAt(0)!;
-                    const key = cpKey(codepoint);
-                    const glyph = font().glyphs[key];
-                    if (!glyph) {
-                      props.onFontChange({
-                        ...props.font,
-                        glyphs: {
-                          ...props.font.glyphs,
-                          [key]: {
-                            name: character === " " ? "space" : character,
-                            codePoint: codepoint,
-                            advanceWidth: font().metrics.capHeight,
-                            width: GLYPH_CANVAS_SIZE,
-                            height: GLYPH_CANVAS_SIZE,
-                            bitmap: emptyBm(
-                              GLYPH_CANVAS_SIZE,
-                              GLYPH_CANVAS_SIZE,
-                            ),
-                          },
-                        },
-                      });
-                    }
-                    props.onEditorStateChange({
-                      ...props.editorState,
-                      selectedGlyphId: key,
-                    });
+                    props.onSelect(character);
                   }}
                   style={{
                     "aspect-ratio": "1",
@@ -478,21 +519,32 @@ function GlyphSelectorSection(props: {
                     "font-size": "11px",
                     "border-radius": "3px",
                     cursor: "pointer",
-                    border: `1px solid ${sel() ? "#6366f1" : filled() ? "#1e3a5f" : "transparent"}`,
-                    background: sel()
+                    border: `1px solid ${selected() ? "#6366f1" : exists() ? "#1e3a5f" : "transparent"}`,
+                    background: selected()
                       ? "#1e1b4b"
-                      : filled()
+                      : exists()
                         ? "#0f1e33"
                         : "transparent",
-                    color: sel() ? "#a5b4fc" : filled() ? "#7dd3fc" : "#334155",
+                    color: selected()
+                      ? "#a5b4fc"
+                      : exists()
+                        ? "#7dd3fc"
+                        : "#334155",
                   }}
                 >
                   {character === " " ? "·" : character}
-                </div>
+                </button>
               );
             }}
           </For>
         </div>
+      </Show>
+      <div>
+        <Show when={props.set.children}>
+          <For each={props.set.children}>
+            {(child) => <GraphemeSetComp {...props} set={child} />}
+          </For>
+        </Show>
       </div>
     </div>
   );
