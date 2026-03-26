@@ -45,6 +45,11 @@ function makeFont(): FontData {
       lineGap: 0,
     },
     glyphs: {},
+    rendering: {
+      pixelShape: "circle",
+      gapX: 0,
+      gapY: 0,
+    },
   };
 }
 
@@ -101,6 +106,9 @@ type NumInputProps = {
   value: string | number;
   onChange: (value: string) => void;
   w?: number;
+  step?: number;
+  min?: number;
+  max?: number;
 };
 const NumInput = (props: NumInputProps) => (
   <div
@@ -127,6 +135,9 @@ const NumInput = (props: NumInputProps) => (
       type="number"
       value={props.value}
       onInput={(e) => props.onChange(e.target.value)}
+      step={props.step}
+      min={props.min}
+      max={props.max}
       style={{
         width: (props.w || 50) + "px",
         background: colors.background,
@@ -312,6 +323,72 @@ function FontSection(props: {
             }
           />
         ))}
+      </div>
+
+      <div css={{ pl: 19, pr: 10, mt: 12 }}>
+        <div
+          style={{
+            "font-size": "11px",
+            color: colors.text,
+            "margin-bottom": "6px",
+          }}
+        >
+          Pixel Shape
+        </div>
+        <div style={{ display: "flex", gap: "4px" }}>
+          <Btn
+            small
+            onClick={() =>
+              props.onFontChange({
+                ...props.font,
+                rendering: { ...props.font.rendering, pixelShape: "square" },
+              })
+            }
+            active={font().rendering?.pixelShape !== "circle"}
+          >
+            Square
+          </Btn>
+          <Btn
+            small
+            onClick={() =>
+              props.onFontChange({
+                ...props.font,
+                rendering: { ...props.font.rendering, pixelShape: "circle" },
+              })
+            }
+            active={font().rendering?.pixelShape === "circle"}
+          >
+            Circle
+          </Btn>
+        </div>
+        <div style={{ "margin-top": "8px" }}>
+          <NumInput
+            label="Gap X"
+            value={font().rendering?.gapX ?? 0}
+            onChange={(val) =>
+              props.onFontChange({
+                ...props.font,
+                rendering: { ...props.font.rendering, gapX: +val },
+              })
+            }
+            step={0.1}
+            min={-0.9}
+            max={2}
+          />
+          <NumInput
+            label="Gap Y"
+            value={font().rendering?.gapY ?? 0}
+            onChange={(val) =>
+              props.onFontChange({
+                ...props.font,
+                rendering: { ...props.font.rendering, gapY: +val },
+              })
+            }
+            step={0.1}
+            min={-0.9}
+            max={2}
+          />
+        </div>
       </div>
 
       <div css={{ flex: "1 0 0px" }} />
@@ -919,45 +996,64 @@ function PreviewSection(props: { font: FontData }) {
   createEffect(() => {
     const canvas = previewRef;
     if (!canvas) return;
+
+    const pixelShape = font().rendering?.pixelShape ?? "square";
+    const gapX = font().rendering?.gapX ?? 0;
+    const gapY = font().rendering?.gapY ?? 0;
     const ctx = canvas.getContext("2d")!;
+    const dpr = window.devicePixelRatio || 1;
     const scale = previewScale();
+    const strideX = scale * (1 + gapX);
+    const strideY = scale * (1 + gapY);
     const ascender = font().metrics.ascender;
     const decender = font().metrics.descender;
-    const lineH = (ascender - decender + 2) * scale,
-      baselineY = (ascender + 1) * scale;
+    const lineH = (ascender - decender + 2) * strideY,
+      baselineY = (ascender + 1) * strideY;
     let totalW = 8;
     for (const ch of previewText()) {
       const g = font().glyphs[cpKey(ch.codePointAt(0)!)];
-      totalW += g ? g.advanceWidth * scale : 4 * scale;
+      totalW += g ? g.advanceWidth * strideX : 4 * strideX;
     }
-    canvas.width = Math.max(totalW, 300);
-    canvas.height = lineH;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const w = Math.max(totalW, 300);
+    const h = lineH;
+
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0, 0, w, h);
     ctx.strokeStyle = colors.border;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, baselineY);
-    ctx.lineTo(canvas.width, baselineY);
+    ctx.lineTo(w, baselineY);
     ctx.stroke();
     let x = 4;
     for (const ch of previewText()) {
       const glyph = font().glyphs[cpKey(ch.codePointAt(0)!)];
       if (!glyph) {
-        x += 4 * scale;
+        x += 4 * strideX;
         continue;
       }
-      const top = baselineY - GLYPH_CANVAS_MIDPOINT * scale;
+      const top = baselineY - GLYPH_CANVAS_MIDPOINT * strideY;
       ctx.fillStyle = colors.text;
       for (let canvasRow = 0; canvasRow < glyph.height; canvasRow++)
         for (let canvasColumn = 0; canvasColumn < glyph.width; canvasColumn++)
-          if (glyph.bitmap[canvasRow][canvasColumn])
-            ctx.fillRect(
-              x + (-GLYPH_CANVAS_MIDPOINT + canvasColumn) * scale,
-              top + canvasRow * scale,
-              scale,
-              scale,
-            );
-      x += glyph.advanceWidth * scale;
+          if (glyph.bitmap[canvasRow][canvasColumn]) {
+            const px = x + (-GLYPH_CANVAS_MIDPOINT + canvasColumn) * strideX;
+            const py = top + canvasRow * strideY;
+            if (pixelShape === "circle") {
+              const radius = scale / 2;
+              ctx.beginPath();
+              ctx.arc(px + radius, py + radius, radius, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.fillRect(px, py, scale, scale);
+            }
+          }
+      x += glyph.advanceWidth * strideX;
     }
   });
 
@@ -1007,7 +1103,7 @@ function PreviewSection(props: { font: FontData }) {
         <input
           type="range"
           min={1}
-          max={8}
+          max={16}
           value={previewScale()}
           onInput={(e) => setPreviewScale(+e.target.value)}
           style={{ width: 70 + "px" }}
@@ -1028,7 +1124,7 @@ function PreviewSection(props: { font: FontData }) {
           background: colors.canvas.bg2,
           "border-radius": 4 + "px",
           padding: "4px 0",
-          "max-height": 90 + "px",
+          "max-height": "33vh",
         }}
       >
         <canvas

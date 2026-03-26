@@ -2,6 +2,7 @@ export type FontData = {
   meta: FontDataMeta;
   metrics: FontDataMetrics;
   glyphs: Record<string, FontDataGlyph>;
+  rendering: FontDataRendering;
 };
 
 export type FontDataMeta = {
@@ -22,6 +23,11 @@ export type FontDataMetrics = {
 export type FontDataGuideline = {
   name: string;
   offset: number;
+};
+export type FontDataRendering = {
+  pixelShape: "square" | "circle";
+  gapX: number;
+  gapY: number;
 };
 export type FontDataGlyph = {
   name: string;

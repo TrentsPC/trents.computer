@@ -14,6 +14,9 @@
     "capHeight": 18,
     "lineGap": 0
   },
+  "rendering": {
+    "pixelShape": "circle"
+  },
   "glyphs": {
     "U+0020": {
       "name": "space",
