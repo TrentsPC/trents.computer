@@ -15,7 +15,9 @@
     "lineGap": 0
   },
   "rendering": {
-    "pixelShape": "circle"
+    "pixelShape": "circle",
+    "gapX": 0,
+    "gapY": 0
   },
   "glyphs": {
     "U+0020": {

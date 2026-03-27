@@ -6,8 +6,8 @@ import {
   JSX,
   Show,
 } from "solid-js";
+import { CHARACTER_DATA, CharacterSet } from "./character-data";
 import "./font.css";
-import { GRAPHEME_DATA, GraphemeSet } from "./grapheme-data";
 import newYork from "./new-york.pxfont.json";
 import { buildTTF } from "./otf";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
@@ -53,18 +53,34 @@ function makeFont(): FontData {
   };
 }
 
+const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0F3810"];
+
+// const colors = {
+//   background: "#a3a3a3",
+//   text: "#000000",
+//   text2: "#475569",
+//   border: "#5e5e5e",
+
+//   canvas: {
+//     bg1: "#a3a3a3",
+//     bg2: "#b0b0b0",
+//     border: "#909090",
+//     guideline: "#333333",
+//     fill: "#000000",
+//   },
+// };
 const colors = {
-  background: "#a3a3a3",
-  text: "#000000",
-  text2: "#475569",
-  border: "#5e5e5e",
+  background: GAMEBOY[0],
+  text: GAMEBOY[3],
+  text2: GAMEBOY[2],
+  border: GAMEBOY[2],
 
   canvas: {
-    bg1: "#a3a3a3",
-    bg2: "#b0b0b0",
-    border: "#909090",
-    guideline: "#333333",
-    fill: "#000000",
+    bg1: GAMEBOY[0],
+    bg2: GAMEBOY[0],
+    border: GAMEBOY[1],
+    guideline: GAMEBOY[3],
+    fill: GAMEBOY[3],
   },
 };
 
@@ -84,13 +100,12 @@ const Btn = (props: BtnProps) => (
     title={props.title}
     style={{
       padding: props.small ? "2px 7px" : "3px 10px",
-      "font-size": "12px",
+      // "font-size": "12px",
       "border-radius": "4px",
       cursor: "pointer",
       border: "none",
       background: props.active ? props.accent || "#6366f1" : "#1e293b",
       color: "#f8fafc",
-      "font-weight": props.active ? "bold" : "normal",
       outline: props.active
         ? `2px solid ${props.accent}`
         : "2px solid transparent",
@@ -123,7 +138,7 @@ const NumInput = (props: NumInputProps) => (
       style={{
         flex: 1,
         color: colors.text,
-        "font-size": "11px",
+        // "font-size": "11px",
         overflow: "hidden",
         "text-overflow": "ellipsis",
         "white-space": "nowrap",
@@ -141,11 +156,11 @@ const NumInput = (props: NumInputProps) => (
       style={{
         width: (props.w || 50) + "px",
         background: colors.background,
-        border: `1px solid ${colors.border}`,
-        "border-radius": "3px",
+        border: `2px solid ${colors.border}`,
+        "border-radius": "2px",
         color: colors.text,
         padding: "2px 4px",
-        "font-size": "11px",
+        // "font-size": "11px",
       }}
     />
   </div>
@@ -194,7 +209,9 @@ export function PixelFontEditor() {
         height: "100vh",
         background: colors.background,
         color: colors.text,
-        "font-family": "monospace",
+        "font-family": "Chicago, monospace",
+        "font-size": "20px",
+        "line-height": 1,
         "user-select": "none",
         overflow: "hidden",
       }}
@@ -274,7 +291,7 @@ function FontSection(props: {
       style={{
         width: "220px",
         background: colors.background,
-        "border-right": `1px solid ${colors.border}`,
+        "border-right": `2px solid ${colors.border}`,
         display: "flex",
         "flex-direction": "column",
         overflow: "hidden",
@@ -299,11 +316,11 @@ function FontSection(props: {
           placeholder="Font name…"
           style={{
             background: "transparent",
-            border: `1px solid ${colors.border}`,
+            border: `2px solid ${colors.border}`,
             "border-radius": "4px",
             color: colors.text,
-            padding: "3px 8px",
-            "font-size": "13px",
+            padding: "2px 6px",
+            "font-size": "1em",
             "min-width": 0,
             height: "32px",
             width: "100%",
@@ -328,7 +345,7 @@ function FontSection(props: {
       <div css={{ pl: 19, pr: 10, mt: 12 }}>
         <div
           style={{
-            "font-size": "11px",
+            // "font-size": "11px",
             color: colors.text,
             "margin-bottom": "6px",
           }}
@@ -406,13 +423,13 @@ function FontSection(props: {
           onClick={exportOTF}
           style={{
             padding: "3px 12px",
-            "font-size": "12px",
+            // "font-size": "12px",
             "border-radius": "4px",
             cursor: "pointer",
             border: "none",
             background: "#7c3aed",
             color: "#fff",
-            "font-weight": "bold",
+            // "font-weight": "bold",
           }}
         >
           ⬇ Export OTF
@@ -421,13 +438,13 @@ function FontSection(props: {
           onClick={saveFont}
           style={{
             padding: "3px 12px",
-            "font-size": "12px",
+            // "font-size": "12px",
             "border-radius": "4px",
             cursor: "pointer",
             border: "none",
             background: "#16a34a",
             color: "#fff",
-            "font-weight": "bold",
+            // "font-weight": "bold",
           }}
         >
           💾 Save JSON
@@ -435,12 +452,12 @@ function FontSection(props: {
         <label
           style={{
             padding: "3px 12px",
-            "font-size": "12px",
+            // "font-size": "12px",
             "border-radius": "4px",
             cursor: "pointer",
             background: "#1e293b",
             color: "#f8fafc",
-            "font-weight": "bold",
+            // "font-weight": "bold",
             "text-align": "center",
           }}
         >
@@ -456,13 +473,13 @@ function FontSection(props: {
           onClick={() => props.onFontChange(makeFont())}
           style={{
             padding: "3px 12px",
-            "font-size": "12px",
+            // "font-size": "12px",
             "border-radius": "4px",
             cursor: "pointer",
             border: "none",
             background: "#ff0000",
             color: "#fff",
-            "font-weight": "bold",
+            // "font-weight": "bold",
           }}
         >
           New Font
@@ -482,9 +499,9 @@ function GlyphSelectorSection(props: {
   return (
     <div
       style={{
-        width: "220px",
+        // width: "260px",
         background: colors.background,
-        "border-right": `1px solid ${colors.border}`,
+        "border-right": `2px solid ${colors.border}`,
         display: "flex",
         "flex-direction": "column",
         overflow: "hidden",
@@ -500,7 +517,7 @@ function GlyphSelectorSection(props: {
       >
         <div
           style={{
-            "font-size": "10px",
+            // "font-size": "10px",
             color: colors.text2,
             "letter-spacing": "1px",
           }}
@@ -509,39 +526,59 @@ function GlyphSelectorSection(props: {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflow: "auto", padding: "0 8px 8px" }}>
-        <For each={GRAPHEME_DATA}>
-          {(set) => (
-            <GraphemeSetComp
-              set={set}
-              font={props.font}
-              selectedGlyphId={props.editorState.selectedGlyphId}
-              onSelect={(character) => {
-                const codepoint = character.codePointAt(0)!;
-                const key = cpKey(codepoint);
-                const glyph = font().glyphs[key];
-                if (!glyph) {
-                  props.onFontChange({
-                    ...props.font,
-                    glyphs: {
-                      ...props.font.glyphs,
-                      [key]: {
-                        name: character === " " ? "space" : character,
-                        codePoint: codepoint,
-                        advanceWidth: font().metrics.capHeight,
-                        width: GLYPH_CANVAS_SIZE,
-                        height: GLYPH_CANVAS_SIZE,
-                        bitmap: emptyBm(GLYPH_CANVAS_SIZE, GLYPH_CANVAS_SIZE),
-                      },
-                    },
-                  });
-                }
-                props.onEditorStateChange({
-                  ...props.editorState,
-                  selectedGlyphId: key,
-                });
-              }}
-            />
+      <div style={{ flex: 1, overflow: "auto", padding: "0 0 8px" }}>
+        <For each={CHARACTER_DATA}>
+          {(set, i) => (
+            <div>
+              {i() !== 0 && (
+                <div
+                  css={{
+                    minHeight: "8px",
+                    margin: "8px 0",
+                    // width: "100%",
+                  }}
+                  style={{
+                    "background-color": colors.border,
+                  }}
+                />
+              )}
+              <div css={{ padding: "0 4px" }}>
+                <GraphemeSetComp
+                  depth={0}
+                  set={set}
+                  font={props.font}
+                  selectedGlyphId={props.editorState.selectedGlyphId}
+                  onSelect={(character) => {
+                    const codepoint = character.codePointAt(0)!;
+                    const key = cpKey(codepoint);
+                    const glyph = font().glyphs[key];
+                    if (!glyph) {
+                      props.onFontChange({
+                        ...props.font,
+                        glyphs: {
+                          ...props.font.glyphs,
+                          [key]: {
+                            name: character === " " ? "space" : character,
+                            codePoint: codepoint,
+                            advanceWidth: font().metrics.capHeight,
+                            width: GLYPH_CANVAS_SIZE,
+                            height: GLYPH_CANVAS_SIZE,
+                            bitmap: emptyBm(
+                              GLYPH_CANVAS_SIZE,
+                              GLYPH_CANVAS_SIZE,
+                            ),
+                          },
+                        },
+                      });
+                    }
+                    props.onEditorStateChange({
+                      ...props.editorState,
+                      selectedGlyphId: key,
+                    });
+                  }}
+                />
+              </div>
+            </div>
           )}
         </For>
       </div>
@@ -550,28 +587,41 @@ function GlyphSelectorSection(props: {
 }
 
 function GraphemeSetComp(props: {
-  set: GraphemeSet;
+  set: CharacterSet;
   selectedGlyphId: string;
   onSelect: (grapheme: string) => void;
   font: FontData;
+  depth: number;
 }) {
   const graphemesAsArray = createMemo(() => {
     const graphemes: string[] = [];
-    if (props.set.graphemes) {
-      for (const ch of props.set.graphemes) {
+    if (props.set.characters) {
+      for (const ch of props.set.characters) {
         graphemes.push(ch);
       }
     }
     return graphemes;
   });
+
+  const headerStyle = () => {
+    let style: JSX.CSSProperties = {
+      padding: "0 4px",
+      "text-align": props.depth === 0 ? "center" : "left",
+      color: props.depth === 0 ? colors.text2 : colors.text,
+      "font-weight": props.depth === 1 ? 400 : 400,
+    };
+
+    return style;
+  };
+
   return (
     <div>
-      {props.set.name}
-      <Show when={props.set.graphemes}>
+      <div style={headerStyle()}>{props.set.name}</div>
+      <Show when={props.set.characters}>
         <div
           style={{
             display: "grid",
-            "grid-template-columns": "repeat(8,1fr)",
+            "grid-template-columns": "repeat(10,28px)",
             gap: "2px",
           }}
         >
@@ -590,23 +640,22 @@ function GraphemeSetComp(props: {
                   }}
                   style={{
                     "aspect-ratio": "1",
+                    // width: "24px",
                     display: "flex",
                     "align-items": "center",
                     "justify-content": "center",
-                    "font-size": "11px",
-                    "border-radius": "3px",
+                    padding: "0px",
+                    // "font-size": "12px",
+                    "border-radius": "2px",
                     cursor: "pointer",
-                    border: `1px solid ${selected() ? "#6366f1" : exists() ? "#1e3a5f" : "transparent"}`,
+                    border: `2px solid ${selected() ? colors.text : exists() ? colors.text2 : "transparent"}`,
                     background: selected()
-                      ? "#1e1b4b"
+                      ? colors.text
                       : exists()
-                        ? "#0f1e33"
+                        ? "transparent"
                         : "transparent",
-                    color: selected()
-                      ? "#a5b4fc"
-                      : exists()
-                        ? "#7dd3fc"
-                        : "#334155",
+                    color: selected() ? colors.background : undefined,
+                    // opacity: exists() ? 1 : 0.5,
                   }}
                 >
                   {character === " " ? "·" : character}
@@ -619,7 +668,9 @@ function GraphemeSetComp(props: {
       <div>
         <Show when={props.set.children}>
           <For each={props.set.children}>
-            {(child) => <GraphemeSetComp {...props} set={child} />}
+            {(child) => (
+              <GraphemeSetComp {...props} depth={props.depth + 1} set={child} />
+            )}
           </For>
         </Show>
       </div>
@@ -681,8 +732,8 @@ function GlyphEditorHeader(props: {
       style={{
         display: "flex",
         background: colors.background,
-        height: "53px",
-        "border-bottom": `1px solid ${colors.border}`,
+        height: "54px",
+        "border-bottom": `2px solid ${colors.border}`,
         "flex-shrink": 0,
         "align-items": "center",
         padding: "0px 16px",
@@ -698,21 +749,20 @@ function GlyphEditorHeader(props: {
       >
         <span
           style={{
-            "font-size": "13px",
+            // "font-size": "13px",
             color: colors.text,
-            "min-width": "60px",
-            "text-align": "center",
+            // "min-width": "60px",
+            // "text-align": "center",
           }}
         >
-          {glyph()?.name === "space" ? "SPACE" : `'${glyph()?.name}'`}
+          {glyph()?.name === "space" ? "SPACE" : `${glyph()?.name}`}
           <span
             style={{
-              "font-size": "10px",
-              color: colors.text,
-              "margin-left": "4px",
+              color: colors.text2,
+              "margin-left": "20px",
             }}
           >
-            {glyph()?.codePoint.toString(16).padStart(4, "0")}
+            U+{glyph()?.codePoint.toString(16).padStart(4, "0")}
           </span>
         </span>
       </div>
@@ -737,7 +787,7 @@ function GlyphEditorHeader(props: {
         }}
       >
         <div style={{ display: "flex", "align-items": "center", gap: "5px" }}>
-          <span style={{ "font-size": "11px", color: colors.text }}>zoom</span>
+          <span style={{ color: colors.text }}>zoom</span>
           <input
             type="range"
             min={14}
@@ -753,7 +803,7 @@ function GlyphEditorHeader(props: {
           />
           <span
             style={{
-              "font-size": "11px",
+              // "font-size": "11px",
               color: colors.text,
               width: "26px",
             }}
@@ -976,7 +1026,7 @@ function GlyphEditorCanvas(props: {
               border: `1px solid ${colors.canvas.border}`,
               cursor: "crosshair",
               "touch-action": "none",
-              "box-shadow": `0 0 0 4px #808080, 4px 4px 0 4px #808080`,
+              "box-shadow": `0 0 0 4px ${colors.border}, 4px 4px 0 4px ${colors.border}`,
               "image-rendering": "pixelated",
             }}
           />
@@ -1061,7 +1111,7 @@ function PreviewSection(props: { font: FontData }) {
     <div
       style={{
         background: colors.background,
-        "border-top": `1px solid ${colors.border}`,
+        "border-top": `2px solid ${colors.border}`,
         padding: "7px 12px",
         "flex-shrink": 0,
       }}
@@ -1076,7 +1126,7 @@ function PreviewSection(props: { font: FontData }) {
       >
         <span
           style={{
-            "font-size": 10 + "px",
+            // "font-size": 10 + "px",
             color: colors.text2,
             "letter-spacing": 1 + "px",
             "white-space": "nowrap",
@@ -1094,12 +1144,10 @@ function PreviewSection(props: { font: FontData }) {
             "border-radius": 4 + "px",
             color: colors.text,
             padding: "2px 8px",
-            "font-size": 12 + "px",
+            // "font-size": 12 + "px",
           }}
         />
-        <span style={{ "font-size": 11 + "px", color: colors.text2 }}>
-          scale
-        </span>
+        <span style={{ color: colors.text2 }}>scale</span>
         <input
           type="range"
           min={1}
@@ -1110,7 +1158,7 @@ function PreviewSection(props: { font: FontData }) {
         />
         <span
           style={{
-            "font-size": 11 + "px",
+            // "font-size": 11 + "px",
             color: colors.text2,
             width: 20 + "px",
           }}
