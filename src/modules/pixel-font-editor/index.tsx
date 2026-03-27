@@ -422,14 +422,10 @@ function FontSection(props: {
         <button
           onClick={exportOTF}
           style={{
-            padding: "3px 12px",
-            // "font-size": "12px",
-            "border-radius": "4px",
+            padding: "4px 12px",
+            "border-radius": "2px",
+            border: `2px solid ${colors.border}`,
             cursor: "pointer",
-            border: "none",
-            background: "#7c3aed",
-            color: "#fff",
-            // "font-weight": "bold",
           }}
         >
           ⬇ Export OTF
@@ -437,27 +433,20 @@ function FontSection(props: {
         <button
           onClick={saveFont}
           style={{
-            padding: "3px 12px",
-            // "font-size": "12px",
-            "border-radius": "4px",
+            padding: "4px 12px",
+            "border-radius": "2px",
+            border: `2px solid ${colors.border}`,
             cursor: "pointer",
-            border: "none",
-            background: "#16a34a",
-            color: "#fff",
-            // "font-weight": "bold",
           }}
         >
           💾 Save JSON
         </button>
         <label
           style={{
-            padding: "3px 12px",
-            // "font-size": "12px",
-            "border-radius": "4px",
+            padding: "4px 12px",
+            "border-radius": "2px",
+            border: `2px solid ${colors.border}`,
             cursor: "pointer",
-            background: "#1e293b",
-            color: "#f8fafc",
-            // "font-weight": "bold",
             "text-align": "center",
           }}
         >
@@ -472,14 +461,10 @@ function FontSection(props: {
         <button
           onClick={() => props.onFontChange(makeFont())}
           style={{
-            padding: "3px 12px",
-            // "font-size": "12px",
-            "border-radius": "4px",
+            padding: "4px 12px",
+            "border-radius": "2px",
+            border: `2px solid ${colors.border}`,
             cursor: "pointer",
-            border: "none",
-            background: "#ff0000",
-            color: "#fff",
-            // "font-weight": "bold",
           }}
         >
           New Font
@@ -509,17 +494,20 @@ function GlyphSelectorSection(props: {
     >
       <div
         css={{
-          height: 52,
+          height: 54,
           display: "flex",
           alignItems: "center",
           px: 16,
+        }}
+        style={{
+          "border-bottom": `2px solid ${colors.border}`,
         }}
       >
         <div
           style={{
             // "font-size": "10px",
             color: colors.text2,
-            "letter-spacing": "1px",
+            // "letter-spacing": "1px",
           }}
         >
           CHARACTERS
@@ -533,8 +521,8 @@ function GlyphSelectorSection(props: {
               {i() !== 0 && (
                 <div
                   css={{
-                    minHeight: "8px",
-                    margin: "8px 0",
+                    minHeight: "2px",
+                    margin: "4px 0 0px",
                     // width: "100%",
                   }}
                   style={{
@@ -609,6 +597,7 @@ function GraphemeSetComp(props: {
       "text-align": props.depth === 0 ? "center" : "left",
       color: props.depth === 0 ? colors.text2 : colors.text,
       "font-weight": props.depth === 1 ? 400 : 400,
+      "margin-top": props.depth === 0 ? "4px" : 0,
     };
 
     return style;
