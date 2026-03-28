@@ -41,8 +41,25 @@ function mkBuf() {
 // ─── TTF/OTF binary builder ────────────────────────────────────────────────
 export function buildTTF(fontData: FontData) {
   const UPM = 1000;
-  const pixH = fontData.metrics.ascender - fontData.metrics.descender;
-  const sc = (v: any) => Math.round((v * UPM) / pixH);
+  // Scale so that cap height equals the em size (font-size)
+  const pixH = fontData.metrics.capHeight;
+  const sc = (v: number) => Math.round((v * UPM) / pixH);
+
+  // Adjust ascender/descender so space above cap height equals space below baseline
+  // This centers capital letters vertically within the em square
+  const aboveCap = fontData.metrics.ascender - fontData.metrics.capHeight;
+  const belowBaseline = -fontData.metrics.descender;
+  let ascender: number;
+  let descender: number;
+  if (aboveCap > belowBaseline) {
+    // Increase descender magnitude to match
+    ascender = fontData.metrics.ascender;
+    descender = -aboveCap;
+  } else {
+    // Increase ascender to match
+    descender = fontData.metrics.descender;
+    ascender = fontData.metrics.capHeight + belowBaseline;
+  }
 
   // Each lit pixel → a clockwise square contour (Y-up math coords)
   function toContours(g: FontDataGlyph) {
@@ -119,10 +136,10 @@ export function buildTTF(fontData: FontData) {
   // .notdef: solid rectangle
   const notdefRec = serGlyph([
     [
-      { x: sc(1), y: sc(fontData.metrics.descender) },
-      { x: nW - sc(1), y: sc(fontData.metrics.descender) },
-      { x: nW - sc(1), y: sc(fontData.metrics.ascender) },
-      { x: sc(1), y: sc(fontData.metrics.ascender) },
+      { x: sc(1), y: sc(descender) },
+      { x: nW - sc(1), y: sc(descender) },
+      { x: nW - sc(1), y: sc(ascender) },
+      { x: sc(1), y: sc(ascender) },
     ],
   ]);
   const grecs = [
@@ -253,9 +270,9 @@ export function buildTTF(fontData: FontData) {
 
   // global bbox
   let gxMin = 0,
-    gyMin = sc(fontData.metrics.descender),
+    gyMin = sc(descender),
     gxMax = nW,
-    gyMax = sc(fontData.metrics.ascender);
+    gyMax = sc(ascender);
   for (const gr of grecs)
     if (gr.rec) {
       gxMin = Math.min(gxMin, gr.rec.xMin);
@@ -291,8 +308,8 @@ export function buildTTF(fontData: FontData) {
   const minLSB = Math.min(...grecs.map((g) => g.lsb || 0));
   const hheaB = mkBuf();
   hheaB.u32(0x00010000);
-  hheaB.i16(sc(fontData.metrics.ascender));
-  hheaB.i16(sc(fontData.metrics.descender));
+  hheaB.i16(sc(ascender));
+  hheaB.i16(sc(descender));
   hheaB.i16(sc(fontData.metrics.lineGap));
   hheaB.u16(maxAW);
   hheaB.i16(minLSB);
@@ -338,8 +355,8 @@ export function buildTTF(fontData: FontData) {
   const avgW = Math.round(
     grecs.slice(1).reduce((s, g) => s + g.advW, 0) / Math.max(1, N - 1),
   );
-  const asc = sc(fontData.metrics.ascender),
-    desc = sc(fontData.metrics.descender);
+  const asc = sc(ascender),
+    desc = sc(descender);
   const xH = sc(fontData.metrics.xHeight),
     capH = sc(fontData.metrics.capHeight);
 

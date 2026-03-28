@@ -73,7 +73,7 @@ const colors = {
   background: GAMEBOY[0],
   text: GAMEBOY[3],
   text2: GAMEBOY[2],
-  border: GAMEBOY[2],
+  border: GAMEBOY[1],
 
   canvas: {
     bg1: GAMEBOY[0],
@@ -99,16 +99,13 @@ const Btn = (props: BtnProps) => (
     onClick={props.onClick}
     title={props.title}
     style={{
-      padding: props.small ? "2px 7px" : "3px 10px",
+      padding: props.small ? "2px 7px" : "2px 8px",
       // "font-size": "12px",
       "border-radius": "4px",
       cursor: "pointer",
-      border: "none",
-      background: props.active ? props.accent || "#6366f1" : "#1e293b",
-      color: "#f8fafc",
-      outline: props.active
-        ? `2px solid ${props.accent}`
-        : "2px solid transparent",
+      background: props.active ? colors.text : "transparent",
+      color: props.active ? colors.background : colors.text,
+      border: `2px solid ${colors.text}`,
       transition: "all .1s",
     }}
   >
@@ -174,7 +171,7 @@ type EditorState = {
 
 const initialEditorState: EditorState = {
   selectedGlyphId: "U+0041",
-  zoom: 14,
+  zoom: 16,
   showGuides: true,
 };
 
@@ -210,8 +207,8 @@ export function PixelFontEditor() {
         background: colors.background,
         color: colors.text,
         "font-family": "Chicago, monospace",
-        "font-size": "20px",
-        "line-height": 1,
+        "font-size": "12px",
+        "line-height": "20px",
         "user-select": "none",
         overflow: "hidden",
       }}
@@ -779,8 +776,9 @@ function GlyphEditorHeader(props: {
           <span style={{ color: colors.text }}>zoom</span>
           <input
             type="range"
-            min={14}
+            min={12}
             max={52}
+            step={2}
             value={props.editorState.zoom}
             onInput={(e) =>
               props.onEditorStateChange({
@@ -898,10 +896,11 @@ function GlyphEditorCanvas(props: {
     const dpr = window.devicePixelRatio || 1;
     const w = g.width * z;
     const h = g.height * z;
+    const dp = (n: number) => n * dpr;
 
     // Set canvas size accounting for device pixel ratio
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
+    canvas.width = dp(w);
+    canvas.height = dp(h);
     canvas.style.width = w + "px";
     canvas.style.height = h + "px";
     ctx.scale(dpr, dpr);
@@ -917,21 +916,59 @@ function GlyphEditorCanvas(props: {
 
     // Draw grid lines (1 physical pixel wide)
     ctx.strokeStyle = colors.canvas.border;
-    ctx.lineWidth = 1 / dpr;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([2, 2]);
+    // for (let row = 1; row < g.height; row++) {
+    //   const y = Math.round(row * z * dpr) / dpr + 1 / dpr;
+    //   ctx.beginPath();
+    //   ctx.moveTo(0, y);
+    //   ctx.lineTo(w, y);
+    //   ctx.stroke();
+    // }
+    // for (let c = 1; c < g.width; c++) {
+    //   const x = Math.round(c * z * dpr) / dpr + 1 / dpr;
+    //   ctx.beginPath();
+    //   ctx.moveTo(x, 0);
+    //   ctx.lineTo(x, h);
+    //   ctx.stroke();
+    // }
+
+    // Draw Grid dots
+    ctx.fillStyle = colors.canvas.border;
     for (let r = 1; r < g.height; r++) {
-      const y = Math.round(r * z * dpr) / dpr + 0.5 / dpr;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
+      for (let c = 1; c < g.width; c++) {
+        if (
+          !g.bitmap[r - 1][c] &&
+          !g.bitmap[r][c - 1] &&
+          !g.bitmap[r - 1][c - 1]
+        ) {
+          ctx.fillRect(c * z, r * z, 2, 2);
+        }
+      }
     }
-    for (let c = 1; c < g.width; c++) {
-      const x = Math.round(c * z * dpr) / dpr + 0.5 / dpr;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
+
+    // Guidelines
+    ctx.setLineDash([100, 0]);
+    if (showGuides()) {
+      for (let row of fontVerticalGuidelines()) {
+        const y =
+          Math.round((g.height / 2 - row.offset) * z * dpr) / dpr + 1 / dpr;
+        // ctx.beginPath();
+        // ctx.moveTo(0, y);
+        // ctx.lineTo(w, y);
+        // ctx.stroke();
+        ctx.fillRect(0, (g.height / 2 - row.offset) * z, w, 2);
+      }
+      for (let column of fontHorizontalGuidelines()) {
+        const x =
+          Math.round((g.width / 2 + column.offset) * z * dpr) / dpr + 1 / dpr;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
     }
+
     // Draw filled pixels
     ctx.fillStyle = colors.canvas.fill;
     for (let r = 0; r < g.height; r++) {
@@ -961,49 +998,6 @@ function GlyphEditorCanvas(props: {
             transform: `translate(${(glyph().advanceWidth * zoom()) / -2}px, ${(font().metrics.capHeight * zoom()) / 2}px)`,
           }}
         >
-          <Show when={showGuides()}>
-            <For each={fontVerticalGuidelines()}>
-              {(guide) => {
-                const row = guideRow(guide.offset);
-                if (row < 0 || row > glyph().height) return null;
-                return (
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      right: 0,
-                      top: `${row * zoom() - 0.5}px`,
-                      "border-top": `1px solid ${colors.canvas.guideline}`,
-                      "z-index": 5,
-                      "pointer-events": "none",
-                    }}
-                  ></div>
-                );
-              }}
-            </For>
-            <For each={fontHorizontalGuidelines()}>
-              {(guide) => {
-                const row = guideRow(guide.offset);
-                if (row < 0 || row > glyph().height) return null;
-                return (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      bottom: 0,
-                      left:
-                        (GLYPH_CANVAS_MIDPOINT + guide.offset) * zoom() -
-                        0.5 +
-                        "px",
-                      "border-left": `1px solid ${colors.canvas.guideline}`,
-                      "z-index": 5,
-                      "pointer-events": "none",
-                    }}
-                  ></div>
-                );
-              }}
-            </For>
-          </Show>
           <canvas
             ref={gridRef}
             onPointerDown={onGridDown}
@@ -1064,7 +1058,7 @@ function PreviewSection(props: { font: FontData }) {
 
     ctx.clearRect(0, 0, w, h);
     ctx.strokeStyle = colors.border;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, baselineY);
     ctx.lineTo(w, baselineY);
@@ -1129,7 +1123,7 @@ function PreviewSection(props: { font: FontData }) {
           style={{
             flex: 1,
             background: colors.background,
-            border: `1px solid ${colors.border}`,
+            border: `2px solid ${colors.border}`,
             "border-radius": 4 + "px",
             color: colors.text,
             padding: "2px 8px",
