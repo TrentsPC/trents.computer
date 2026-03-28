@@ -6,17 +6,42 @@ export type CharacterSet = {
 
 export const CHARACTER_DATA: CharacterSet[] = [
   {
-    name: "Common Latin",
+    name: "Basic Latin",
     children: [
       { name: "Uppercase", characters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
       { name: "Lowercase", characters: "abcdefghijklmnopqrstuvwxyz" },
       { name: "Numerals", characters: "0123456789" },
-      { name: "Currency & math", characters: "#$%+" },
+      { name: "Currency & math", characters: "#$%+<>=" },
       {
         name: "Punctuation & symbols",
-        characters: "!\"&'()*,-./:;<=>?@[\\]^_`{|}~",
+        characters: "()[]{}/\\|-_.,:;'\"!?&@*^`~",
       },
       { name: "Whitespace", characters: " " },
+    ],
+  },
+  {
+    name: "Extended Latin",
+    children: [
+      {
+        name: "Currency",
+        characters: "¢£¥฿₣₦₧₩₫€₱₹₺₽",
+      },
+      {
+        name: "Dashes",
+        characters: "‒–—⸺⸻",
+      },
+      {
+        name: "Punctuation & symbols",
+        characters: "‘’“”‹›«»¡§¶·†‡•‰‱※‽⸘⁂⹋©℗®™",
+      },
+      {
+        name: "Superscript",
+        characters: "⁰¹²³⁴⁵⁶⁷⁸⁹",
+      },
+      {
+        name: "Subscript",
+        characters: "₀₁₂₃₄₅₆₇₈₉",
+      },
     ],
   },
   {

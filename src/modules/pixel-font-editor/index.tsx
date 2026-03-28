@@ -1,6 +1,7 @@
 import {
   createEffect,
   createMemo,
+  createResource,
   createSignal,
   For,
   JSX,
@@ -11,6 +12,7 @@ import "./font.css";
 import newYork from "./new-york.pxfont.json";
 import { buildTTF } from "./otf";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
+import unicodeData from "./UnicodeData.txt?url";
 
 const CHARSET =
   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~𝒞😎";
@@ -436,7 +438,7 @@ function FontSection(props: {
             cursor: "pointer",
           }}
         >
-          💾 Save JSON
+          💾 Save font
         </button>
         <label
           style={{
@@ -447,7 +449,7 @@ function FontSection(props: {
             "text-align": "center",
           }}
         >
-          📂 Load JSON
+          📂 Load font
           <input
             type="file"
             accept=".json"
@@ -464,7 +466,7 @@ function FontSection(props: {
             cursor: "pointer",
           }}
         >
-          New Font
+          New font
         </button>
       </div>
     </div>
@@ -699,13 +701,34 @@ function GlyphEditor(props: {
   );
 }
 
+function sentenceCase(str: string) {
+  return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 function GlyphEditorHeader(props: {
   glyph: FontDataGlyph;
   onGlyphChange: (updater: (g: FontDataGlyph) => FontDataGlyph) => void;
   editorState: EditorState;
   onEditorStateChange: (editorState: EditorState) => void;
 }) {
+  const [unicodeNames] = createResource(async () => {
+    return await fetch(unicodeData).then((res) => res.text());
+  });
   const glyph = () => props.glyph;
+  const glyphOfficialName = () => {
+    let data = unicodeNames();
+    if (!data) return undefined;
+    const codepointStr = props.glyph.codePoint
+      .toString(16)
+      .toUpperCase()
+      .padStart(4, "0");
+    const searchStr = "\n" + codepointStr + ";";
+    const index = data.indexOf(searchStr);
+    if (index === -1) return undefined;
+    const endIndex = data.indexOf("\n", index + searchStr.length);
+    if (index === -1) return undefined;
+    return data.slice(index + searchStr.length, endIndex);
+  };
 
   const clearGlyph = () =>
     props.onGlyphChange((g) => ({
@@ -741,14 +764,14 @@ function GlyphEditorHeader(props: {
             // "text-align": "center",
           }}
         >
-          {glyph()?.name === "space" ? "SPACE" : `${glyph()?.name}`}
+          {sentenceCase(glyphOfficialName() || "")}
           <span
             style={{
               color: colors.text2,
               "margin-left": "20px",
             }}
           >
-            U+{glyph()?.codePoint.toString(16).padStart(4, "0")}
+            U+{glyph()?.codePoint.toString(16).padStart(4, "0").toUpperCase()}
           </span>
         </span>
       </div>
