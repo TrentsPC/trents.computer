@@ -1148,7 +1148,7 @@ function PreviewSection(props: { font: FontData }) {
     ctx.moveTo(0, baselineY);
     ctx.lineTo(w, baselineY);
     ctx.stroke();
-    let x = 4;
+    let x = 0;
     for (const ch of previewText()) {
       const glyph = font().glyphs[cpKey(ch.codePointAt(0)!)];
       if (!glyph) {
