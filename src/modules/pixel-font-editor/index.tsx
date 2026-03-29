@@ -347,6 +347,10 @@ function FontSection(props: {
           }}
         />
       </div>
+      <div
+        css={{ height: 2, mb: 10 }}
+        style={{ "background-color": colors.border }}
+      />
       <div css={{ pl: 19, pr: 10 }}>
         {Object.entries(font().metrics).map(([k, v]) => (
           <NumInput
@@ -371,7 +375,7 @@ function FontSection(props: {
             "margin-bottom": "6px",
           }}
         >
-          Pixel Shape
+          Pixel shape
         </div>
         <div style={{ display: "flex", gap: "4px" }}>
           <Btn
@@ -542,7 +546,7 @@ function GlyphSelectorSection(props: {
           height: 54,
           display: "flex",
           alignItems: "center",
-          px: 16,
+          px: 10,
         }}
         style={{
           "border-bottom": `2px solid ${colors.border}`,
@@ -559,7 +563,7 @@ function GlyphSelectorSection(props: {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflow: "auto", padding: "0 0 8px" }}>
+      <div style={{ flex: 1, overflow: "auto", padding: "0 0 10px" }}>
         <For each={CHARACTER_DATA}>
           {(set, i) => (
             <div>
@@ -567,7 +571,7 @@ function GlyphSelectorSection(props: {
                 <div
                   css={{
                     minHeight: "2px",
-                    margin: "4px 0 0px",
+                    margin: "10px 0 0px",
                     // width: "100%",
                   }}
                   style={{
@@ -575,7 +579,7 @@ function GlyphSelectorSection(props: {
                   }}
                 />
               )}
-              <div css={{ padding: "0 8px" }}>
+              <div css={{ padding: "0 10px" }}>
                 <GraphemeSetComp
                   depth={0}
                   set={set}
@@ -638,11 +642,12 @@ function GraphemeSetComp(props: {
 
   const headerStyle = () => {
     let style: JSX.CSSProperties = {
-      padding: "0 4px",
+      padding: "0 0px",
       "text-align": props.depth === 0 ? "center" : "left",
       color: props.depth === 0 ? colors.text2 : colors.text,
       "font-weight": props.depth === 1 ? 400 : 400,
-      "margin-top": props.depth === 0 ? "4px" : 0,
+      "margin-top": props.depth === 0 ? "10px" : "8px",
+      "margin-bottom": props.depth === 0 ? "0px" : "4px",
     };
 
     return style;
@@ -797,7 +802,7 @@ function GlyphEditorHeader(props: {
         "border-bottom": `2px solid ${colors.border}`,
         "flex-shrink": 0,
         "align-items": "center",
-        padding: "0px 16px",
+        padding: "0px 10px",
       }}
     >
       <div
@@ -808,24 +813,25 @@ function GlyphEditorHeader(props: {
           flex: "1 0 0px",
         }}
       >
-        <span
-          style={{
-            // "font-size": "13px",
-            color: colors.text,
-            // "min-width": "60px",
-            // "text-align": "center",
-          }}
-        >
-          {sentenceCase(glyphOfficialName() || "")}
-          <span
+        <div>
+          <div
+            style={{
+              // "font-size": "13px",
+              color: colors.text,
+              // "min-width": "60px",
+              // "text-align": "center",
+            }}
+          >
+            {sentenceCase(glyphOfficialName() || "")}
+          </div>
+          <div
             style={{
               color: colors.text2,
-              "margin-left": "20px",
             }}
           >
             U+{glyph()?.codePoint.toString(16).padStart(4, "0").toUpperCase()}
-          </span>
-        </span>
+          </div>
+        </div>
       </div>
       <Btn onClick={clearGlyph}>Clear</Btn>
       <Show when={glyph()}>
@@ -881,7 +887,7 @@ function GlyphEditorHeader(props: {
           active={props.editorState.showGuides}
           accent="#0ea5e9"
         >
-          Show Guides
+          Show guides
         </Btn>
       </div>
     </div>
@@ -988,9 +994,9 @@ function GlyphEditorCanvas(props: {
     }
 
     // Draw grid lines (1 physical pixel wide)
-    ctx.strokeStyle = colors.canvas.border;
-    ctx.lineWidth = 2;
-    ctx.setLineDash([2, 2]);
+    // ctx.strokeStyle = colors.canvas.border;
+    // ctx.lineWidth = 2;
+    // ctx.setLineDash([2, 2]);
     // for (let row = 1; row < g.height; row++) {
     //   const y = Math.round(row * z * dpr) / dpr + 1 / dpr;
     //   ctx.beginPath();
@@ -1021,24 +1027,28 @@ function GlyphEditorCanvas(props: {
     }
 
     // Guidelines
-    ctx.setLineDash([100, 0]);
+    ctx.fillStyle = colors.canvas.border;
     if (showGuides()) {
       for (let row of fontVerticalGuidelines()) {
-        const y =
-          Math.round((g.height / 2 - row.offset) * z * dpr) / dpr + 1 / dpr;
-        // ctx.beginPath();
-        // ctx.moveTo(0, y);
-        // ctx.lineTo(w, y);
-        // ctx.stroke();
-        ctx.fillRect(0, (g.height / 2 - row.offset) * z, w, 2);
+        const start = row.offset === -1 ? 0 : w / 2;
+        const end = row.offset === -1 ? w : g.advanceWidth * z;
+        ctx.fillRect(start, (g.height / 2 - row.offset) * z, end, 2);
       }
       for (let column of fontHorizontalGuidelines()) {
-        const x =
-          Math.round((g.width / 2 + column.offset) * z * dpr) / dpr + 1 / dpr;
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
+        const highestVerticalGuide = Math.max(
+          ...fontVerticalGuidelines().map((g) => g.offset),
+        );
+        const lowestVerticalGuide = Math.min(
+          ...fontVerticalGuidelines().map((g) => g.offset),
+        );
+        const start =
+          column.offset === -1 ? 0 : (g.height / 2 - highestVerticalGuide) * z;
+        const end =
+          column.offset === -1
+            ? g.height * z
+            : (highestVerticalGuide - lowestVerticalGuide) * z;
+        const x = (g.width / 2 + column.offset) * z;
+        ctx.fillRect(x, start, 2, end);
       }
     }
 
@@ -1169,7 +1179,7 @@ function PreviewSection(props: { font: FontData }) {
       style={{
         background: colors.background,
         "border-top": `2px solid ${colors.border}`,
-        padding: "7px 12px",
+        padding: "8px 10px",
         "flex-shrink": 0,
       }}
     >
@@ -1222,6 +1232,7 @@ function PreviewSection(props: { font: FontData }) {
           style={{
             color: colors.text,
             width: 40 + "px",
+            "text-align": "right",
           }}
         >
           {previewScale() * props.font.metrics.capHeight}px
@@ -1229,7 +1240,8 @@ function PreviewSection(props: { font: FontData }) {
         <span
           style={{
             color: colors.text2,
-            width: 40 + "px",
+            width: 30 + "px",
+            "text-align": "right",
           }}
         >
           {previewScale()}x
