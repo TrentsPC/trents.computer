@@ -351,7 +351,7 @@ function FontSection(props: {
         css={{ height: 2, mb: 10 }}
         style={{ "background-color": colors.border }}
       />
-      <div css={{ pl: 19, pr: 10 }}>
+      <div css={{ pl: 10 + 8, pr: 10 }}>
         {Object.entries(font().metrics).map(([k, v]) => (
           <NumInput
             label={k}
@@ -367,10 +367,11 @@ function FontSection(props: {
       </div>
       {/* x-height ratio typically between 0.6-0.75 (SF Pro Text is 0.73, Electra LT is 0.63) */}
 
-      <div css={{ pl: 19, pr: 10, mt: 12 }}>
+      <div css={{ pl: 10, pr: 10, mt: 12 }}>
         <div
           style={{
             // "font-size": "11px",
+            "padding-left": "8px",
             color: colors.text,
             "margin-bottom": "6px",
           }}
@@ -403,7 +404,7 @@ function FontSection(props: {
             Circle
           </Btn>
         </div>
-        <div style={{ "margin-top": "8px" }}>
+        <div style={{ "margin-top": "8px", "padding-left": "8px" }}>
           <NumInput
             label="Gap X"
             value={font().rendering?.gapX ?? 0}
@@ -439,9 +440,9 @@ function FontSection(props: {
         css={{
           display: "flex",
           flexDirection: "column",
-          gap: 8,
-          px: 19,
-          pb: 19,
+          gap: 10,
+          px: 10,
+          pb: 10,
         }}
       >
         <button
