@@ -11,6 +11,7 @@ import { CHARACTER_DATA, CharacterSet } from "./character-data";
 import "./font.css";
 import newYork from "./new-york.pxfont.json";
 import { buildTTF } from "./otf";
+import { Slider } from "./Slider";
 import { FontData, FontDataGlyph, FontDataGuideline } from "./types";
 import unicodeData from "./UnicodeData.txt?url";
 
@@ -24,7 +25,7 @@ for (const ch of CHARSET) {
 const cpKey = (cp: number) =>
   `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
 const emptyBm = (w: number, h: number) =>
-  Array.from({ length: h }, () => Array(w).fill(0));
+  Array.from({ length: h }, () => Array(w).fill(0).join(""));
 
 const GLYPH_CANVAS_SIZE = 64;
 const GLYPH_CANVAS_MIDPOINT = GLYPH_CANVAS_SIZE / 2;
@@ -103,7 +104,14 @@ const Btn = (props: BtnProps) => (
     style={{
       padding: props.small ? "2px 7px" : "2px 8px",
       // "font-size": "12px",
-      "border-radius": "4px",
+      // "border-radius": "4px",
+
+      "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
       cursor: "pointer",
       background: props.active ? colors.text : "transparent",
       color: props.active ? colors.background : colors.text,
@@ -156,7 +164,13 @@ const NumInput = (props: NumInputProps) => (
         width: (props.w || 50) + "px",
         background: colors.background,
         border: `2px solid ${colors.border}`,
-        "border-radius": "2px",
+        // "border-radius": "2px",
+        "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
         color: colors.text,
         padding: "2px 4px",
         // "font-size": "11px",
@@ -316,7 +330,14 @@ function FontSection(props: {
           style={{
             background: "transparent",
             border: `2px solid ${colors.border}`,
-            "border-radius": "4px",
+
+            "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
+            // "border-radius": "4px",
             color: colors.text,
             padding: "2px 6px",
             "font-size": "1em",
@@ -340,6 +361,7 @@ function FontSection(props: {
           />
         ))}
       </div>
+      {/* x-height ratio typically between 0.6-0.75 (SF Pro Text is 0.73, Electra LT is 0.63) */}
 
       <div css={{ pl: 19, pr: 10, mt: 12 }}>
         <div
@@ -422,18 +444,30 @@ function FontSection(props: {
           onClick={exportOTF}
           style={{
             padding: "4px 12px",
-            "border-radius": "2px",
+            // "border-radius": "2px",
+            "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
             border: `2px solid ${colors.border}`,
             cursor: "pointer",
           }}
         >
-          ⬇ Export OTF
+          Export OTF
         </button>
         <button
           onClick={saveFont}
           style={{
             padding: "4px 12px",
-            "border-radius": "2px",
+            // "border-radius": "2px",
+            "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
             border: `2px solid ${colors.border}`,
             cursor: "pointer",
           }}
@@ -443,7 +477,13 @@ function FontSection(props: {
         <label
           style={{
             padding: "4px 12px",
-            "border-radius": "2px",
+            // "border-radius": "2px",
+            "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
             border: `2px solid ${colors.border}`,
             cursor: "pointer",
             "text-align": "center",
@@ -461,7 +501,13 @@ function FontSection(props: {
           onClick={() => props.onFontChange(makeFont())}
           style={{
             padding: "4px 12px",
-            "border-radius": "2px",
+            // "border-radius": "2px",
+            "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
             border: `2px solid ${colors.border}`,
             cursor: "pointer",
           }}
@@ -529,7 +575,7 @@ function GlyphSelectorSection(props: {
                   }}
                 />
               )}
-              <div css={{ padding: "0 4px" }}>
+              <div css={{ padding: "0 8px" }}>
                 <GraphemeSetComp
                   depth={0}
                   set={set}
@@ -634,7 +680,13 @@ function GraphemeSetComp(props: {
                     "justify-content": "center",
                     padding: "0px",
                     // "font-size": "12px",
-                    "border-radius": "2px",
+                    // "border-radius": "2px",
+                    "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
                     cursor: "pointer",
                     border: `2px solid ${selected() ? colors.text : exists() ? colors.text2 : "transparent"}`,
                     background: selected()
@@ -797,19 +849,17 @@ function GlyphEditorHeader(props: {
       >
         <div style={{ display: "flex", "align-items": "center", gap: "5px" }}>
           <span style={{ color: colors.text }}>zoom</span>
-          <input
-            type="range"
+          <Slider
             min={12}
             max={52}
             step={2}
             value={props.editorState.zoom}
-            onInput={(e) =>
+            onValueChange={(value) =>
               props.onEditorStateChange({
                 ...props.editorState,
-                zoom: +e.target.value,
+                zoom: value,
               })
             }
-            style={{ width: "70px" }}
           />
           <span
             style={{
@@ -831,7 +881,7 @@ function GlyphEditorHeader(props: {
           active={props.editorState.showGuides}
           accent="#0ea5e9"
         >
-          📏 Guides
+          Show Guides
         </Btn>
       </div>
     </div>
@@ -851,7 +901,7 @@ function GlyphEditorCanvas(props: {
   const glyph = () => props.glyph;
 
   let drawing = false;
-  let drawVal = 1;
+  let drawVal = "1";
   let gridRef: HTMLCanvasElement = null!;
 
   const fontVerticalGuidelines = () => {
@@ -874,11 +924,11 @@ function GlyphEditorCanvas(props: {
     return guides;
   };
 
-  const setPixel = (r: any, c: any, val: any) => {
+  const setPixel = (r: number, c: number, val: string) => {
     props.onGlyphChange((g) => {
       if (g.bitmap[r]?.[c] === val) return g;
-      const bm = g.bitmap.map((row: any) => [...row]);
-      bm[r][c] = val;
+      const bm = g.bitmap.slice();
+      bm[r] = bm[r].slice(0, c) + val + bm[r].slice(c + 1);
       return { ...g, bitmap: bm };
     });
   };
@@ -897,7 +947,7 @@ function GlyphEditorCanvas(props: {
     const [r, c] = getCell(e);
     if (r < 0 || r >= glyph().height || c < 0 || c >= glyph().width) return;
     drawing = true;
-    drawVal = glyph().bitmap[r][c] === 1 ? 0 : 1;
+    drawVal = glyph().bitmap[r][c] === "1" ? "0" : "1";
     setPixel(r, c, drawVal);
     gridRef.setPointerCapture(e.pointerId);
   };
@@ -961,9 +1011,9 @@ function GlyphEditorCanvas(props: {
     for (let r = 1; r < g.height; r++) {
       for (let c = 1; c < g.width; c++) {
         if (
-          !g.bitmap[r - 1][c] &&
-          !g.bitmap[r][c - 1] &&
-          !g.bitmap[r - 1][c - 1]
+          g.bitmap[r - 1][c] === "0" &&
+          g.bitmap[r][c - 1] === "0" &&
+          g.bitmap[r - 1][c - 1] === "0"
         ) {
           ctx.fillRect(c * z, r * z, 2, 2);
         }
@@ -996,14 +1046,13 @@ function GlyphEditorCanvas(props: {
     ctx.fillStyle = colors.canvas.fill;
     for (let r = 0; r < g.height; r++) {
       for (let c = 0; c < g.width; c++) {
-        if (g.bitmap[r][c]) {
+        if (g.bitmap[r][c] === "1") {
           ctx.fillRect(c * z, r * z, z, z);
         }
       }
     }
   });
 
-  const guideRow = (y: number) => GLYPH_CANVAS_MIDPOINT - y;
   return (
     <div
       style={{
@@ -1044,8 +1093,10 @@ function GlyphEditorCanvas(props: {
 
 function PreviewSection(props: { font: FontData }) {
   const font = () => props.font;
-  const [previewText, setPreviewText] = createSignal("ABCDEFG");
-  const [previewScale, setPreviewScale] = createSignal(3);
+  const [previewText, setPreviewText] = createSignal(
+    "The quick brown fox jumps over the lazy dog.",
+  );
+  const [previewScale, setPreviewScale] = createSignal(4);
   let previewRef: HTMLCanvasElement = null!;
 
   // Preview canvas
@@ -1097,7 +1148,7 @@ function PreviewSection(props: { font: FontData }) {
       ctx.fillStyle = colors.text;
       for (let canvasRow = 0; canvasRow < glyph.height; canvasRow++)
         for (let canvasColumn = 0; canvasColumn < glyph.width; canvasColumn++)
-          if (glyph.bitmap[canvasRow][canvasColumn]) {
+          if (glyph.bitmap[canvasRow][canvasColumn] === "1") {
             const px = x + (-GLYPH_CANVAS_MIDPOINT + canvasColumn) * strideX;
             const py = top + canvasRow * strideY;
             if (pixelShape === "circle") {
@@ -1147,29 +1198,41 @@ function PreviewSection(props: { font: FontData }) {
             flex: 1,
             background: colors.background,
             border: `2px solid ${colors.border}`,
-            "border-radius": 4 + "px",
+            // "border-radius": 4 + "px",
             color: colors.text,
             padding: "2px 8px",
             // "font-size": 12 + "px",
+            "clip-path": `polygon(
+              0px calc(100% - 2px), 2px calc(100% - 2px), 2px 100%, 
+              calc(100% - 2px) 100%, calc(100% - 2px) calc(100% - 2px), 100% calc(100% - 2px), 
+              100% 2px, calc(100% - 2px) 2px, calc(100% - 2px) 0px, 
+              2px 0px, 2px 2px, 0px 2px
+            )`,
           }}
         />
-        <span style={{ color: colors.text2 }}>scale</span>
-        <input
-          type="range"
-          min={1}
+        <span style={{ color: colors.text2 }}>Font size</span>
+        <Slider
+          min={2}
           max={16}
+          step={1}
           value={previewScale()}
-          onInput={(e) => setPreviewScale(+e.target.value)}
-          style={{ width: 70 + "px" }}
+          onValueChange={setPreviewScale}
         />
         <span
           style={{
-            // "font-size": 11 + "px",
-            color: colors.text2,
-            width: 20 + "px",
+            color: colors.text,
+            width: 40 + "px",
           }}
         >
-          {previewScale()}×
+          {previewScale() * props.font.metrics.capHeight}px
+        </span>
+        <span
+          style={{
+            color: colors.text2,
+            width: 40 + "px",
+          }}
+        >
+          {previewScale()}x
         </span>
       </div>
       <div

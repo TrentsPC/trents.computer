@@ -66,7 +66,7 @@ export function buildTTF(fontData: FontData) {
     const cs = [];
     for (let r = 0; r < g.height; r++)
       for (let c = 0; c < g.width; c++) {
-        if (!g.bitmap[r][c]) continue;
+        if (g.bitmap[r][c] !== "1") continue;
         const xL = sc(-g.width / 2 + c),
           xR = sc(-g.width / 2 + c + 1);
         const yT = sc(g.height / 2 - r),

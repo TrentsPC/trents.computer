@@ -35,5 +35,5 @@ export type FontDataGlyph = {
   advanceWidth: number;
   width: number;
   height: number;
-  bitmap: number[][];
+  bitmap: string[];
 };
