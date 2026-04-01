@@ -249,30 +249,9 @@ export function PixelFontEditor() {
           />
         </Show>
       </div>
-      {/* <div
-        css={{
-          position: "fixed",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-        }}
-        style={{
-          background: `conic-gradient(transparent 25%, ${colors.text} 0, ${colors.text} 50%, transparent 0, transparent 75%, ${colors.text} 0) 0 0 / 4px 4px`,
-        }}
-      >
-        <div
-          css={{ width: 200, height: 200, padding: 8 }}
-          style={{
-            "background-color": colors.background,
-            border: `2px solid ${colors.text2}`,
-            "box-shadow": `4px 4px ${colors.text}`,
-          }}
-        >
-          <div>Sorry, your free trial has ended. womp womp :(</div>
-        </div>
-      </div> */}
+      {/* <Dialog>
+        <div>Sorry, your free trial has ended. womp womp :(</div>
+      </Dialog> */}
     </div>
   );
 }
