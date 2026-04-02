@@ -56,34 +56,47 @@ function makeFont(): FontData {
   };
 }
 
-const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0F3810"];
+// const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0F3810"];
 
-// const colors = {
-//   background: "#a3a3a3",
-//   text: "#000000",
-//   text2: "#475569",
-//   border: "#5e5e5e",
+// 1: Background, 2: Lines 'n' dots, 3: Text
+const GAMEBOY = ["#a3b334", "#6B882E", "#0F3810"];
 
-//   canvas: {
-//     bg1: "#a3a3a3",
-//     bg2: "#b0b0b0",
-//     border: "#909090",
-//     guideline: "#333333",
-//     fill: "#000000",
-//   },
-// };
+// Return of the Obra Dinn
+const OD_IBM_8503 = ["#ebe5ce", "#2e3037", "#2e3037"];
+const OD_IBM_8503_DARK = ["#2e3037", "#ebe5ce", "#ebe5ce"];
+const OD_MACINTOSH_LIGHT = ["#e5ffff", "#333319", "#333319"];
+const OD_MACINTOSH_DARK = ["#333319", "#e5ffff", "#e5ffff"];
+const OD_ZENITH_ZM_1240_LIGHT = ["#fdca55", "#3f291e", "#3f291e"];
+const OD_ZENITH_ZM_1240_DARK = ["#3f291e", "#fdca55", "#fdca55"];
+const OD_IBM_5151_LIGHT = ["#01eb5f", "#25342f", "#25342f"];
+const OD_IBM_5151_DARK = ["#25342f", "#01eb5f", "#01eb5f"];
+const OD_COMMODORE_1084_LIGHT = ["#88d7de", "#40318e", "#40318e"];
+const OD_COMMODORE_1084_DARK = ["#40318e", "#88d7de", "#88d7de"];
+
+// From https://lospec.com/palette-list
+const TITANSTONE_LIGHT = ["#ffffd1", "#635c6d", "#150413"];
+const TITANSTONE_DARK = TITANSTONE_LIGHT.slice().reverse();
+const BUMBLEBIT_LIGHT = ["#e7ffee", "#eda031", "#272946"];
+const BUMBLEBIT_DARK = BUMBLEBIT_LIGHT.slice().reverse();
+const CHOCOLATE_ICHOR_LIGHT = ["#edd8bd", "#8b5760", "#3b313c"];
+const CHOCOLATE_ICHOR_DARK = CHOCOLATE_ICHOR_LIGHT.slice().reverse();
+const DREAM_BASED_LIGHT = ["#fae6cd", "#f3c0ce", "#979bc7"];
+const DREAM_BASED_DARK = DREAM_BASED_LIGHT.slice().reverse();
+
+const PALETTE = CHOCOLATE_ICHOR_LIGHT;
+
 const colors = {
-  background: GAMEBOY[0],
-  text: GAMEBOY[3],
-  text2: GAMEBOY[2],
-  border: GAMEBOY[1],
+  background: PALETTE[0],
+  text: PALETTE[2],
+  text2: PALETTE[2],
+  border: PALETTE[1],
 
   canvas: {
-    bg1: GAMEBOY[0],
-    bg2: GAMEBOY[0],
-    border: GAMEBOY[1],
-    guideline: GAMEBOY[3],
-    fill: GAMEBOY[3],
+    bg1: PALETTE[0],
+    bg2: PALETTE[0],
+    border: PALETTE[1],
+    guideline: PALETTE[2],
+    fill: PALETTE[2],
   },
 };
 
@@ -227,6 +240,16 @@ export function PixelFontEditor() {
         "line-height": "20px",
         "user-select": "none",
         overflow: "hidden",
+
+        "--color-0": PALETTE[0],
+        "--color-1": PALETTE[1],
+        "--color-2": PALETTE[2],
+      }}
+      css={{
+        "& ::selection": {
+          backgroundColor: "var(--color-2)",
+          color: "var(--color-0)",
+        },
       }}
     >
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>

@@ -1,6 +1,6 @@
 import { styled } from "@hypergood/css";
 
-const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0F3810"];
+const GAMEBOY = ["var(--color-0)", "var(--color-1)", "var(--color-2)"];
 
 export type SliderProps = {
   min: number;
@@ -57,7 +57,7 @@ export function Slider(props: SliderProps) {
           style={{
             width: percentage() * 100 + "%",
             height: "100%",
-            background: GAMEBOY[3],
+            background: GAMEBOY[2],
           }}
         />
       </Track>
@@ -68,7 +68,8 @@ export function Slider(props: SliderProps) {
           left: `calc(${percentage() * 100}% - ${2 * percentage()}px)`,
           height: "16px",
           width: "2px",
-          background: GAMEBOY[3],
+          background: GAMEBOY[2],
+          "box-shadow": `0px 0 0 2px ${GAMEBOY[0]}`,
         }}
       />
     </Root>
