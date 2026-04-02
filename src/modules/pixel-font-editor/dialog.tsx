@@ -1,6 +1,6 @@
 import { createEffect, JSX } from "solid-js";
 
-const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0F3810"];
+const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0f3810"];
 const colors = {
   background: GAMEBOY[0],
   text: GAMEBOY[3],
@@ -16,23 +16,28 @@ const colors = {
   },
 };
 
-const TWENTY_FIVE_GRADIENT = `conic-gradient(
-  transparent 25%, 
-  ${colors.text} 0, 
-  ${colors.text} 25%, 
-  transparent 0, 
-  transparent 75%, 
-  ${colors.text} 0
-) 0 0 / 4px 4px`;
-const FIFTY_GRADIENT = `conic-gradient(transparent 25%, ${colors.text} 0, ${colors.text} 50%, transparent 0, transparent 75%, ${colors.text} 0) 0 0 / 4px 4px`;
-const SEVENTY_FIVE_GRADIENT = `conic-gradient(
-  ${colors.text} 25%, 
-  ${colors.text} 0, 
-  ${colors.text} 50%, 
-  transparent 0, 
-  transparent 75%, 
-  ${colors.text} 0
-) 0 0 / 4px 4px`;
+type Matrix = number[][];
+
+const BAYER_2: Matrix = [
+  [0, 2],
+  [3, 1],
+];
+const BAYER_4: Matrix = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5],
+];
+const BAYER_8: Matrix = [
+  [0, 32, 8, 40, 2, 34, 10, 42],
+  [48, 16, 56, 24, 50, 18, 58, 26],
+  [12, 44, 4, 36, 14, 46, 6, 38],
+  [60, 28, 52, 20, 62, 30, 54, 22],
+  [3, 35, 11, 43, 1, 33, 9, 41],
+  [51, 19, 59, 27, 49, 17, 57, 25],
+  [15, 47, 7, 39, 13, 45, 5, 37],
+  [63, 31, 55, 23, 61, 29, 53, 21],
+];
 
 export function Dialog(props: { children?: JSX.Element }) {
   let canvasRef = null! as HTMLCanvasElement;
@@ -43,63 +48,90 @@ export function Dialog(props: { children?: JSX.Element }) {
 
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const dp = (n: number) => n * dpr;
+    const rawW = window.innerWidth;
+    const rawH = window.innerHeight;
+    const width = rawW / 2;
+    const height = rawH / 2;
 
-    // Set canvas size accounting for device pixel ratio
-    canvas.width = dp(w);
-    canvas.height = dp(h);
-    canvas.style.width = w + "px";
-    canvas.style.height = h + "px";
-    // ctx.scale(dpr, dpr);
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = rawW + "px";
+    canvas.style.height = rawH + "px";
 
-    const gradient = ctx.createLinearGradient(20, 0, 220, 0);
-    gradient.addColorStop(0, "white");
-    gradient.addColorStop(0.5, "black");
-    gradient.addColorStop(1, "white");
+    ctx.fillStyle = "#bebebe";
+    ctx.fillStyle = "#808080";
+    ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(20, 20, 200, 100);
+    const midPointX = Math.floor(width / 2);
+    const top = 128;
+    const dialogContentWidth = 512;
+    const dialogContentHeight = 256;
 
-    const imageData = ctx.getImageData(20, 20, 200, 100, {
+    ctx.shadowBlur = 48 / 2;
+    ctx.shadowColor = "rgba(0,0,0,1)";
+    ctx.shadowOffsetY = 16 / 2;
+    ctx.fillStyle = "white";
+    ctx.fillRect(
+      midPointX - dialogContentWidth / 2,
+      top,
+      dialogContentWidth,
+      dialogContentHeight,
+    );
+
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = "rgba(0,0,0,1)";
+    ctx.shadowOffsetY = 0;
+    ctx.fillStyle = "white";
+    ctx.fillRect(
+      midPointX - dialogContentWidth / 2,
+      top,
+      dialogContentWidth,
+      dialogContentHeight,
+    );
+
+    function ditherPixel(x: number, y: number, data: number): boolean {
+      x = Math.floor(x);
+      y = Math.floor(y);
+      const thresholdMatrix = BAYER_8;
+      const rows = thresholdMatrix.length;
+      const columns = thresholdMatrix[0].length;
+      const total = rows * columns;
+
+      const value = data / 256;
+      // const threshold = thresholdMatrix[y % rows][x % columns];
+      // const threshold = Math.random() * total;
+      // https://matejlou.blog/2023/12/06/ordered-dithering-for-arbitrary-or-irregular-palettes/
+      const fmodf = (a: number, b: number) => a % b;
+      // const threshold = fmodf(
+      //   52.9829189 * fmodf(0.06711056 * x + 0.00583715 * y, 1.0),
+      //   1.0,
+      // );
+      const rawT = fmodf(0.7548776662 * x + 0.56984029 * y, 1.0);
+      const threshold = rawT < 0.5 ? 2.0 * rawT : 2.0 - 2.0 * rawT;
+
+      return value <= threshold;
+    }
+
+    const imageData = ctx.getImageData(0, 0, width, height, {
       colorSpace: "srgb",
       pixelFormat: "rgba-unorm8",
     });
-
-    function ditherPixel(x: number, y: number, data: number): boolean {
-      x = Math.floor(x / 2 / dpr);
-      y = Math.floor(y / 2 / dpr);
-
-      const twenty_five = (x % 2 || y % 2) === 0;
-      const fifty_fifty = ((x % 2) + (y % 2)) % 2 === 0;
-      const seventy_five = (x % 2 && y % 2) === 0;
-
-      const stops = [false, twenty_five, fifty_fifty, seventy_five, true];
-
-      const stopIdx = Math.floor((data / 256) * stops.length);
-      const stop = stops[stopIdx];
-
-      return !stop;
-    }
-
-    for (let y = 0; y < 100; y++) {
-      for (let x = 0; x < 200; x++) {
-        const position = (y * 200 + x) * 4;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const position = (y * width + x) * 4;
         const red = imageData.data.at(position);
         const dither = ditherPixel(x, y, red || 0);
         if (dither) {
-          imageData.data.set([0, 0, 0, 255], position);
+          imageData.data.set([15, 56, 16, 255], position);
         } else {
-          imageData.data.set([200, 200, 200, 255], position);
+          imageData.data.set([200, 200, 200, 0], position);
         }
       }
     }
 
-    ctx.clearRect(20, 20, 200, 100);
+    // ctx.clearRect(0, 0, width, height);
 
-    ctx.putImageData(imageData, 20, 20);
+    ctx.putImageData(imageData, 0, 0);
   });
 
   return (
@@ -109,13 +141,13 @@ export function Dialog(props: { children?: JSX.Element }) {
         inset: 0,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        // paddingTop: 64 * 7,
+        // justifyContent: "center",
+        paddingTop: 128 * 2,
         pointerEvents: "none",
         flexDirection: "column",
       }}
       style={{
-        background: FIFTY_GRADIENT,
+        // background: FIFTY_GRADIENT,
         "background-attachment": "fixed",
       }}
     >
@@ -131,30 +163,15 @@ export function Dialog(props: { children?: JSX.Element }) {
         }}
       />
       <div
-        css={{ padding: 6, paddingBottom: 8, backgroundColor: "transparent" }}
+        css={{ width: 512 * 2, height: 256 * 2, padding: 16 }}
         style={{
-          // background: SEVENTY_FIVE_GRADIENT,
-          "background-attachment": "fixed",
+          "background-color": colors.background,
+          // border: `2px solid ${colors.text2}`,
+          position: "relative",
+          "box-shadow": `0 0 0 2px ${colors.text2}`,
         }}
       >
-        <div
-          css={{ padding: 0, backgroundColor: "transparent" }}
-          style={{
-            background: colors.text,
-            "background-attachment": "fixed",
-          }}
-        >
-          <div
-            css={{ width: 200, height: 200, padding: 16 }}
-            style={{
-              "background-color": colors.background,
-              border: `2px solid ${colors.text2}`,
-              "box-shadow": `4px 4px ${colors.text}`,
-            }}
-          >
-            {props.children}
-          </div>
-        </div>
+        {props.children}
       </div>
     </div>
   );
