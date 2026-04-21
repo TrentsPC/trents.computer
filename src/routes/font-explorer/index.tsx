@@ -5,7 +5,7 @@ export const Route = createFileRoute("/font-explorer/")({
   component: FontExplorer,
 });
 
-export default function FontExplorer() {
+function FontExplorer() {
   const navigate = useNavigate();
   return (
     <div>

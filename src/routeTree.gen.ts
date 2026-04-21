@@ -15,6 +15,7 @@ import { Route as TicTacToeRouteImport } from './routes/tic-tac-toe'
 import { Route as SpringRouteImport } from './routes/spring'
 import { Route as SokobanRouteImport } from './routes/sokoban'
 import { Route as SecretWordRouteImport } from './routes/secret-word'
+import { Route as MinesweeperRouteImport } from './routes/minesweeper'
 import { Route as IsoRouteImport } from './routes/iso'
 import { Route as GbRouteImport } from './routes/gb'
 import { Route as FakerRouteImport } from './routes/faker'
@@ -70,6 +71,11 @@ const SokobanRoute = SokobanRouteImport.update({
 const SecretWordRoute = SecretWordRouteImport.update({
   id: '/secret-word',
   path: '/secret-word',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinesweeperRoute = MinesweeperRouteImport.update({
+  id: '/minesweeper',
+  path: '/minesweeper',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IsoRoute = IsoRouteImport.update({
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
+  '/minesweeper': typeof MinesweeperRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
   '/spring': typeof SpringRoute
@@ -230,15 +237,15 @@ export interface FileRoutesByFullPath {
   '/os/win98': typeof OsWin98Route
   '/pixel-font/vibe-coded': typeof PixelFontVibeCodedRoute
   '/font-explorer/': typeof FontExplorerIndexRoute
-  '/pantry': typeof PantryIndexRoute
-  '/pixel-font': typeof PixelFontIndexRoute
+  '/pantry/': typeof PantryIndexRoute
+  '/pixel-font/': typeof PixelFontIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
   '/font-explorer/tables/FFTM': typeof FontExplorerTablesFFTMRoute
-  '/font-explorer/tables': typeof FontExplorerTablesIndexRoute
-  '/pantry/books': typeof PantryBooksIndexRoute
+  '/font-explorer/tables/': typeof FontExplorerTablesIndexRoute
+  '/pantry/books/': typeof PantryBooksIndexRoute
   '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
-  '/pantry/books/$bookId': typeof PantryBooksBookIdIndexRoute
-  '/pantry/recipes/$recipeId': typeof PantryRecipesRecipeIdIndexRoute
+  '/pantry/books/$bookId/': typeof PantryBooksBookIdIndexRoute
+  '/pantry/recipes/$recipeId/': typeof PantryRecipesRecipeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
+  '/minesweeper': typeof MinesweeperRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
   '/spring': typeof SpringRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/faker': typeof FakerRoute
   '/gb': typeof GbRoute
   '/iso': typeof IsoRoute
+  '/minesweeper': typeof MinesweeperRoute
   '/secret-word': typeof SecretWordRoute
   '/sokoban': typeof SokobanRoute
   '/spring': typeof SpringRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/faker'
     | '/gb'
     | '/iso'
+    | '/minesweeper'
     | '/secret-word'
     | '/sokoban'
     | '/spring'
@@ -334,15 +344,15 @@ export interface FileRouteTypes {
     | '/os/win98'
     | '/pixel-font/vibe-coded'
     | '/font-explorer/'
-    | '/pantry'
-    | '/pixel-font'
+    | '/pantry/'
+    | '/pixel-font/'
     | '/font-explorer/tables/$unknownTable'
     | '/font-explorer/tables/FFTM'
-    | '/font-explorer/tables'
-    | '/pantry/books'
+    | '/font-explorer/tables/'
+    | '/pantry/books/'
     | '/pantry/recipes/$recipeId/edit'
-    | '/pantry/books/$bookId'
-    | '/pantry/recipes/$recipeId'
+    | '/pantry/books/$bookId/'
+    | '/pantry/recipes/$recipeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/faker'
     | '/gb'
     | '/iso'
+    | '/minesweeper'
     | '/secret-word'
     | '/sokoban'
     | '/spring'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/faker'
     | '/gb'
     | '/iso'
+    | '/minesweeper'
     | '/secret-word'
     | '/sokoban'
     | '/spring'
@@ -423,6 +435,7 @@ export interface RootRouteChildren {
   FakerRoute: typeof FakerRoute
   GbRoute: typeof GbRoute
   IsoRoute: typeof IsoRoute
+  MinesweeperRoute: typeof MinesweeperRoute
   SecretWordRoute: typeof SecretWordRoute
   SokobanRoute: typeof SokobanRoute
   SpringRoute: typeof SpringRoute
@@ -444,102 +457,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chadgdp': {
-      id: '/chadgdp'
-      path: '/chadgdp'
-      fullPath: '/chadgdp'
-      preLoaderRoute: typeof ChadgdpRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/font-explorer': {
-      id: '/font-explorer'
-      path: '/font-explorer'
-      fullPath: '/font-explorer'
-      preLoaderRoute: typeof FontExplorerRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nested': {
-      id: '/nested'
-      path: '/nested'
-      fullPath: '/nested'
-      preLoaderRoute: typeof NestedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/boggle': {
-      id: '/boggle'
-      path: '/boggle'
-      fullPath: '/boggle'
-      preLoaderRoute: typeof BoggleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/calendar': {
-      id: '/calendar'
-      path: '/calendar'
-      fullPath: '/calendar'
-      preLoaderRoute: typeof CalendarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cv': {
-      id: '/cv'
-      path: '/cv'
-      fullPath: '/cv'
-      preLoaderRoute: typeof CvRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faker': {
-      id: '/faker'
-      path: '/faker'
-      fullPath: '/faker'
-      preLoaderRoute: typeof FakerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gb': {
-      id: '/gb'
-      path: '/gb'
-      fullPath: '/gb'
-      preLoaderRoute: typeof GbRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/iso': {
-      id: '/iso'
-      path: '/iso'
-      fullPath: '/iso'
-      preLoaderRoute: typeof IsoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/secret-word': {
-      id: '/secret-word'
-      path: '/secret-word'
-      fullPath: '/secret-word'
-      preLoaderRoute: typeof SecretWordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sokoban': {
-      id: '/sokoban'
-      path: '/sokoban'
-      fullPath: '/sokoban'
-      preLoaderRoute: typeof SokobanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/spring': {
-      id: '/spring'
-      path: '/spring'
-      fullPath: '/spring'
-      preLoaderRoute: typeof SpringRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tic-tac-toe': {
-      id: '/tic-tac-toe'
-      path: '/tic-tac-toe'
-      fullPath: '/tic-tac-toe'
-      preLoaderRoute: typeof TicTacToeRouteImport
+    '/words': {
+      id: '/words'
+      path: '/words'
+      fullPath: '/words'
+      preLoaderRoute: typeof WordsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/two-hard-things': {
@@ -549,53 +471,123 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof TwoHardThingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/words': {
-      id: '/words'
-      path: '/words'
-      fullPath: '/words'
-      preLoaderRoute: typeof WordsRouteImport
+    '/tic-tac-toe': {
+      id: '/tic-tac-toe'
+      path: '/tic-tac-toe'
+      fullPath: '/tic-tac-toe'
+      preLoaderRoute: typeof TicTacToeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/font-explorer/hex': {
-      id: '/font-explorer/hex'
-      path: '/hex'
-      fullPath: '/font-explorer/hex'
-      preLoaderRoute: typeof FontExplorerHexRouteImport
-      parentRoute: typeof FontExplorerRouteRoute
-    }
-    '/os/ios': {
-      id: '/os/ios'
-      path: '/os/ios'
-      fullPath: '/os/ios'
-      preLoaderRoute: typeof OsIosRouteImport
+    '/spring': {
+      id: '/spring'
+      path: '/spring'
+      fullPath: '/spring'
+      preLoaderRoute: typeof SpringRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/os/ios3': {
-      id: '/os/ios3'
-      path: '/os/ios3'
-      fullPath: '/os/ios3'
-      preLoaderRoute: typeof OsIos3RouteImport
+    '/sokoban': {
+      id: '/sokoban'
+      path: '/sokoban'
+      fullPath: '/sokoban'
+      preLoaderRoute: typeof SokobanRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/os/sonoma': {
-      id: '/os/sonoma'
-      path: '/os/sonoma'
-      fullPath: '/os/sonoma'
-      preLoaderRoute: typeof OsSonomaRouteImport
+    '/secret-word': {
+      id: '/secret-word'
+      path: '/secret-word'
+      fullPath: '/secret-word'
+      preLoaderRoute: typeof SecretWordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/os/win98': {
-      id: '/os/win98'
-      path: '/os/win98'
-      fullPath: '/os/win98'
-      preLoaderRoute: typeof OsWin98RouteImport
+    '/minesweeper': {
+      id: '/minesweeper'
+      path: '/minesweeper'
+      fullPath: '/minesweeper'
+      preLoaderRoute: typeof MinesweeperRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pixel-font/vibe-coded': {
-      id: '/pixel-font/vibe-coded'
-      path: '/pixel-font/vibe-coded'
-      fullPath: '/pixel-font/vibe-coded'
-      preLoaderRoute: typeof PixelFontVibeCodedRouteImport
+    '/iso': {
+      id: '/iso'
+      path: '/iso'
+      fullPath: '/iso'
+      preLoaderRoute: typeof IsoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gb': {
+      id: '/gb'
+      path: '/gb'
+      fullPath: '/gb'
+      preLoaderRoute: typeof GbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faker': {
+      id: '/faker'
+      path: '/faker'
+      fullPath: '/faker'
+      preLoaderRoute: typeof FakerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cv': {
+      id: '/cv'
+      path: '/cv'
+      fullPath: '/cv'
+      preLoaderRoute: typeof CvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boggle': {
+      id: '/boggle'
+      path: '/boggle'
+      fullPath: '/boggle'
+      preLoaderRoute: typeof BoggleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nested': {
+      id: '/nested'
+      path: '/nested'
+      fullPath: '/nested'
+      preLoaderRoute: typeof NestedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer': {
+      id: '/font-explorer'
+      path: '/font-explorer'
+      fullPath: '/font-explorer'
+      preLoaderRoute: typeof FontExplorerRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chadgdp': {
+      id: '/chadgdp'
+      path: '/chadgdp'
+      fullPath: '/chadgdp'
+      preLoaderRoute: typeof ChadgdpRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pixel-font/': {
+      id: '/pixel-font/'
+      path: '/pixel-font'
+      fullPath: '/pixel-font/'
+      preLoaderRoute: typeof PixelFontIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pantry/': {
+      id: '/pantry/'
+      path: '/pantry'
+      fullPath: '/pantry/'
+      preLoaderRoute: typeof PantryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/font-explorer/': {
@@ -605,25 +597,60 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof FontExplorerIndexRouteImport
       parentRoute: typeof FontExplorerRouteRoute
     }
-    '/pantry/': {
-      id: '/pantry/'
-      path: '/pantry'
-      fullPath: '/pantry'
-      preLoaderRoute: typeof PantryIndexRouteImport
+    '/pixel-font/vibe-coded': {
+      id: '/pixel-font/vibe-coded'
+      path: '/pixel-font/vibe-coded'
+      fullPath: '/pixel-font/vibe-coded'
+      preLoaderRoute: typeof PixelFontVibeCodedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pixel-font/': {
-      id: '/pixel-font/'
-      path: '/pixel-font'
-      fullPath: '/pixel-font'
-      preLoaderRoute: typeof PixelFontIndexRouteImport
+    '/os/win98': {
+      id: '/os/win98'
+      path: '/os/win98'
+      fullPath: '/os/win98'
+      preLoaderRoute: typeof OsWin98RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/font-explorer/tables/$unknownTable': {
-      id: '/font-explorer/tables/$unknownTable'
-      path: '/tables/$unknownTable'
-      fullPath: '/font-explorer/tables/$unknownTable'
-      preLoaderRoute: typeof FontExplorerTablesUnknownTableRouteImport
+    '/os/sonoma': {
+      id: '/os/sonoma'
+      path: '/os/sonoma'
+      fullPath: '/os/sonoma'
+      preLoaderRoute: typeof OsSonomaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/os/ios3': {
+      id: '/os/ios3'
+      path: '/os/ios3'
+      fullPath: '/os/ios3'
+      preLoaderRoute: typeof OsIos3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/os/ios': {
+      id: '/os/ios'
+      path: '/os/ios'
+      fullPath: '/os/ios'
+      preLoaderRoute: typeof OsIosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer/hex': {
+      id: '/font-explorer/hex'
+      path: '/hex'
+      fullPath: '/font-explorer/hex'
+      preLoaderRoute: typeof FontExplorerHexRouteImport
+      parentRoute: typeof FontExplorerRouteRoute
+    }
+    '/pantry/books/': {
+      id: '/pantry/books/'
+      path: '/pantry/books'
+      fullPath: '/pantry/books/'
+      preLoaderRoute: typeof PantryBooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/font-explorer/tables/': {
+      id: '/font-explorer/tables/'
+      path: '/tables'
+      fullPath: '/font-explorer/tables/'
+      preLoaderRoute: typeof FontExplorerTablesIndexRouteImport
       parentRoute: typeof FontExplorerRouteRoute
     }
     '/font-explorer/tables/FFTM': {
@@ -633,18 +660,25 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof FontExplorerTablesFFTMRouteImport
       parentRoute: typeof FontExplorerRouteRoute
     }
-    '/font-explorer/tables/': {
-      id: '/font-explorer/tables/'
-      path: '/tables'
-      fullPath: '/font-explorer/tables'
-      preLoaderRoute: typeof FontExplorerTablesIndexRouteImport
+    '/font-explorer/tables/$unknownTable': {
+      id: '/font-explorer/tables/$unknownTable'
+      path: '/tables/$unknownTable'
+      fullPath: '/font-explorer/tables/$unknownTable'
+      preLoaderRoute: typeof FontExplorerTablesUnknownTableRouteImport
       parentRoute: typeof FontExplorerRouteRoute
     }
-    '/pantry/books/': {
-      id: '/pantry/books/'
-      path: '/pantry/books'
-      fullPath: '/pantry/books'
-      preLoaderRoute: typeof PantryBooksIndexRouteImport
+    '/pantry/recipes/$recipeId/': {
+      id: '/pantry/recipes/$recipeId/'
+      path: '/pantry/recipes/$recipeId'
+      fullPath: '/pantry/recipes/$recipeId/'
+      preLoaderRoute: typeof PantryRecipesRecipeIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pantry/books/$bookId/': {
+      id: '/pantry/books/$bookId/'
+      path: '/pantry/books/$bookId'
+      fullPath: '/pantry/books/$bookId/'
+      preLoaderRoute: typeof PantryBooksBookIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pantry/recipes/$recipeId/edit': {
@@ -652,20 +686,6 @@ declare module '@tanstack/solid-router' {
       path: '/pantry/recipes/$recipeId/edit'
       fullPath: '/pantry/recipes/$recipeId/edit'
       preLoaderRoute: typeof PantryRecipesRecipeIdEditRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pantry/books/$bookId/': {
-      id: '/pantry/books/$bookId/'
-      path: '/pantry/books/$bookId'
-      fullPath: '/pantry/books/$bookId'
-      preLoaderRoute: typeof PantryBooksBookIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pantry/recipes/$recipeId/': {
-      id: '/pantry/recipes/$recipeId/'
-      path: '/pantry/recipes/$recipeId'
-      fullPath: '/pantry/recipes/$recipeId'
-      preLoaderRoute: typeof PantryRecipesRecipeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -701,6 +721,7 @@ const rootRouteChildren: RootRouteChildren = {
   FakerRoute: FakerRoute,
   GbRoute: GbRoute,
   IsoRoute: IsoRoute,
+  MinesweeperRoute: MinesweeperRoute,
   SecretWordRoute: SecretWordRoute,
   SokobanRoute: SokobanRoute,
   SpringRoute: SpringRoute,
