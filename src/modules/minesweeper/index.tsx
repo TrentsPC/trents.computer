@@ -8,9 +8,40 @@ export type Grid<T> = T[][];
 // 7x7: 20
 // 8x8: 26
 
+// Calculated ideal mine counts per size:
+// 3x4: 3 (NOT GOOD) (LOTTA DUPE-LOOKING PUZZLES)
+// 3x5: 4
+// 4x4: 5
+
+const mineCounts: Record<string, number | undefined> = {
+  // "3x4": 3,
+  "3x5": 4,
+  "3x6": 6, // 4,5,6, and 7 all seem about equivalent
+  "3x7": 6, // 6-7
+  "4x4": 5,
+  "4x5": 6, // 4-7
+  "5x5": 10,
+  "6x6": 14,
+  "7x7": 20,
+  "8x8": 26,
+};
+
+function getMineCount(width: number, height: number) {
+  const long = Math.max(width, height);
+  const short = Math.min(width, height);
+  const str = short + "x" + long;
+  return mineCounts[str];
+}
+
 type Position = [x: number, y: number];
 
-export type CellClue = "mine" | "vanilla" | "any";
+const CellClue = {
+  Mine: 0,
+  Vanilla: 1,
+  Any: 2,
+} as const;
+export type CellClue = (typeof CellClue)[keyof typeof CellClue];
+
 export type FieldClue = "vanilla";
 
 export type Minefield = {
@@ -26,9 +57,9 @@ export type Minefield = {
 const t = true;
 const f = false;
 const u = undefined;
-const m = "mine";
-const v = "vanilla";
-const a = "any";
+const m = CellClue.Mine;
+const v = CellClue.Vanilla;
+const a = CellClue.Any;
 export const exampleMinefield: Minefield = {
   width: 5,
   height: 5,
@@ -54,9 +85,9 @@ export const exampleMinefield: Minefield = {
 function getCellClue(minefield: Minefield, x: number, y: number): string {
   const clueType = minefield.cellClues[y][x];
   if (!clueType) return "?";
-  if (clueType === "any") return "?";
+  if (clueType === CellClue.Any) return "?";
 
-  if (clueType === "vanilla") {
+  if (clueType === CellClue.Vanilla) {
     let mineCount = 0;
     for (let dx of [-1, 0, 1]) {
       for (let dy of [-1, 0, 1]) {
@@ -75,7 +106,7 @@ function getCellClue(minefield: Minefield, x: number, y: number): string {
     if (x > minefield.width - 1) return false;
     if (y < 0) return false;
     if (y > minefield.height - 1) return false;
-    return minefield.cellClues[y][x] === "mine";
+    return minefield.cellClues[y][x] === CellClue.Mine;
   }
 }
 
@@ -87,9 +118,9 @@ function cellClueHasContradiction(
 ): boolean {
   const clueType = minefield.cellClues[y][x];
   if (!clueType) return false;
-  if (clueType === "any") return false;
+  if (clueType === CellClue.Any) return false;
 
-  if (clueType === "vanilla") {
+  if (clueType === CellClue.Vanilla) {
     const clueStr = getCellClue(minefield, x, y);
     const clue = Number(clueStr);
     if (!isFinite(clue)) return true;
@@ -111,7 +142,7 @@ function cellClueHasContradiction(
     return false;
   }
 
-  if (clueType === "mine") return false;
+  if (clueType === CellClue.Mine) return false;
   return false;
 
   function solveStateAt(x: number, y: number): boolean | undefined {
@@ -269,11 +300,13 @@ function* getRevealedClueCombinations(
   }
 }
 
-function getHint(minefield: Minefield, difficulty = 2) {
+function getHint(minefield: Minefield, difficulty = 2, mask?: Position) {
   const mustBeFlag: Position[] = [];
   const mustBeSafe: Position[] = [];
 
-  const masksGen = getRevealedClueCombinations(minefield, difficulty);
+  const masksGen = mask
+    ? [[mask]]
+    : getRevealedClueCombinations(minefield, difficulty);
 
   for (let position of masksGen) {
     let foundSomething = false;
@@ -384,27 +417,34 @@ function removeCluesUntilBarelySolvable(
   while (!unsolvable && loops < 15) {
     const x = Math.floor(Math.random() * width);
     const y = Math.floor(Math.random() * height);
-    if (minefield.cellClues[y][x] === "mine") {
+    if (minefield.cellClues[y][x] === CellClue.Mine) {
       continue;
     }
 
-    minefield.cellClues[y][x] = "any";
+    minefield.cellClues[y][x] = CellClue.Any;
     const attempt = solveMinefield(cloneMinefield(minefield), difficulty);
     unsolvable = attempt.flags !== attempt.mines;
     if (unsolvable) {
-      minefield.cellClues[y][x] = "vanilla";
+      minefield.cellClues[y][x] = CellClue.Vanilla;
     }
     loops++;
   }
   return minefield;
 }
 
+type GenerateMinefieldOptions = {
+  difficulty: number;
+  width: number;
+  height: number;
+  mines: number;
+};
+
 function generateMinefield({
   difficulty = 2,
   width = 5,
   height = 5,
   mines = 10,
-}): Minefield {
+}: GenerateMinefieldOptions): Minefield {
   const grid: Grid<CellClue> = Array.from({ length: height }).map((r) =>
     Array.from({ length: width }).fill(v),
   ) as any;
@@ -413,12 +453,12 @@ function generateMinefield({
     const x = Math.floor(Math.random() * width);
     const y = Math.floor(Math.random() * height);
     let currently = grid[y][x];
-    if (currently === "mine") continue;
-    grid[y][x] = "mine";
+    if (currently === CellClue.Mine) continue;
+    grid[y][x] = CellClue.Mine;
     minesSoFar++;
   }
   const solveState = grid.map((row) =>
-    row.map((v) => (v === "mine" ? undefined : false)),
+    row.map((v) => (v === CellClue.Mine ? undefined : false)),
   );
   let baseMinefield: Minefield = {
     cellClues: grid,
@@ -442,6 +482,7 @@ function generateMinefield({
 export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [hint, setHint] = createSignal<ReturnType<typeof getHint>>(undefined);
+  const [difficulty, setDifficulty] = createSignal(2);
 
   function updateSolveState(x: number, y: number, state: boolean) {
     const next = cloneMinefield(minefield());
@@ -498,6 +539,32 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                       }}
                       onClick={() => {
                         setHint(undefined);
+                        if (cell === false) {
+                          // Try Auto-complete
+                          const hint = getHint(minefield(), 1, [x(), y()]);
+                          if (hint) {
+                            let next = cloneMinefield(minefield());
+                            for (let [flagX, flagY] of hint.mustBeFlag) {
+                              if (
+                                Math.abs(flagX - x()) <= 1 &&
+                                Math.abs(flagY - y()) <= 1
+                              ) {
+                                next.solveState[flagY][flagX] = true;
+                                next.flags++;
+                              }
+                            }
+                            for (let [safeX, safeY] of hint.mustBeSafe) {
+                              if (
+                                Math.abs(safeX - x()) <= 1 &&
+                                Math.abs(safeY - y()) <= 1
+                              ) {
+                                next.solveState[safeY][safeX] = false;
+                              }
+                            }
+                            setMinefield(next);
+                          }
+                          return;
+                        }
                         if (cell !== undefined) return;
                         const oppositeTest = cloneMinefield(minefield());
                         oppositeTest.solveState[y()][x()] = true;
@@ -542,12 +609,75 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       </table>
       <button
         onClick={() => {
-          const hint = getHint(minefield(), 3);
+          const hint = getHint(minefield(), difficulty());
           setHint(hint);
         }}
       >
         GET HINT
       </button>
+      NEW GAME
+      <table>
+        <tbody>
+          <For each={[3, 4, 5, 6, 7, 8]}>
+            {(height) => (
+              <tr>
+                <For each={[3, 4, 5, 6, 7, 8]}>
+                  {(width) => (
+                    <td
+                      css={{
+                        width: 32,
+                        height: 32,
+                        border: "1px solid black",
+                        fontScale: 0,
+                        textAlign: "center",
+                        color: "transparent",
+                        "&:hover": {
+                          color: "black",
+                        },
+                      }}
+                      style={{
+                        "background-color": getMineCount(width, height)
+                          ? "white"
+                          : "lightgrey",
+                      }}
+                      onClick={() => {
+                        const mines = getMineCount(width, height);
+                        if (mines) {
+                          const canDoSatisfying = width * height < 25;
+                          if (canDoSatisfying) {
+                            const satisfying = generateSatisfyingMinefield({
+                              difficulty: difficulty(),
+                              width: width,
+                              height: height,
+                              mines: mines,
+                            });
+                            if (satisfying) {
+                              setMinefield(satisfying);
+                              setHint(undefined);
+                            }
+                          } else {
+                            setMinefield(
+                              generateMinefield({
+                                difficulty: difficulty(),
+                                width: width,
+                                height: height,
+                                mines: mines,
+                              }),
+                            );
+                            setHint(undefined);
+                          }
+                        }
+                      }}
+                    >
+                      {width}x{height}
+                    </td>
+                  )}
+                </For>
+              </tr>
+            )}
+          </For>
+        </tbody>
+      </table>
       {/* <button
         onClick={() => {
           const clone = cloneMinefield(minefield());
@@ -567,82 +697,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       >
         RESET
       </button> */}
-      <button
-        onClick={() => {
-          setMinefield(
-            generateMinefield({
-              difficulty: 2,
-              width: 5,
-              height: 5,
-              mines: 10,
-            }),
-          );
-          setHint(undefined);
-        }}
-      >
-        NEW 5x5 PUZZLE
-      </button>
       {/* <button
-        onClick={() => {
-          setMinefield(
-            generateMinefield({
-              difficulty: 2,
-              width: 8,
-              height: 4,
-              mines: 14,
-            }),
-          );
-          setHint(undefined);
-        }}
-      >
-        NEW 4x8 PUZZLE
-      </button>
-      <button
-        onClick={() => {
-          setMinefield(
-            generateMinefield({
-              difficulty: 2,
-              width: 6,
-              height: 6,
-              mines: 14,
-            }),
-          );
-          setHint(undefined);
-        }}
-      >
-        NEW 6x6 PUZZLE
-      </button>
-      <button
-        onClick={() => {
-          setMinefield(
-            generateMinefield({
-              difficulty: 2,
-              width: 7,
-              height: 7,
-              mines: 20,
-            }),
-          );
-          setHint(undefined);
-        }}
-      >
-        NEW 7x7 PUZZLE
-      </button>
-      <button
-        onClick={() => {
-          setMinefield(
-            generateMinefield({
-              difficulty: 2,
-              width: 8,
-              height: 8,
-              mines: 26,
-            }),
-          );
-          setHint(undefined);
-        }}
-      >
-        NEW 8x8 PUZZLE
-      </button> */}
-      <button
         onClick={() => {
           setHint(undefined);
           const next = solveMinefield(minefield(), 2);
@@ -650,20 +705,88 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
         }}
       >
         SOLVE
-      </button>
-
+      </button> */}
       {/* <button
         onClick={() => {
           const start = performance.now();
-          for (let n = 0; n < 10; n++) {
-            solveMinefield(exampleMinefield, 2);
+          for (let n = 1; n <= 10; n++) {
+            generateMinefield({
+              difficulty: 2,
+              width: 5,
+              height: 5,
+              mines: 10,
+            });
+            const end = performance.now();
+            console.log("TIME: ", ((end - start) / n).toFixed(0));
           }
-          const end = performance.now();
-          console.log("TIME: ", ((end - start) / 10).toFixed(0));
+          console.log("END");
         }}
       >
         BENCHMARK
       </button> */}
+      <button
+        onClick={() => {
+          getSatisfactionRate({
+            difficulty: difficulty(),
+            width: 4,
+            height: 5,
+            mines: 7,
+          });
+        }}
+      >
+        SATISFY
+      </button>
     </div>
   );
+}
+
+function isSolved(minefield: Minefield) {
+  return minefield.flags === minefield.mines;
+}
+
+function getSatisfactionRate(opts: GenerateMinefieldOptions) {
+  const simpleSolverDifficulty = opts.difficulty - 1;
+
+  const minMines = 4;
+  const maxMines = Math.min((opts.height * opts.width) / 2);
+
+  const satisfyCountByMineCount = Array.from({ length: maxMines + 1 }).fill(
+    0,
+  ) as number[];
+
+  for (let n = 1; n <= 400; n++) {
+    for (let mines = minMines; mines <= maxMines; mines++) {
+      const randomMinefield = generateMinefield({ ...opts, mines });
+      const simpleAttempt = solveMinefield(
+        randomMinefield,
+        simpleSolverDifficulty,
+      );
+      if (!isSolved(simpleAttempt)) {
+        satisfyCountByMineCount[mines]++;
+      }
+    }
+    // console.log(
+    //   "SATISFACTION RATING:",
+    //   Math.round((satisfyingSolves / n) * 100),
+    // );
+    if (n % 10 === 0) {
+      console.table(satisfyCountByMineCount);
+    }
+  }
+  console.log("END");
+}
+
+function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
+  const simpleSolverDifficulty = opts.difficulty - 1;
+
+  for (let n = 1; n <= 100; n++) {
+    const randomMinefield = generateMinefield(opts);
+    const simpleAttempt = solveMinefield(
+      cloneMinefield(randomMinefield),
+      simpleSolverDifficulty,
+    );
+    if (!isSolved(simpleAttempt)) {
+      return randomMinefield;
+    }
+  }
 }
