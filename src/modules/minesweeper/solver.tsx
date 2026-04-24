@@ -1,4 +1,11 @@
 import { CellClue, Minefield, Position } from "./types";
+import {
+  countUnsolvedPositions,
+  fillUnsolvedPositionsWithFlags,
+  getAllRevealedClues,
+  getAllUnsolvedPositions,
+  shuffle,
+} from "./utils";
 
 export function getCellClue(
   minefield: Minefield,
@@ -61,6 +68,8 @@ function cellClueHasContradiction(
     }
     if (flagCount > clue) return true;
     if (flagCount + unsolvedCount < clue) return true;
+    const remainingMines = minefield.mines - minefield.flags;
+    if (remainingMines + flagCount < clue) return true;
     return false;
   }
 
@@ -103,60 +112,6 @@ function checkForContradictions(minefield: Minefield, mask?: Position[]) {
   }
 }
 
-function getAllUnsolvedPositions(minefield: Minefield, after?: Position) {
-  let positions: Position[] = [];
-  const [startX, startY] = after || [0, 0];
-  for (let y = startY; y < minefield.height; y++) {
-    for (let x = y === startY ? startX : 0; x < minefield.width; x++) {
-      if (minefield.solveState[y][x] === undefined) {
-        positions.push([x, y]);
-      }
-    }
-  }
-  return positions;
-}
-
-function shuffle<T>(array: T[]) {
-  let currentIndex = array.length;
-
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
-    // Pick a remaining element...
-    let randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
-  }
-}
-
-function countUnsolvedPositions(minefield: Minefield) {
-  let count = 0;
-  for (let y = 0; y < minefield.height; y++) {
-    for (let x = 0; x < minefield.width; x++) {
-      if (minefield.solveState[y][x] === undefined) {
-        count++;
-      }
-    }
-  }
-  return count;
-}
-
-function fillUnsolvedPositionsWithFlags(minefield: Minefield) {
-  for (let y = 0; y < minefield.height; y++) {
-    for (let x = 0; x < minefield.width; x++) {
-      if (minefield.solveState[y][x] === undefined) {
-        minefield.solveState[y][x] = true;
-        minefield.flags++;
-      }
-    }
-  }
-  return minefield;
-}
-
 /**
  * Create a possible arrangement of mines that satisfies all currently known clues
  *
@@ -179,52 +134,46 @@ export function createHypotheticalSolve(
     return fillUnsolvedPositionsWithFlags(minefield);
   }
 
-  let potentialMines = getAllUnsolvedPositions(minefield, lastMinePosition);
+  let potentialMines = getAllUnsolvedPositions(minefield, undefined);
 
-  // potentialMines = mask
-  //   ? getVisibleCells(minefield, mask, true)
-  //   : potentialMines;
   if (doShuffle) {
     shuffle(potentialMines);
   }
 
   for (const potentialMine of potentialMines) {
     const [x, y] = potentialMine;
-    // if (minefield.solveState[y][x] !== undefined) continue;
+    if (minefield.solveState[y][x] !== undefined) continue;
     minefield.solveState[y][x] = true;
 
     minefield.flags++;
-    const hypothetical = createHypotheticalSolve(
+    const hypotheticalWithFlag = createHypotheticalSolve(
       minefield,
-      potentialMine,
+      undefined,
       mask,
     );
-    if (hypothetical) {
-      return hypothetical;
-    } else {
-      minefield.flags--;
-      minefield.solveState[y][x] = false;
+    if (hypotheticalWithFlag) {
+      return hypotheticalWithFlag;
+    }
 
-      const hypothetical = createHypotheticalSolve(
-        minefield,
-        potentialMine,
-        mask,
-      );
-      if (hypothetical) {
-        return hypothetical;
-      } else {
-        minefield.solveState[y][x] = false;
-      }
+    minefield.flags--;
+    minefield.solveState[y][x] = false;
+
+    const hypotheticalWithSafe = createHypotheticalSolve(
+      minefield,
+      undefined,
+      mask,
+    );
+    if (hypotheticalWithSafe) {
+      return hypotheticalWithSafe;
+    } else {
+      minefield.solveState[y][x] = false;
     }
   }
-  // if (mask) {
-  //   return minefield;
-  // }
 
   return undefined;
 }
 
-function getVisiblePositionsFromCell(
+export function getVisiblePositionsFromCell(
   type: CellClue,
   x: number,
   y: number,
@@ -252,7 +201,7 @@ function getVisiblePositionsFromCell(
   return [];
 }
 
-function getVisibleCells(
+export function getVisibleCells(
   minefield: Minefield,
   positionalClues: Position[],
   fullScan = false,
@@ -329,29 +278,6 @@ export function getHintForCells(
     };
   }
 }
-export function multiGetHintForCells(
-  minefield: Minefield,
-  relevantCells: Position[][],
-) {
-  for (const cells of relevantCells) {
-    const hint = getHintForCells(minefield, cells);
-    if (hint) {
-      return hint;
-    }
-  }
-}
-
-function getAllRevealedCluePositions(minefield: Minefield) {
-  let positions: Position[] = [];
-  for (let y = 0; y < minefield.height; y++) {
-    for (let x = 0; x < minefield.width; x++) {
-      if (minefield.solveState[y][x] === false) {
-        positions.push([x, y]);
-      }
-    }
-  }
-  return positions;
-}
 
 function getCombinations<T>(sourceArray: T[], k: number) {
   const result: T[][] = [];
@@ -378,12 +304,14 @@ function getCombinations<T>(sourceArray: T[], k: number) {
 function* getRevealedClueCombinations(
   minefield: Minefield,
   maxSize: number,
-): Generator<Position[][], void, unknown> {
-  const positions = getAllRevealedCluePositions(minefield);
+): Generator<Position[], void, unknown> {
+  const positions = getAllRevealedClues(minefield);
   for (let size = 1; size <= maxSize; size++) {
     const combinations = getCombinations(positions, size);
 
-    yield combinations;
+    for (const combination of combinations) {
+      yield combination;
+    }
   }
 }
 
@@ -395,7 +323,7 @@ export type HintResult = {
 
 export function getHint(minefield: Minefield, difficulty = 2, mask?: Position) {
   const masksGen = mask
-    ? [[[mask]]]
+    ? [[mask]]
     : getRevealedClueCombinations(minefield, difficulty);
 
   const hint = getHintForCells(minefield, [], true);
@@ -405,12 +333,13 @@ export function getHint(minefield: Minefield, difficulty = 2, mask?: Position) {
   }
 
   for (let positions of masksGen) {
-    const hint = multiGetHintForCells(minefield, positions);
+    const hint = getHintForCells(minefield, positions, false);
 
     if (hint) {
       return hint;
     }
   }
+  return undefined;
 }
 
 export function solveMinefield(minefield: Minefield, difficulty = 2) {

@@ -1,10 +1,12 @@
-import { createSignal, For } from "solid-js";
+import { createMemo, createSignal, For } from "solid-js";
 import { fonts } from "~/theme.styles";
 import { benchmarkGenerator, generateMinefield } from "./generator";
 import {
   createHypotheticalSolve,
   getCellClue,
   getHint,
+  getHintForCells,
+  getVisibleCells,
   HintResult,
   solveMinefield,
 } from "./solver";
@@ -84,8 +86,19 @@ type GenerateMinefieldOptions = {
 
 export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
-  const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
+  const [_hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const [difficulty, setDifficulty] = createSignal(3);
+  const [debug, setDebug] = createSignal(0);
+  // const visible = createMemo(() =>
+  //   getVisibleCells(minefield(), getAllRevealedClues(minefield())),
+  // );
+  const visible = createMemo(() =>
+    getVisibleCells(minefield(), [
+      [1, 4],
+      [2, 4],
+    ]),
+  );
+  const hint = createMemo(() => getHint(minefield(), difficulty()));
 
   function updateSolveState(x: number, y: number, state: boolean) {
     const next = cloneMinefield(minefield());
@@ -102,6 +115,12 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
     if (h.relevantClues.some((p) => p[0] === x && p[1] === y)) return true;
     if (h.mustBeFlag.some((p) => p[0] === x && p[1] === y)) return true;
     if (h.mustBeSafe.some((p) => p[0] === x && p[1] === y)) return true;
+    return false;
+  }
+  function isVisible(x: number, y: number) {
+    const h = visible();
+    if (!h) return false;
+    if (h.some((p) => p[0] === x && p[1] === y)) return true;
     return false;
   }
 
@@ -138,16 +157,15 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                       style={{
                         "background-color": isInvolvedInHint(x(), y())
                           ? "cyan"
-                          : "transparent",
+                          : isVisible(x(), y())
+                            ? "silver"
+                            : "transparent",
                       }}
-                      onClick={async () => {
+                      onClick={() => {
                         setHint(undefined);
                         if (cell === false) {
                           // Try Auto-complete
-                          const hint = await getHint(minefield(), 1, [
-                            x(),
-                            y(),
-                          ]);
+                          const hint = getHint(minefield(), 1, [x(), y()]);
                           if (hint) {
                             let next = cloneMinefield(minefield());
                             for (let [flagX, flagY] of hint.mustBeFlag) {
@@ -214,13 +232,27 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
         </tbody>
       </table>
       <button
-        onClick={async () => {
-          const hint = await getHint(minefield(), difficulty());
+        onClick={() => {
+          const hint = getHint(minefield(), difficulty());
           setHint(hint);
         }}
       >
         GET HINT
       </button>
+      <pre>
+        <code>
+          {JSON.stringify(
+            getHintForCells(
+              minefield(),
+              [
+                [1, 4],
+                [2, 4],
+              ],
+              false,
+            ),
+          )}
+        </code>
+      </pre>
       NEW GAME
       <table>
         <tbody>
@@ -286,8 +318,8 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
         </tbody>
       </table>
       <button
-        onClick={async () => {
-          const solve = await solveMinefield(minefield(), 2);
+        onClick={() => {
+          const solve = solveMinefield(minefield(), 2);
           setMinefield(solve);
         }}
       >
