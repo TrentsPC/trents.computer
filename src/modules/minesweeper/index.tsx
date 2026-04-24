@@ -85,7 +85,7 @@ type GenerateMinefieldOptions = {
 export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
-  const [difficulty, setDifficulty] = createSignal(2);
+  const [difficulty, setDifficulty] = createSignal(3);
 
   function updateSolveState(x: number, y: number, state: boolean) {
     const next = cloneMinefield(minefield());
