@@ -393,11 +393,7 @@ export type HintResult = {
   mustBeSafe: Position[];
 };
 
-export async function getHint(
-  minefield: Minefield,
-  difficulty = 2,
-  mask?: Position,
-) {
+export function getHint(minefield: Minefield, difficulty = 2, mask?: Position) {
   const masksGen = mask
     ? [[[mask]]]
     : getRevealedClueCombinations(minefield, difficulty);
@@ -417,10 +413,10 @@ export async function getHint(
   }
 }
 
-export async function solveMinefield(minefield: Minefield, difficulty = 2) {
+export function solveMinefield(minefield: Minefield, difficulty = 2) {
   let hint: HintResult | undefined;
   do {
-    hint = await getHint(cloneMinefield(minefield), difficulty);
+    hint = getHint(cloneMinefield(minefield), difficulty);
     if (hint) {
       const next = cloneMinefield(minefield);
       for (let [x, y] of hint.mustBeFlag) {
