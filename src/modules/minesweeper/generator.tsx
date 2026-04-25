@@ -1,5 +1,5 @@
 import { solveMinefield } from "./solver-2";
-import { CellClue, Grid, Minefield, Position } from "./types";
+import { CellClue, Grid, GridType, Minefield } from "./types";
 import { getAllRevealedClues } from "./utils";
 
 function cloneMinefield(minefield: Minefield): Minefield {
@@ -37,73 +37,6 @@ function hideCluesUntilBarelySolvable(
   return minefield;
 }
 
-function getRemainingCluePositions(minefield: Minefield): Position[] {
-  let res: Position[] = [];
-  for (let y = 0; y < minefield.height; y++) {
-    for (let x = 0; x < minefield.width; x++) {
-      if (minefield.solveState[y][x] === false) {
-        res.push([x, y]);
-      }
-    }
-  }
-  return res;
-}
-function getRemainingClueCount(minefield: Minefield) {
-  let res = 0;
-  for (let y = 0; y < minefield.height; y++) {
-    for (let x = 0; x < minefield.width; x++) {
-      if (minefield.solveState[y][x] === false) {
-        res++;
-      }
-    }
-  }
-  return res;
-}
-function getQuestionMarkClueCount(minefield: Minefield) {
-  let res = 0;
-  for (let y = 0; y < minefield.height; y++) {
-    for (let x = 0; x < minefield.width; x++) {
-      if (minefield.cellClues[y][x] === CellClue.Any) {
-        res++;
-      }
-    }
-  }
-  return res;
-}
-
-function hideAsManyCluesAsPossible(
-  minefield: Minefield,
-  difficulty: number,
-  remainingCluePositions?: Position[],
-  depth = 0,
-): { minefield: Minefield; depth: number } {
-  let bestAttempt = minefield;
-  let bestAttemptDepth = depth;
-  if (!remainingCluePositions) {
-    remainingCluePositions = getRemainingCluePositions(minefield);
-  }
-  for (let i = 0; i < remainingCluePositions.length; i++) {
-    const [x, y] = remainingCluePositions[i]!;
-    minefield.solveState[y][x] = undefined;
-    const attempt = solveMinefield(cloneMinefield(minefield), difficulty);
-    let unsolvable = attempt.flags !== attempt.mines;
-    if (!unsolvable) {
-      const deeperAttempt = hideAsManyCluesAsPossible(
-        minefield,
-        difficulty,
-        remainingCluePositions.slice(i),
-        depth + 1,
-      );
-      if (deeperAttempt.depth > bestAttemptDepth) {
-        bestAttempt = cloneMinefield(deeperAttempt.minefield);
-        bestAttemptDepth = deeperAttempt.depth;
-      }
-    }
-    minefield.solveState[y][x] = false;
-  }
-  return { minefield: bestAttempt, depth: bestAttemptDepth };
-}
-
 function removeCluesUntilBarelySolvable(
   minefield: Minefield,
   difficulty: number,
@@ -115,7 +48,8 @@ function removeCluesUntilBarelySolvable(
   while (!unsolvable && loops < 15) {
     const x = Math.floor(Math.random() * width);
     const y = Math.floor(Math.random() * height);
-    if (minefield.cellClues[y][x] === CellClue.Mine) {
+    const clueType = minefield.cellClues[y][x];
+    if (clueType === CellClue.Mine) {
       continue;
     }
 
@@ -123,18 +57,19 @@ function removeCluesUntilBarelySolvable(
     const attempt = solveMinefield(cloneMinefield(minefield), difficulty);
     unsolvable = attempt.flags !== attempt.mines;
     if (unsolvable) {
-      minefield.cellClues[y][x] = CellClue.Vanilla;
+      minefield.cellClues[y][x] = clueType;
     }
     loops++;
   }
   return minefield;
 }
 
-type GenerateMinefieldOptions = {
+export type GenerateMinefieldOptions = {
   difficulty: number;
   width: number;
   height: number;
   mines: number;
+  grid: GridType;
 };
 
 export function generateMinefield({
@@ -142,9 +77,15 @@ export function generateMinefield({
   width = 5,
   height = 5,
   mines = 10,
+  grid: gridType = "square",
 }: GenerateMinefieldOptions): Minefield {
+  const defaultClue = {
+    hex: CellClue.VanillaHex,
+    square: CellClue.Vanilla,
+    triangle: CellClue.VanillaTri,
+  }[gridType];
   const grid: Grid<CellClue> = Array.from({ length: height }).map((r) =>
-    Array.from({ length: width }).fill(CellClue.Vanilla),
+    Array.from({ length: width }).fill(defaultClue),
   ) as any;
   let minesSoFar = 0;
   while (minesSoFar < mines) {
@@ -160,6 +101,7 @@ export function generateMinefield({
   );
   let baseMinefield: Minefield = {
     cellClues: grid,
+    grid: gridType,
     fieldClue: "vanilla",
     flags: 0,
     height,
@@ -205,6 +147,7 @@ export function benchmarkGenerator() {
       height: 4,
       mines: 5,
       width: 4,
+      grid: "square",
     });
     if (n % 20 === 0) {
       const end = performance.now();

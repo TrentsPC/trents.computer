@@ -26,6 +26,27 @@ export function getCellClue(
     return mineCount;
   }
 
+  if (clueType === CellClue.VanillaHex) {
+    let mineCount = 0;
+    const visible = getVisiblePositionsFromCell(clueType, x, y);
+    for (let [px, py] of visible) {
+      if (mineAt(px, py)) {
+        mineCount++;
+      }
+    }
+    return mineCount;
+  }
+  if (clueType === CellClue.VanillaTri) {
+    let mineCount = 0;
+    const visible = getVisiblePositionsFromCell(clueType, x, y);
+    for (let [px, py] of visible) {
+      if (mineAt(px, py)) {
+        mineCount++;
+      }
+    }
+    return mineCount;
+  }
+
   return -1;
 
   function mineAt(x: number, y: number) {
@@ -43,7 +64,7 @@ function cellClueHasContradiction(
   y: number,
 ): boolean {
   const clueType = minefield.cellClues[y][x];
-  if (!clueType) return false;
+  if (clueType === undefined) return false;
   if (clueType === CellClue.Any) return false;
 
   if (clueType === CellClue.Vanilla) {
@@ -62,6 +83,49 @@ function cellClueHasContradiction(
         }
       }
     }
+    if (flagCount > clue) return true;
+    if (flagCount + unsolvedCount < clue) return true;
+    const remainingMines = minefield.mines - minefield.flags;
+    if (remainingMines + flagCount < clue) return true;
+    return false;
+  }
+
+  if (clueType === CellClue.VanillaHex) {
+    const clue = getCellClue(minefield, x, y);
+    let flagCount = 0;
+    let unsolvedCount = 0;
+
+    const visible = getVisiblePositionsFromCell(clueType, x, y);
+    for (let [px, py] of visible) {
+      let val = solveStateAt(px, py);
+      if (val) {
+        flagCount++;
+      } else if (val === undefined) {
+        unsolvedCount++;
+      }
+    }
+
+    if (flagCount > clue) return true;
+    if (flagCount + unsolvedCount < clue) return true;
+    const remainingMines = minefield.mines - minefield.flags;
+    if (remainingMines + flagCount < clue) return true;
+    return false;
+  }
+  if (clueType === CellClue.VanillaTri) {
+    const clue = getCellClue(minefield, x, y);
+    let flagCount = 0;
+    let unsolvedCount = 0;
+
+    const visible = getVisiblePositionsFromCell(clueType, x, y);
+    for (let [px, py] of visible) {
+      let val = solveStateAt(px, py);
+      if (val) {
+        flagCount++;
+      } else if (val === undefined) {
+        unsolvedCount++;
+      }
+    }
+
     if (flagCount > clue) return true;
     if (flagCount + unsolvedCount < clue) return true;
     const remainingMines = minefield.mines - minefield.flags;
@@ -159,6 +223,38 @@ export function getVisiblePositionsFromCell(
       [x - 1, y + 1],
       [x, y + 1],
       [x + 1, y + 1],
+    ];
+  }
+  if (type === CellClue.VanillaHex) {
+    const shift = x % 2 === 0 ? -1 : 0;
+    return [
+      [x, y - 1],
+      [x, y + 1],
+
+      [x - 1, y + shift],
+      [x - 1, y + shift + 1],
+      [x + 1, y + shift],
+      [x + 1, y + shift + 1],
+    ];
+  }
+  if (type === CellClue.VanillaTri) {
+    const shift = (x + y) % 2 === 0 ? 0 : -1;
+    return [
+      [x - 1, y - 1],
+      [x, y - 1],
+      [x + 1, y - 1],
+
+      [x - 1, y],
+      [x + 1, y],
+
+      [x - 1, y + 1],
+      [x, y + 1],
+      [x + 1, y + 1],
+
+      [x - 2, y + shift],
+      [x - 2, y + shift + 1],
+      [x + 2, y + shift],
+      [x + 2, y + shift + 1],
     ];
   }
   return [];
