@@ -54,7 +54,7 @@ const a = CellClue.Any;
 export const exampleMinefield: Minefield = {
   width: 5,
   height: 5,
-  grid: "triangle",
+  grid: "square",
   mines: 10,
   flags: 0,
   fieldClue: "vanilla",
@@ -206,15 +206,13 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                       //   : {}),
 
                       "background-color":
-                        isInvolvedInHint(x(), y()) === "mine"
-                          ? "red"
-                          : isInvolvedInHint(x(), y()) === "safe"
-                            ? "green"
-                            : isInvolvedInHint(x(), y())
-                              ? "cyan"
-                              : isVisible(x(), y())
-                                ? "silver"
-                                : "rgba(0,0,0,0.05)",
+                        isInvolvedInHint(x(), y()) === "clue"
+                          ? "gold"
+                          : isInvolvedInHint(x(), y())
+                            ? "lightseagreen"
+                            : isVisible(x(), y())
+                              ? "silver"
+                              : "rgba(0,0,0,0.05)",
                     }}
                     onMouseEnter={() => {
                       if (cell === false) {
