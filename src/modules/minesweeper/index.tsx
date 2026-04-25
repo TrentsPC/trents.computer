@@ -2,14 +2,13 @@ import { createMemo, createSignal, For } from "solid-js";
 import { fonts } from "~/theme.styles";
 import { benchmarkGenerator, generateMinefield } from "./generator";
 import {
-  createHypotheticalSolve,
+  createHypotheticalSolveForEntireBoard,
   getCellClue,
   getHint,
-  getHintForCells,
-  getVisibleCells,
+  getVisibleUnsolvedPositions,
   HintResult,
   solveMinefield,
-} from "./solver";
+} from "./solver-2";
 import { CellClue, Minefield } from "./types";
 
 // 5x5: 10
@@ -88,17 +87,11 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [_hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const [difficulty, setDifficulty] = createSignal(3);
-  const [debug, setDebug] = createSignal(0);
-  // const visible = createMemo(() =>
-  //   getVisibleCells(minefield(), getAllRevealedClues(minefield())),
-  // );
-  const visible = createMemo(() =>
-    getVisibleCells(minefield(), [
-      [1, 4],
-      [2, 4],
-    ]),
-  );
+  const [debug, setDebug] = createSignal(true);
   const hint = createMemo(() => getHint(minefield(), difficulty()));
+  const visible = createMemo(() =>
+    getVisibleUnsolvedPositions(minefield(), hint()?.relevantClues || []),
+  );
 
   function updateSolveState(x: number, y: number, state: boolean) {
     const next = cloneMinefield(minefield());
@@ -112,12 +105,13 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   function isInvolvedInHint(x: number, y: number) {
     const h = hint();
     if (!h) return false;
-    if (h.relevantClues.some((p) => p[0] === x && p[1] === y)) return true;
-    if (h.mustBeFlag.some((p) => p[0] === x && p[1] === y)) return true;
-    if (h.mustBeSafe.some((p) => p[0] === x && p[1] === y)) return true;
+    if (h.relevantClues.some((p) => p[0] === x && p[1] === y)) return "clue";
+    if (h.mustBeFlag.some((p) => p[0] === x && p[1] === y)) return "mine";
+    if (h.mustBeSafe.some((p) => p[0] === x && p[1] === y)) return "safe";
     return false;
   }
   function isVisible(x: number, y: number) {
+    // return false;
     const h = visible();
     if (!h) return false;
     if (h.some((p) => p[0] === x && p[1] === y)) return true;
@@ -144,87 +138,103 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
             {(row, y) => (
               <tr>
                 <For each={row}>
-                  {(cell, x) => (
-                    <td
-                      css={{
-                        border: "1px solid black",
-                        width: 64,
-                        height: 64,
-                        fontScale: 6,
-                        textAlign: "center",
-                        fontFamily: fonts.mono,
-                      }}
-                      style={{
-                        "background-color": isInvolvedInHint(x(), y())
-                          ? "cyan"
-                          : isVisible(x(), y())
-                            ? "silver"
-                            : "transparent",
-                      }}
-                      onClick={() => {
-                        setHint(undefined);
-                        if (cell === false) {
-                          // Try Auto-complete
-                          const hint = getHint(minefield(), 1, [x(), y()]);
-                          if (hint) {
-                            let next = cloneMinefield(minefield());
-                            for (let [flagX, flagY] of hint.mustBeFlag) {
-                              if (
-                                Math.abs(flagX - x()) <= 1 &&
-                                Math.abs(flagY - y()) <= 1
-                              ) {
-                                next.solveState[flagY][flagX] = true;
-                                next.flags++;
+                  {(cell, x) => {
+                    const clue = createMemo(() =>
+                      getCellClue(minefield(), x(), y()),
+                    );
+                    return (
+                      <td
+                        css={{
+                          border: "1px solid black",
+                          width: 64,
+                          height: 64,
+                          fontScale: 6,
+                          textAlign: "center",
+                          fontFamily: fonts.mono,
+                        }}
+                        style={{
+                          "background-color":
+                            isInvolvedInHint(x(), y()) === "mine"
+                              ? "red"
+                              : isInvolvedInHint(x(), y()) === "safe"
+                                ? "green"
+                                : isInvolvedInHint(x(), y())
+                                  ? "cyan"
+                                  : isVisible(x(), y())
+                                    ? "silver"
+                                    : "transparent",
+                        }}
+                        onClick={() => {
+                          setHint(undefined);
+                          if (cell === false) {
+                            // Try Auto-complete
+                            const hint = getHint(minefield(), 1, [x(), y()]);
+                            if (hint) {
+                              let next = cloneMinefield(minefield());
+                              for (let [flagX, flagY] of hint.mustBeFlag) {
+                                if (
+                                  Math.abs(flagX - x()) <= 1 &&
+                                  Math.abs(flagY - y()) <= 1
+                                ) {
+                                  next.solveState[flagY][flagX] = true;
+                                  next.flags++;
+                                }
                               }
-                            }
-                            for (let [safeX, safeY] of hint.mustBeSafe) {
-                              if (
-                                Math.abs(safeX - x()) <= 1 &&
-                                Math.abs(safeY - y()) <= 1
-                              ) {
-                                next.solveState[safeY][safeX] = false;
+                              for (let [safeX, safeY] of hint.mustBeSafe) {
+                                if (
+                                  Math.abs(safeX - x()) <= 1 &&
+                                  Math.abs(safeY - y()) <= 1
+                                ) {
+                                  next.solveState[safeY][safeX] = false;
+                                }
                               }
+                              setMinefield(next);
                             }
-                            setMinefield(next);
+                            return;
                           }
-                          return;
-                        }
-                        if (cell !== undefined) return;
-                        const oppositeTest = cloneMinefield(minefield());
-                        oppositeTest.solveState[y()][x()] = true;
-                        oppositeTest.flags++;
+                          if (cell !== undefined) return;
+                          const oppositeTest = cloneMinefield(minefield());
+                          oppositeTest.solveState[y()][x()] = true;
+                          oppositeTest.flags++;
 
-                        const badSolve = createHypotheticalSolve(oppositeTest);
-                        if (badSolve) {
-                          setMinefield(badSolve);
-                        } else {
-                          updateSolveState(x(), y(), false);
-                        }
-                      }}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        setHint(undefined);
-                        if (cell !== undefined) return;
+                          const badSolve =
+                            createHypotheticalSolveForEntireBoard(oppositeTest);
+                          if (badSolve) {
+                            setMinefield(badSolve);
+                          } else {
+                            updateSolveState(x(), y(), false);
+                          }
+                          // updateSolveState(x(), y(), false);
+                        }}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          setHint(undefined);
+                          if (cell !== undefined) return;
 
-                        const oppositeTest = cloneMinefield(minefield());
-                        oppositeTest.solveState[y()][x()] = false;
+                          const oppositeTest = cloneMinefield(minefield());
+                          oppositeTest.solveState[y()][x()] = false;
 
-                        const badSolve = createHypotheticalSolve(oppositeTest);
-                        if (badSolve) {
-                          oppositeTest.solveState[y()][x()] = undefined;
-                          setMinefield(badSolve);
-                        } else {
-                          updateSolveState(x(), y(), true);
-                        }
-                      }}
-                    >
-                      {cell === undefined
-                        ? ""
-                        : cell
-                          ? "⛳️"
-                          : getCellClue(minefield(), x(), y())}
-                    </td>
-                  )}
+                          const badSolve =
+                            createHypotheticalSolveForEntireBoard(oppositeTest);
+                          if (badSolve) {
+                            oppositeTest.solveState[y()][x()] = undefined;
+                            setMinefield(badSolve);
+                          } else {
+                            updateSolveState(x(), y(), true);
+                          }
+                          // updateSolveState(x(), y(), true);
+                        }}
+                      >
+                        {cell === undefined
+                          ? ""
+                          : cell
+                            ? "⛳️"
+                            : clue() === -1
+                              ? "?"
+                              : clue()}
+                      </td>
+                    );
+                  }}
                 </For>
               </tr>
             )}
@@ -239,81 +249,57 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       >
         GET HINT
       </button>
-      <pre>
-        <code>
-          {JSON.stringify(
-            getHintForCells(
-              minefield(),
-              [
-                [1, 4],
-                [2, 4],
-              ],
-              false,
-            ),
-          )}
-        </code>
-      </pre>
       NEW GAME
       <table>
         <tbody>
           <For each={[3, 4, 5, 6, 7, 8]}>
-            {(height) => (
-              <tr>
-                <For each={[3, 4, 5, 6, 7, 8]}>
-                  {(width) => (
-                    <td
-                      css={{
-                        width: 32,
-                        height: 32,
-                        border: "1px solid black",
-                        fontScale: 0,
-                        textAlign: "center",
-                        color: "transparent",
-                        "&:hover": {
-                          color: "black",
-                        },
-                      }}
-                      style={{
-                        "background-color": getMineCount(width, height)
-                          ? "white"
-                          : "lightgrey",
-                      }}
-                      onClick={async () => {
-                        const mines = getMineCount(width, height);
-                        if (mines) {
-                          const canDoSatisfying = width * height < 25;
-                          if (canDoSatisfying) {
-                            const satisfying =
-                              await generateSatisfyingMinefield({
-                                difficulty: difficulty(),
-                                width: width,
-                                height: height,
-                                mines: mines,
-                              });
-                            if (satisfying) {
-                              setMinefield(satisfying);
+            {(height) => {
+              return (
+                <tr>
+                  <For each={[3, 4, 5, 6, 7, 8]}>
+                    {(width) => (
+                      <td
+                        css={{
+                          width: 32,
+                          height: 32,
+                          border: "1px solid black",
+                          fontScale: 0,
+                          textAlign: "center",
+                          color: "transparent",
+                          "&:hover": {
+                            color: "black",
+                          },
+                        }}
+                        style={{
+                          "background-color": getMineCount(width, height)
+                            ? "white"
+                            : "lightgrey",
+                        }}
+                        onClick={async () => {
+                          const mines = getMineCount(width, height);
+                          if (mines) {
+                            const minefield = generateSatisfyingMinefield({
+                              difficulty: difficulty(),
+                              width: width,
+                              height: height,
+                              mines: mines,
+                            });
+                            if (minefield) {
+                              setMinefield(minefield);
                               setHint(undefined);
+                            } else {
+                              alert("fail, womp womp :(");
                             }
-                          } else {
-                            setMinefield(
-                              await generateMinefield({
-                                difficulty: difficulty(),
-                                width: width,
-                                height: height,
-                                mines: mines,
-                              }),
-                            );
-                            setHint(undefined);
                           }
-                        }
-                      }}
-                    >
-                      {width}x{height}
-                    </td>
-                  )}
-                </For>
-              </tr>
-            )}
+                        }}
+                      >
+                        {width}x{height}
+                      </td>
+                    )}
+                  </For>
+                </tr>
+              );
+            }}
           </For>
         </tbody>
       </table>
@@ -380,12 +366,12 @@ async function getSatisfactionRate(opts: GenerateMinefieldOptions) {
   console.log("END");
 }
 
-async function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
+function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
   const simpleSolverDifficulty = opts.difficulty - 1;
 
-  for (let n = 1; n <= 100; n++) {
-    const randomMinefield = await generateMinefield(opts);
-    const simpleAttempt = await solveMinefield(
+  for (let n = 1; n <= 50; n++) {
+    const randomMinefield = generateMinefield(opts);
+    const simpleAttempt = solveMinefield(
       cloneMinefield(randomMinefield),
       simpleSolverDifficulty,
     );

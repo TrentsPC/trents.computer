@@ -1,20 +1,18 @@
 import { CellClue, Minefield, Position } from "./types";
 import {
-  countUnsolvedPositions,
-  fillUnsolvedPositionsWithFlags,
+  cloneMinefield,
   getAllRevealedClues,
   getAllUnsolvedPositions,
-  shuffle,
 } from "./utils";
 
 export function getCellClue(
   minefield: Minefield,
   x: number,
   y: number,
-): string {
+): number {
   const clueType = minefield.cellClues[y][x];
-  if (!clueType) return "?";
-  if (clueType === CellClue.Any) return "?";
+  if (!clueType) return -1;
+  if (clueType === CellClue.Any) return -1;
 
   if (clueType === CellClue.Vanilla) {
     let mineCount = 0;
@@ -25,10 +23,10 @@ export function getCellClue(
         }
       }
     }
-    return mineCount + "";
+    return mineCount;
   }
 
-  return "lol";
+  return -1;
 
   function mineAt(x: number, y: number) {
     if (x < 0) return false;
@@ -49,9 +47,7 @@ function cellClueHasContradiction(
   if (clueType === CellClue.Any) return false;
 
   if (clueType === CellClue.Vanilla) {
-    const clueStr = getCellClue(minefield, x, y);
-    const clue = Number(clueStr);
-    if (!isFinite(clue)) return true;
+    const clue = getCellClue(minefield, x, y);
     let flagCount = 0;
     let unsolvedCount = 0;
 
@@ -88,88 +84,55 @@ function cellClueHasContradiction(
 /**
  * Returns true if any contradiction is guaranteed within currently known clues
  *
- * @param mask if included, only cells included in the mask will be checked for contradictions
+ * @param clues if included, only cells included in the mask will be checked for contradictions
  */
-function checkForContradictions(minefield: Minefield, mask?: Position[]) {
-  if (mask) {
-    for (let [x, y] of mask) {
-      const isVisibleClue = minefield.solveState[y][x] === false;
-      if (isVisibleClue && cellClueHasContradiction(minefield, x, y)) {
-        return true;
-      }
+function checkForContradictions(minefield: Minefield, clues: Position[]) {
+  for (let [x, y] of clues) {
+    if (cellClueHasContradiction(minefield, x, y)) {
+      return true;
     }
-    return false;
-  } else {
-    for (let x = 0; x < minefield.width; x++) {
-      for (let y = 0; y < minefield.height; y++) {
-        const isVisibleClue = minefield.solveState[y][x] === false;
-        if (isVisibleClue && cellClueHasContradiction(minefield, x, y)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
+  return false;
 }
 
-/**
- * Create a possible arrangement of mines that satisfies all currently known clues
- *
- * Returns undefined if no solution exists
- */
-export function createHypotheticalSolve(
+export function createHypotheticalSolveForVisibleCells(
   minefield: Minefield,
-  lastMinePosition?: Position,
-  mask?: Position[],
-  doShuffle?: boolean,
+  clues: Position[],
 ): Minefield | undefined {
-  if (checkForContradictions(minefield, mask)) {
+  if (checkForContradictions(minefield, clues)) {
     return undefined;
   }
-  const mineCount = minefield.mines;
-  const flagCount = minefield.flags;
-  const unsolvedCount = countUnsolvedPositions(minefield);
-  if (mineCount === flagCount) return minefield;
-  if (unsolvedCount === mineCount - flagCount) {
-    return fillUnsolvedPositionsWithFlags(minefield);
+
+  const visibleUnknownCells = getVisibleUnsolvedPositions(minefield, clues);
+  if (visibleUnknownCells.length === 0) {
+    return minefield;
   }
 
-  let potentialMines = getAllUnsolvedPositions(minefield, undefined);
+  const firstUnknownCell = visibleUnknownCells[0]!;
 
-  if (doShuffle) {
-    shuffle(potentialMines);
+  const [x, y] = firstUnknownCell;
+  minefield.solveState[y][x] = true;
+  minefield.flags++;
+  const hypotheticalWithFlag = createHypotheticalSolveForVisibleCells(
+    minefield,
+    clues,
+  );
+  if (hypotheticalWithFlag) {
+    return hypotheticalWithFlag;
   }
 
-  for (const potentialMine of potentialMines) {
-    const [x, y] = potentialMine;
-    if (minefield.solveState[y][x] !== undefined) continue;
-    minefield.solveState[y][x] = true;
+  minefield.flags--;
+  minefield.solveState[y][x] = false;
 
-    minefield.flags++;
-    const hypotheticalWithFlag = createHypotheticalSolve(
-      minefield,
-      undefined,
-      mask,
-    );
-    if (hypotheticalWithFlag) {
-      return hypotheticalWithFlag;
-    }
-
-    minefield.flags--;
-    minefield.solveState[y][x] = false;
-
-    const hypotheticalWithSafe = createHypotheticalSolve(
-      minefield,
-      undefined,
-      mask,
-    );
-    if (hypotheticalWithSafe) {
-      return hypotheticalWithSafe;
-    } else {
-      minefield.solveState[y][x] = false;
-    }
+  const hypotheticalWithSafe = createHypotheticalSolveForVisibleCells(
+    minefield,
+    clues,
+  );
+  if (hypotheticalWithSafe) {
+    return hypotheticalWithSafe;
   }
 
+  minefield.solveState[y][x] = undefined;
   return undefined;
 }
 
@@ -201,53 +164,44 @@ export function getVisiblePositionsFromCell(
   return [];
 }
 
-export function getVisibleCells(
+export function getVisibleUnsolvedPositions(
   minefield: Minefield,
   positionalClues: Position[],
-  fullScan = false,
 ): Position[] {
   const result: Position[] = [];
-  if (fullScan) {
-    for (let y = 0; y < minefield.height; y++) {
-      for (let x = 0; x < minefield.width; x++) {
-        result.push([x, y]);
-      }
-    }
-  } else {
-    for (const [clueX, clueY] of positionalClues) {
-      for (const [x, y] of getVisiblePositionsFromCell(
-        minefield.cellClues[clueY][clueX],
-        clueX,
-        clueY,
-      )) {
-        if (x >= 0 && x < minefield.width && y >= 0 && y < minefield.height) {
+  for (const [clueX, clueY] of positionalClues) {
+    for (const [x, y] of getVisiblePositionsFromCell(
+      minefield.cellClues[clueY][clueX],
+      clueX,
+      clueY,
+    )) {
+      if (x >= 0 && x < minefield.width && y >= 0 && y < minefield.height) {
+        if (minefield.solveState[y][x] === undefined) {
           result.push([x, y]);
         }
       }
     }
   }
+
   return result;
 }
 
-export function getHintForCells(
+export function getHintForClues(
   minefield: Minefield,
-  relevantCells: Position[],
-  fullScan = false,
+  relevantClues: Position[],
 ): HintResult | undefined {
   let foundSomething = false;
   const mustBeFlag: Position[] = [];
   const mustBeSafe: Position[] = [];
-  const visibleCells = getVisibleCells(minefield, relevantCells, fullScan);
+  const visibleCells = getVisibleUnsolvedPositions(minefield, relevantClues);
   for (const [x, y] of visibleCells) {
-    if (minefield.solveState[y][x] !== undefined) continue;
-
     minefield.solveState[y][x] = true;
     minefield.flags++;
 
-    const solve = createHypotheticalSolve(
+    const solve = createHypotheticalSolveForVisibleCells(
       cloneMinefield(minefield),
-      undefined,
-      relevantCells,
+
+      relevantClues,
     );
     if (!solve) {
       mustBeSafe.push([x, y]);
@@ -258,10 +212,10 @@ export function getHintForCells(
     if (solve) {
       minefield.solveState[y][x] = false;
 
-      const solve = createHypotheticalSolve(
+      const solve = createHypotheticalSolveForVisibleCells(
         cloneMinefield(minefield),
-        undefined,
-        relevantCells,
+
+        relevantClues,
       );
       if (!solve) {
         mustBeFlag.push([x, y]);
@@ -272,7 +226,7 @@ export function getHintForCells(
   }
   if (foundSomething) {
     return {
-      relevantClues: relevantCells,
+      relevantClues: relevantClues,
       mustBeFlag,
       mustBeSafe,
     };
@@ -321,19 +275,31 @@ export type HintResult = {
   mustBeSafe: Position[];
 };
 
+function getRemainingCellsHint(minefield: Minefield): HintResult | undefined {
+  const unsolvedPositions = getAllUnsolvedPositions(minefield);
+  const unsolvedCount = unsolvedPositions.length;
+  if (unsolvedCount === minefield.mines - minefield.flags) {
+    return {
+      relevantClues: [],
+      mustBeFlag: unsolvedPositions,
+      mustBeSafe: [],
+    };
+  }
+  return undefined;
+}
+
 export function getHint(minefield: Minefield, difficulty = 2, mask?: Position) {
   const masksGen = mask
     ? [[mask]]
     : getRevealedClueCombinations(minefield, difficulty);
 
-  const hint = getHintForCells(minefield, [], true);
-
-  if (hint) {
-    return hint;
+  const remainingCellsHint = getRemainingCellsHint(minefield);
+  if (remainingCellsHint) {
+    return remainingCellsHint;
   }
 
   for (let positions of masksGen) {
-    const hint = getHintForCells(minefield, positions, false);
+    const hint = getHintForClues(minefield, positions);
 
     if (hint) {
       return hint;
@@ -361,9 +327,9 @@ export function solveMinefield(minefield: Minefield, difficulty = 2) {
   return minefield;
 }
 
-export function cloneMinefield(minefield: Minefield): Minefield {
-  return {
-    ...minefield,
-    solveState: minefield.solveState.slice().map((c) => c.slice()),
-  };
+export function createHypotheticalSolveForEntireBoard(
+  minefield: Minefield,
+): Minefield | undefined {
+  const allClues = getAllRevealedClues(minefield);
+  return createHypotheticalSolveForVisibleCells(minefield, allClues);
 }

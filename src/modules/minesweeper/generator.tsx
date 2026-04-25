@@ -1,5 +1,6 @@
-import { solveMinefield } from "./solver";
+import { solveMinefield } from "./solver-2";
 import { CellClue, Grid, Minefield, Position } from "./types";
+import { getAllRevealedClues } from "./utils";
 
 function cloneMinefield(minefield: Minefield): Minefield {
   return {
@@ -13,12 +14,14 @@ function hideCluesUntilBarelySolvable(
   difficulty: number,
 ) {
   let unsolvable = false;
-  const { width, height } = minefield;
   let loops = 0;
 
+  const knownClues = getAllRevealedClues(minefield);
+
   while (!unsolvable && loops < 100) {
-    const x = Math.floor(Math.random() * width);
-    const y = Math.floor(Math.random() * height);
+    const clueIndex = Math.floor(Math.random() * knownClues.length);
+    const [clue] = knownClues.splice(clueIndex, 1);
+    const [x, y] = clue;
     if (minefield.solveState[y][x] === undefined) {
       continue;
     }
@@ -50,6 +53,17 @@ function getRemainingClueCount(minefield: Minefield) {
   for (let y = 0; y < minefield.height; y++) {
     for (let x = 0; x < minefield.width; x++) {
       if (minefield.solveState[y][x] === false) {
+        res++;
+      }
+    }
+  }
+  return res;
+}
+function getQuestionMarkClueCount(minefield: Minefield) {
+  let res = 0;
+  for (let y = 0; y < minefield.height; y++) {
+    for (let x = 0; x < minefield.width; x++) {
+      if (minefield.cellClues[y][x] === CellClue.Any) {
         res++;
       }
     }
@@ -123,12 +137,12 @@ type GenerateMinefieldOptions = {
   mines: number;
 };
 
-export async function generateMinefield({
+export function generateMinefield({
   difficulty = 2,
   width = 5,
   height = 5,
   mines = 10,
-}: GenerateMinefieldOptions): Promise<Minefield> {
+}: GenerateMinefieldOptions): Minefield {
   const grid: Grid<CellClue> = Array.from({ length: height }).map((r) =>
     Array.from({ length: width }).fill(CellClue.Vanilla),
   ) as any;
@@ -154,14 +168,6 @@ export async function generateMinefield({
     width,
   };
 
-  const hideAttempts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(() =>
-    hideCluesUntilBarelySolvable(cloneMinefield(baseMinefield), difficulty),
-  );
-  hideAttempts.sort(
-    (a, b) => getRemainingClueCount(a) - getRemainingClueCount(b),
-  );
-  baseMinefield = hideAttempts[0];
-
   baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
   baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
   baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
@@ -176,14 +182,12 @@ function isSolved(minefield: Minefield) {
   return minefield.flags === minefield.mines;
 }
 
-export async function generateSatisfyingMinefield(
-  opts: GenerateMinefieldOptions,
-) {
+export function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
   const simpleSolverDifficulty = opts.difficulty - 1;
 
-  for (let n = 1; n <= 100; n++) {
-    const randomMinefield = await generateMinefield(opts);
-    const simpleAttempt = await solveMinefield(
+  for (let n = 1; n <= 10; n++) {
+    const randomMinefield = generateMinefield(opts);
+    const simpleAttempt = solveMinefield(
       cloneMinefield(randomMinefield),
       simpleSolverDifficulty,
     );
@@ -193,10 +197,10 @@ export async function generateSatisfyingMinefield(
   }
 }
 
-export async function benchmarkGenerator() {
+export function benchmarkGenerator() {
   const start = performance.now();
   for (let n = 1; n <= 200; n++) {
-    await generateMinefield({
+    generateMinefield({
       difficulty: 2,
       height: 4,
       mines: 5,

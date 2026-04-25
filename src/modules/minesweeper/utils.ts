@@ -68,3 +68,10 @@ export function fillUnsolvedPositionsWithFlags(minefield: Minefield) {
   }
   return minefield;
 }
+
+export function cloneMinefield(minefield: Minefield): Minefield {
+  return {
+    ...minefield,
+    solveState: minefield.solveState.slice().map((c) => c.slice()),
+  };
+}
