@@ -85,6 +85,7 @@ type GenerateMinefieldOptions = {
 
 export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
+  const [failure, setFailure] = createSignal<Minefield | undefined>();
   const [_hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const [difficulty, setDifficulty] = createSignal(3);
   const [debug, setDebug] = createSignal(true);
@@ -142,6 +143,8 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                     const clue = createMemo(() =>
                       getCellClue(minefield(), x(), y()),
                     );
+                    const failed = () =>
+                      failure()?.solveState[y()][x()] === true;
                     return (
                       <td
                         css={{
@@ -200,7 +203,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                           const badSolve =
                             createHypotheticalSolveForEntireBoard(oppositeTest);
                           if (badSolve) {
-                            setMinefield(badSolve);
+                            setFailure(badSolve);
                           } else {
                             updateSolveState(x(), y(), false);
                           }
@@ -218,20 +221,22 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                             createHypotheticalSolveForEntireBoard(oppositeTest);
                           if (badSolve) {
                             oppositeTest.solveState[y()][x()] = undefined;
-                            setMinefield(badSolve);
+                            setFailure(badSolve);
                           } else {
                             updateSolveState(x(), y(), true);
                           }
                           // updateSolveState(x(), y(), true);
                         }}
                       >
-                        {cell === undefined
-                          ? ""
-                          : cell
-                            ? "⛳️"
-                            : clue() === -1
-                              ? "?"
-                              : clue()}
+                        {failed()
+                          ? "💣"
+                          : cell === undefined
+                            ? ""
+                            : cell
+                              ? "⛳️"
+                              : clue() === -1
+                                ? "?"
+                                : clue()}
                       </td>
                     );
                   }}
@@ -287,6 +292,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                             if (minefield) {
                               setMinefield(minefield);
                               setHint(undefined);
+                              setFailure(undefined);
                             } else {
                               alert("fail, womp womp :(");
                             }

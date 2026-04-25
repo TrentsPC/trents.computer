@@ -331,5 +331,12 @@ export function createHypotheticalSolveForEntireBoard(
   minefield: Minefield,
 ): Minefield | undefined {
   const allClues = getAllRevealedClues(minefield);
-  return createHypotheticalSolveForVisibleCells(minefield, allClues);
+  const mostlySolved = createHypotheticalSolveForVisibleCells(
+    minefield,
+    allClues,
+  );
+  if (!mostlySolved) {
+    return undefined;
+  }
+  return mostlySolved;
 }
