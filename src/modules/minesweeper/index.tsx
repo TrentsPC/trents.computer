@@ -1,7 +1,14 @@
-import { createMemo, createSignal, For } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+} from "solid-js";
 import { fonts } from "~/theme.styles";
 import {
   benchmarkGenerator,
+  createHexGrid,
   generateMinefield,
   GenerateMinefieldOptions,
 } from "./generator";
@@ -86,9 +93,23 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [failure, setFailure] = createSignal<Minefield | undefined>();
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const [difficulty, setDifficulty] = createSignal(2);
-  const [debug, setDebug] = createSignal(true);
   const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(
     undefined,
+  );
+  const [drawMode, setDrawMode] = createSignal(false);
+  createEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "d") {
+        setDrawMode((p) => !p);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    onCleanup(() => {
+      window.removeEventListener("keydown", handleKeyDown);
+    });
+  });
+  const hexMask = createMemo(() =>
+    createHexGrid(minefield().width, minefield().height),
   );
   const visible = createMemo(() =>
     getVisibleUnsolvedPositions(
@@ -122,6 +143,110 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
     return false;
   }
 
+  let canvasRef: HTMLCanvasElement = null!;
+
+  createEffect(() => {
+    const canvas = canvasRef;
+    const ctx = canvas.getContext("2d")!;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const dpr = window.devicePixelRatio || 1;
+      const newW = Math.round(rect.width * dpr);
+      const newH = Math.round(rect.height * dpr);
+      if (canvas.width === newW && canvas.height === newH) return;
+      canvas.width = newW;
+      canvas.height = newH;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    let isDrawing = false;
+    let mode: "draw" | "erase" = "draw";
+    let activePointerId: number | null = null;
+    let lastX = 0;
+    let lastY = 0;
+
+    function getPos(e: PointerEvent) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    function applyStyle() {
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      if (mode === "erase") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = 24;
+      } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 4;
+      }
+    }
+
+    function onPointerDown(e: PointerEvent) {
+      if (e.button !== 0 && e.button !== 2) return;
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      activePointerId = e.pointerId;
+      isDrawing = true;
+      mode = e.button === 2 ? "erase" : "draw";
+      const { x, y } = getPos(e);
+      lastX = x;
+      lastY = y;
+      applyStyle();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function onPointerMove(e: PointerEvent) {
+      if (!isDrawing || e.pointerId !== activePointerId) return;
+      const { x, y } = getPos(e);
+      applyStyle();
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      lastX = x;
+      lastY = y;
+    }
+
+    function onPointerUp(e: PointerEvent) {
+      if (e.pointerId !== activePointerId) return;
+      isDrawing = false;
+      activePointerId = null;
+      if (canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+    }
+
+    function onContextMenu(e: Event) {
+      e.preventDefault();
+    }
+
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointercancel", onPointerUp);
+    canvas.addEventListener("contextmenu", onContextMenu);
+
+    onCleanup(() => {
+      ro.disconnect();
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerUp);
+      canvas.removeEventListener("contextmenu", onContextMenu);
+    });
+  });
+
   return (
     <div
       css={{
@@ -143,6 +268,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
           "row-gap": "2px",
           "column-gap": "2px",
           "grid-template-columns": `repeat(${minefield().width}, 1fr)`,
+          position: "relative",
         }}
       >
         <For each={minefield().solveState}>
@@ -153,6 +279,10 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                   getCellClue(minefield(), x(), y()),
                 );
                 const failed = () => failure()?.solveState[y()][x()] === true;
+                const hidden = () =>
+                  minefield().grid === "hex"
+                    ? hexMask()[y()][x()] === CellClue.Any
+                    : false;
                 return (
                   <div
                     css={{
@@ -194,6 +324,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                     data-even-col={x() % 2 === 0 ? "true" : "false"}
                     data-even-row={y() % 2 === 0 ? "true" : "false"}
                     style={{
+                      opacity: hidden() ? 0 : 1,
                       transform:
                         minefield().grid === "hex"
                           ? x() % 2 === 1
@@ -296,6 +427,21 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
             </For>
           )}
         </For>
+        <canvas
+          ref={canvasRef}
+          css={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            // backgroundColor: "red",
+          }}
+          style={{
+            opacity: drawMode() ? 1 : 0.5,
+            "pointer-events": drawMode() ? "auto" : "none",
+          }}
+        />
       </div>
       <button
         css={{ mt: 32 }}
@@ -363,67 +509,56 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
         </tbody>
       </table>
       NEW HEX GAME
-      <table>
-        <tbody>
-          <For each={[3, 4, 5, 6, 7, 8]}>
-            {(height) => {
-              return (
-                <tr>
-                  <For each={[3, 4, 5, 6, 7, 8]}>
-                    {(width) => (
-                      <td
-                        css={{
-                          width: 32,
-                          height: 32,
-                          border: "1px solid black",
-                          fontScale: 0,
-                          textAlign: "center",
-                          color: "transparent",
-                          "&:hover": {
-                            color: "black",
-                          },
-                        }}
-                        style={{
-                          "background-color": getMineCount(width, height)
-                            ? "white"
-                            : "lightgrey",
-                        }}
-                        onClick={async () => {
-                          const mines = getMineCount(width, height);
-                          if (mines) {
-                            // const minefield = generateHexMinefield({
-                            //   difficulty: difficulty(),
-                            //   width: width,
-                            //   height: height,
-                            //   mines: mines,
-                            // });
-                            const minefield = generateSatisfyingMinefield({
-                              difficulty: difficulty(),
-                              width: width,
-                              height: height,
-                              mines: mines,
-                              grid: "hex",
-                            });
-                            if (minefield) {
-                              setMinefield(minefield);
-                              setHint(undefined);
-                              setFailure(undefined);
-                            } else {
-                              alert("fail, womp womp :(");
-                            }
-                          }
-                        }}
-                      >
-                        {width}x{height}
-                      </td>
-                    )}
-                  </For>
-                </tr>
-              );
-            }}
-          </For>
-        </tbody>
-      </table>
+      <div css={{ display: "flex" }}>
+        <For each={[3, 4, 5, 6, 7, 8]}>
+          {(sideLength) => (
+            <div
+              css={{
+                width: 32,
+                height: 32,
+                border: "1px solid black",
+                fontScale: 0,
+                textAlign: "center",
+                color: "transparent",
+                "&:hover": {
+                  color: "black",
+                },
+              }}
+              style={{
+                "background-color": getMineCount(sideLength, sideLength)
+                  ? "white"
+                  : "lightgrey",
+              }}
+              onClick={async () => {
+                let mines = getMineCount(sideLength, sideLength) || 2;
+                mines = mines * 2;
+
+                // const mines = 5;
+                const width = sideLength * 2 - 1;
+                const height = sideLength * 2 - 1;
+                if (mines) {
+                  const minefield = generateSatisfyingMinefield({
+                    difficulty: difficulty(),
+                    width: width,
+                    height: height,
+                    mines: mines,
+                    grid: "hex",
+                  });
+                  if (minefield) {
+                    setMinefield(minefield);
+                    setHint(undefined);
+                    setFailure(undefined);
+                  } else {
+                    alert("fail, womp womp :(");
+                  }
+                }
+              }}
+            >
+              {sideLength}
+            </div>
+          )}
+        </For>
+      </div>
       NEW TRI GAME
       <table>
         <tbody>
