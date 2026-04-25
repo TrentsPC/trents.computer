@@ -488,7 +488,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       </table>
       <button
         onClick={() => {
-          const solve = solveMinefield(minefield(), 2);
+          const solve = solveMinefield(minefield(), difficulty());
           setMinefield(solve);
         }}
       >

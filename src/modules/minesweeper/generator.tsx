@@ -22,7 +22,7 @@ function hideCluesUntilBarelySolvable(
     const clueIndex = Math.floor(Math.random() * knownClues.length);
     const [clue] = knownClues.splice(clueIndex, 1);
     const [x, y] = clue;
-    if (minefield.solveState[y][x] === undefined) {
+    if (minefield.solveState[y][x] !== false) {
       continue;
     }
 
