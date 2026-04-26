@@ -592,63 +592,57 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       NEW TRI GAME
       <table>
         <tbody>
-          <For each={[3, 4, 5, 6, 7, 8]}>
-            {(height) => {
-              return (
-                <tr>
-                  <For each={[3, 4, 5, 6, 7, 8]}>
-                    {(width) => (
-                      <td
-                        css={{
-                          width: 32,
-                          height: 32,
-                          border: "1px solid black",
-                          fontScale: 0,
-                          textAlign: "center",
-                          color: "transparent",
-                          "&:hover": {
-                            color: "black",
-                          },
-                        }}
-                        style={{
-                          "background-color": getMineCount(width, height)
-                            ? "white"
-                            : "lightgrey",
-                        }}
-                        onClick={async () => {
-                          const mines = getMineCount(width, height);
-                          if (mines) {
-                            // const minefield = generateHexMinefield({
-                            //   difficulty: difficulty(),
-                            //   width: width,
-                            //   height: height,
-                            //   mines: mines,
-                            // });
-                            const minefield = generateSatisfyingMinefield({
-                              difficulty: difficulty(),
-                              width: width,
-                              height: height,
-                              mines: mines,
-                              grid: "triangle",
-                            });
-                            if (minefield) {
-                              setMinefield(minefield);
-                              setHint(undefined);
-                              setFailure(undefined);
-                            } else {
-                              alert("fail, womp womp :(");
-                            }
-                          }
-                        }}
-                      >
-                        {width}x{height}
-                      </td>
-                    )}
-                  </For>
-                </tr>
-              );
-            }}
-          </For>
+          <tr>
+            <For each={[3, 4, 5, 6, 7, 8]}>
+              {(sideLength) => (
+                <td
+                  css={{
+                    width: 32,
+                    height: 32,
+                    border: "1px solid black",
+                    fontScale: 0,
+                    textAlign: "center",
+                    color: "transparent",
+                    "&:hover": {
+                      color: "black",
+                    },
+                  }}
+                  style={{
+                    "background-color": getMineCount(sideLength, sideLength)
+                      ? "white"
+                      : "lightgrey",
+                  }}
+                  onClick={async () => {
+                    const height = sideLength;
+                    let width = sideLength * 2 - 1;
+                    if (sideLength % 2 === 0) {
+                      width++;
+                    }
+                    let mines = getMineCount(width, height) || 2;
+                    mines = mines / 2;
+                    if (mines) {
+                      const minefield = generateMinefield({
+                        difficulty: difficulty(),
+                        width: width,
+                        height: height,
+                        mines: mines,
+                        grid: "triangle",
+                      });
+                      if (minefield) {
+                        setMinefield(minefield);
+                        setHint(undefined);
+                        setFailure(undefined);
+                      } else {
+                        alert("fail, womp womp :(");
+                      }
+                    }
+                  }}
+                >
+                  {sideLength}
+                </td>
+              )}
+            </For>
+          </tr>
         </tbody>
       </table>
       <button
