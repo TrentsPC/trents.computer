@@ -85,8 +85,8 @@ function cellClueHasContradiction(
     }
     if (flagCount > clue) return true;
     if (flagCount + unsolvedCount < clue) return true;
-    const remainingMines = minefield.mines - minefield.flags;
-    if (remainingMines + flagCount < clue) return true;
+    // const remainingMines = minefield.mines - minefield.flags;
+    // if (remainingMines + flagCount < clue) return true;
     return false;
   }
 
@@ -107,8 +107,8 @@ function cellClueHasContradiction(
 
     if (flagCount > clue) return true;
     if (flagCount + unsolvedCount < clue) return true;
-    const remainingMines = minefield.mines - minefield.flags;
-    if (remainingMines + flagCount < clue) return true;
+    // const remainingMines = minefield.mines - minefield.flags;
+    // if (remainingMines + flagCount < clue) return true;
     return false;
   }
   if (clueType === CellClue.VanillaTri) {
@@ -128,8 +128,8 @@ function cellClueHasContradiction(
 
     if (flagCount > clue) return true;
     if (flagCount + unsolvedCount < clue) return true;
-    const remainingMines = minefield.mines - minefield.flags;
-    if (remainingMines + flagCount < clue) return true;
+    // const remainingMines = minefield.mines - minefield.flags;
+    // if (remainingMines + flagCount < clue) return true;
     return false;
   }
 

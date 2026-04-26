@@ -72,9 +72,9 @@ export type GenerateMinefieldOptions = {
   grid: GridType;
 };
 
-export function createHexGrid(width = 5, height = 5): Grid<CellClue> {
-  const grid: Grid<CellClue> = Array.from({ length: height }).map((r) =>
-    Array.from({ length: width }).fill(CellClue.VanillaHex),
+export function createHexMask(width = 5, height = 5): Grid<boolean> {
+  const grid: Grid<boolean> = Array.from({ length: height }).map((r) =>
+    Array.from({ length: width }).fill(true),
   ) as any;
   const half = (width - 1) / 2;
   const startsAtTop = ((width - 1) / 2) % 2 === 0;
@@ -85,7 +85,7 @@ export function createHexGrid(width = 5, height = 5): Grid<CellClue> {
     for (let x = 0; x < width; x++) {
       const dist = Math.min(x, width - 1 - x);
       if (dist < start) {
-        grid[y][x] = CellClue.Any;
+        grid[y][x] = false;
       }
     }
     start -= 2;
@@ -95,12 +95,22 @@ export function createHexGrid(width = 5, height = 5): Grid<CellClue> {
     for (let x = 0; x < width; x++) {
       const dist = Math.min(x, width - 1 - x);
       if (dist < start) {
-        grid[y][x] = CellClue.Any;
+        grid[y][x] = false;
       }
     }
     start -= 2;
   }
 
+  return grid;
+}
+
+function getMask(gridType: GridType, width: number, height: number) {
+  if (gridType === "hex") {
+    return createHexMask(width, height);
+  }
+  let grid: Grid<boolean> = Array.from({ length: height }).map((r) =>
+    Array.from({ length: width }).fill(true),
+  ) as any;
   return grid;
 }
 
@@ -116,12 +126,12 @@ export function generateMinefield({
     square: CellClue.Vanilla,
     triangle: CellClue.VanillaTri,
   }[gridType];
-  let grid: Grid<CellClue> = Array.from({ length: height }).map((r) =>
-    Array.from({ length: width }).fill(defaultClue),
-  ) as any;
-  if (gridType === "hex") {
-    grid = createHexGrid(width, height);
-  }
+  const mask = getMask(gridType, width, height);
+
+  const grid: Grid<CellClue> = mask.map((row) =>
+    row.map((col) => (col ? defaultClue : CellClue.Any)),
+  );
+
   let minesSoFar = 0;
   while (minesSoFar < mines) {
     const x = Math.floor(Math.random() * width);
@@ -143,6 +153,7 @@ export function generateMinefield({
     mines,
     solveState,
     width,
+    mask,
   };
 
   baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
@@ -154,10 +165,9 @@ export function generateMinefield({
   baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
 
   if (gridType === "hex") {
-    let mask = createHexGrid(width, height);
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (mask[y][x] === CellClue.Any) {
+        if (mask[y][x] === false) {
           baseMinefield.solveState[y][x] = false;
         }
       }

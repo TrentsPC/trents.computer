@@ -8,7 +8,6 @@ import {
 import { fonts } from "~/theme.styles";
 import {
   benchmarkGenerator,
-  createHexGrid,
   generateMinefield,
   GenerateMinefieldOptions,
 } from "./generator";
@@ -22,10 +21,10 @@ import {
 } from "./solver-2";
 import { CellClue, Minefield, Position } from "./types";
 
-// 5x5: 10
-// 6x6: 14
-// 7x7: 20
-// 8x8: 26
+// 5x5: 10 - 40%
+// 6x6: 14 - 38%
+// 7x7: 20 - 41%
+// 8x8: 26 - 40%
 
 // Calculated ideal mine counts per size:
 // 3x4: 3 (NOT GOOD) (LOTTA DUPE-LOOKING PUZZLES)
@@ -46,10 +45,13 @@ const mineCounts: Record<string, number | undefined> = {
 };
 
 function getMineCount(width: number, height: number) {
-  const long = Math.max(width, height);
-  const short = Math.min(width, height);
-  const str = short + "x" + long;
-  return mineCounts[str];
+  const area = width * height;
+  const mines = Math.round(area * 0.4);
+  return mines;
+  // const long = Math.max(width, height);
+  // const short = Math.min(width, height);
+  // const str = short + "x" + long;
+  // return mineCounts[str];
 }
 
 const t = true;
@@ -79,6 +81,13 @@ export const exampleMinefield: Minefield = {
     [u, u, u, u, u],
     [u, f, f, u, u],
   ],
+  mask: [
+    [t, t, t, t, t],
+    [t, t, t, t, t],
+    [t, t, t, t, t],
+    [t, t, t, t, t],
+    [t, t, t, t, t],
+  ],
 };
 
 function cloneMinefield(minefield: Minefield): Minefield {
@@ -92,7 +101,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [failure, setFailure] = createSignal<Minefield | undefined>();
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
-  const [difficulty, setDifficulty] = createSignal(2);
+  const [difficulty, setDifficulty] = createSignal(3);
   const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(
     undefined,
   );
@@ -108,9 +117,6 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       window.removeEventListener("keydown", handleKeyDown);
     });
   });
-  const hexMask = createMemo(() =>
-    createHexGrid(minefield().width, minefield().height),
-  );
   const visible = createMemo(() =>
     getVisibleUnsolvedPositions(
       minefield(),
@@ -279,10 +285,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                   getCellClue(minefield(), x(), y()),
                 );
                 const failed = () => failure()?.solveState[y()][x()] === true;
-                const hidden = () =>
-                  minefield().grid === "hex"
-                    ? hexMask()[y()][x()] === CellClue.Any
-                    : false;
+                const hidden = () => minefield().mask[y()][x()] === false;
                 return (
                   <div
                     css={{
@@ -438,7 +441,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
             // backgroundColor: "red",
           }}
           style={{
-            opacity: drawMode() ? 1 : 0.5,
+            opacity: drawMode() ? 1 : 0.333,
             "pointer-events": drawMode() ? "auto" : "none",
           }}
         />
@@ -452,113 +455,140 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       >
         GET HINT
       </button>
-      NEW GAME
+      DIFFICULTY
       <table>
         <tbody>
-          <For each={[3, 4, 5, 6, 7, 8]}>
-            {(height) => {
-              return (
-                <tr>
-                  <For each={[3, 4, 5, 6, 7, 8]}>
-                    {(width) => (
-                      <td
-                        css={{
-                          width: 32,
-                          height: 32,
-                          border: "1px solid black",
-                          fontScale: 0,
-                          textAlign: "center",
-                          color: "transparent",
-                          "&:hover": {
-                            color: "black",
-                          },
-                        }}
-                        style={{
-                          "background-color": getMineCount(width, height)
-                            ? "white"
-                            : "lightgrey",
-                        }}
-                        onClick={async () => {
-                          const mines = getMineCount(width, height);
-                          if (mines) {
-                            const minefield = generateSatisfyingMinefield({
-                              difficulty: difficulty(),
-                              width: width,
-                              height: height,
-                              mines: mines,
-                              grid: "square",
-                            });
-                            if (minefield) {
-                              setMinefield(minefield);
-                              setHint(undefined);
-                              setFailure(undefined);
-                            } else {
-                              alert("fail, womp womp :(");
-                            }
-                          }
-                        }}
-                      >
-                        {width}x{height}
-                      </td>
-                    )}
-                  </For>
-                </tr>
-              );
-            }}
-          </For>
+          <tr>
+            <For each={[3, 5, 7]}>
+              {(width) => (
+                <td
+                  css={{
+                    width: 32,
+                    height: 32,
+                    border: "1px solid black",
+                    fontScale: 0,
+                    textAlign: "center",
+                  }}
+                  style={{
+                    "background-color":
+                      difficulty() === width ? "lightgrey" : "white",
+                  }}
+                  onClick={() => {
+                    setDifficulty(width);
+                  }}
+                >
+                  {width === 7 ? "!!" : width === 5 ? "!" : "."}
+                </td>
+              )}
+            </For>
+          </tr>
+        </tbody>
+      </table>
+      NEW SQUARE GAME
+      <table>
+        <tbody>
+          <tr>
+            <For each={[4, 5, 6, 7, 8]}>
+              {(width) => (
+                <td
+                  css={{
+                    width: 32,
+                    height: 32,
+                    border: "1px solid black",
+                    fontScale: 0,
+                    textAlign: "center",
+                    color: "transparent",
+                    "&:hover": {
+                      color: "black",
+                    },
+                  }}
+                  style={{
+                    "background-color": getMineCount(width, width)
+                      ? "white"
+                      : "lightgrey",
+                  }}
+                  onClick={async () => {
+                    const mines = getMineCount(width, width);
+                    if (mines) {
+                      const minefield = generateSatisfyingMinefield({
+                        difficulty: difficulty(),
+                        width: width,
+                        height: width,
+                        mines: mines,
+                        grid: "square",
+                      });
+                      if (minefield) {
+                        setMinefield(minefield);
+                        setHint(undefined);
+                        setFailure(undefined);
+                      } else {
+                        alert("fail, womp womp :(");
+                      }
+                    }
+                  }}
+                >
+                  {width}x{width}
+                </td>
+              )}
+            </For>
+          </tr>
         </tbody>
       </table>
       NEW HEX GAME
-      <div css={{ display: "flex" }}>
-        <For each={[3, 4, 5, 6, 7, 8]}>
-          {(sideLength) => (
-            <div
-              css={{
-                width: 32,
-                height: 32,
-                border: "1px solid black",
-                fontScale: 0,
-                textAlign: "center",
-                color: "transparent",
-                "&:hover": {
-                  color: "black",
-                },
-              }}
-              style={{
-                "background-color": getMineCount(sideLength, sideLength)
-                  ? "white"
-                  : "lightgrey",
-              }}
-              onClick={async () => {
-                let mines = getMineCount(sideLength, sideLength) || 2;
-                mines = mines * 2;
+      <table>
+        <tbody>
+          <tr>
+            <For each={[3, 4, 5, 6, 7, 8]}>
+              {(sideLength) => (
+                <td
+                  css={{
+                    width: 32,
+                    height: 32,
+                    border: "1px solid black",
+                    fontScale: 0,
+                    textAlign: "center",
+                    color: "transparent",
+                    "&:hover": {
+                      color: "black",
+                    },
+                  }}
+                  style={{
+                    "background-color": getMineCount(sideLength, sideLength)
+                      ? "white"
+                      : "lightgrey",
+                  }}
+                  onClick={async () => {
+                    let mines = getMineCount(sideLength, sideLength) || 2;
+                    mines = mines * 2;
 
-                // const mines = 5;
-                const width = sideLength * 2 - 1;
-                const height = sideLength * 2 - 1;
-                if (mines) {
-                  const minefield = generateSatisfyingMinefield({
-                    difficulty: difficulty(),
-                    width: width,
-                    height: height,
-                    mines: mines,
-                    grid: "hex",
-                  });
-                  if (minefield) {
-                    setMinefield(minefield);
-                    setHint(undefined);
-                    setFailure(undefined);
-                  } else {
-                    alert("fail, womp womp :(");
-                  }
-                }
-              }}
-            >
-              {sideLength}
-            </div>
-          )}
-        </For>
-      </div>
+                    // const mines = 5;
+                    const width = sideLength * 2 - 1;
+                    const height = sideLength * 2 - 1;
+                    if (mines) {
+                      const minefield = generateSatisfyingMinefield({
+                        difficulty: difficulty(),
+                        width: width,
+                        height: height,
+                        mines: mines,
+                        grid: "hex",
+                      });
+                      if (minefield) {
+                        setMinefield(minefield);
+                        setHint(undefined);
+                        setFailure(undefined);
+                      } else {
+                        alert("fail, womp womp :(");
+                      }
+                    }
+                  }}
+                >
+                  {sideLength}
+                </td>
+              )}
+            </For>
+          </tr>
+        </tbody>
+      </table>
       NEW TRI GAME
       <table>
         <tbody>
@@ -686,7 +716,7 @@ async function getSatisfactionRate(opts: GenerateMinefieldOptions) {
 }
 
 function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
-  const simpleSolverDifficulty = opts.difficulty - 1;
+  const simpleSolverDifficulty = opts.difficulty - 2;
 
   for (let n = 1; n <= 50; n++) {
     const randomMinefield = generateMinefield(opts);

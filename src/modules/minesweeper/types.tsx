@@ -24,4 +24,5 @@ export type Minefield = {
   fieldClue: FieldClue;
   cellClues: Grid<CellClue>;
   solveState: Grid<true | false | undefined>;
+  mask: Grid<boolean>;
 };
