@@ -114,13 +114,12 @@ export function GameBoyEmulator() {
         <br /> Enter {"->"} Start
       </p>
       <p css={{ textAlign: "center", pb: 12 }}>
-        This runs best in Firefox. Like, significantly faster than other engines
-        (on mac at least).
+        This runs best in Firefox. Like, significantly faster than other engines (on mac at least).
       </p>
 
       <p css={{ textAlign: "center", pb: 12 }}>
-        Drag and drop your own .gb files onto the screen to load them, or use
-        the buttons below to load a few examples.
+        Drag and drop your own .gb files onto the screen to load them, or use the buttons below to
+        load a few examples.
       </p>
       <div css={{ spaceX: 10, display: "flex", justifyContent: "center" }}>
         <button
@@ -245,12 +244,8 @@ const raf = async () => {
 
 function EnabledInterrupts({ gameBoy }: { gameBoy: GameBoy }) {
   const [ime, setIME] = createSignal(gameBoy.cpu.getRegisters().ime.get());
-  const [enabled, setEnabled] = createSignal(
-    gameBoy.addressBus.readByte(0xffff)
-  );
-  const [requested, setRequested] = createSignal(
-    gameBoy.addressBus.readByte(0xff0f)
-  );
+  const [enabled, setEnabled] = createSignal(gameBoy.addressBus.readByte(0xffff));
+  const [requested, setRequested] = createSignal(gameBoy.addressBus.readByte(0xff0f));
 
   function update() {
     setIME(gameBoy.cpu.getRegisters().ime.get());

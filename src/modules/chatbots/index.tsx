@@ -1,10 +1,6 @@
 import { For, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import {
-  ArrowLeftIcon,
-  ChatBubbleIcon,
-  ChevronRightIcon,
-} from "solid-radix-icons";
+import { ArrowLeftIcon, ChatBubbleIcon, ChevronRightIcon } from "solid-radix-icons";
 import { StateLayer } from "~/components/ui/StateLayer";
 import { colors, fonts } from "~/theme.styles";
 import { Bot } from "./types";
@@ -49,8 +45,7 @@ export const useChatbots = () => [conversations, setConversations] as const;
 
 export function ChatWidget() {
   const [selectedIndex, setSelectedIndex] = createSignal(-1);
-  const selectedGroup = () =>
-    conversations[selectedIndex()] as Group | undefined;
+  const selectedGroup = () => conversations[selectedIndex()] as Group | undefined;
 
   const [open, setOpen] = createSignal(false);
 
@@ -153,11 +148,7 @@ export function ChatWidget() {
                           color: colors.secondaryLabel,
                         }}
                       >
-                        {
-                          conversation.messages[
-                            conversation.messages.length - 1
-                          ]?.text
-                        }
+                        {conversation.messages[conversation.messages.length - 1]?.text}
                       </p>
                     </div>
                     <ChevronRightIcon
@@ -165,9 +156,7 @@ export function ChatWidget() {
                         color: "var(--color-brand)",
                       }}
                     />
-                    <StateLayer
-                      style={{ color: "var(--color-brand-vibrant)" }}
-                    />
+                    <StateLayer style={{ color: "var(--color-brand-vibrant)" }} />
                   </button>
                 )}
               </For>
@@ -226,10 +215,7 @@ function Conversation(props: {
           }}
         />
       </div>
-      <div
-        css={{ flex: 1, overflowY: "auto", py: 16, spaceY: 12 }}
-        ref={scrollRef}
-      >
+      <div css={{ flex: 1, overflowY: "auto", py: 16, spaceY: 12 }} ref={scrollRef}>
         <For each={props.messages}>
           {(message) => (
             <div
@@ -238,8 +224,7 @@ function Conversation(props: {
                 px: 20,
               }}
               style={{
-                "justify-content":
-                  message.from === "user" ? "flex-end" : "flex-start",
+                "justify-content": message.from === "user" ? "flex-end" : "flex-start",
               }}
             >
               <div
@@ -253,9 +238,7 @@ function Conversation(props: {
                 }}
                 style={{
                   background:
-                    message.from === "user"
-                      ? "var(--color-brand)"
-                      : colors.secondaryBackground,
+                    message.from === "user" ? "var(--color-brand)" : colors.secondaryBackground,
                   color: message.from === "user" ? "white" : "black",
                   "text-align": message.from === "user" ? "right" : "left",
                 }}

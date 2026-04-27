@@ -47,14 +47,10 @@ export function hexToHCL(hex: string) {
 }
 
 export function harmonizeHue(designColor: number, sourceColor: number) {
-  const differenceDegrees = mathUtils.differenceDegrees(
-    designColor,
-    sourceColor
-  );
+  const differenceDegrees = mathUtils.differenceDegrees(designColor, sourceColor);
   const rotationDegrees = Math.min(differenceDegrees * 0.5, 15.0);
   const outputHue = mathUtils.sanitizeDegreesDouble(
-    designColor +
-      rotationDegrees * mathUtils.rotationDirection(designColor, sourceColor)
+    designColor + rotationDegrees * mathUtils.rotationDirection(designColor, sourceColor),
   );
   return outputHue;
 }

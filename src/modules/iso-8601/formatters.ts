@@ -78,8 +78,7 @@ function formatDTComponent(component: DTComponent, minDigits: number): string {
     value = value + "S" + component.significantDigits;
   } else if (component.unspecifiedDigits) {
     value =
-      value.slice(0, -component.unspecifiedDigits) +
-      "".padEnd(component.unspecifiedDigits, "X");
+      value.slice(0, -component.unspecifiedDigits) + "".padEnd(component.unspecifiedDigits, "X");
   } else if (component.approximate && component.uncertain) {
     value = `%${value}`;
   } else {

@@ -978,7 +978,7 @@ zork.addVerb("OPEN", () => {
     directObject?.description,
     " reveals ",
     printContents(zork.directObject!),
-    "."
+    ".",
   );
 });
 
@@ -1162,9 +1162,7 @@ zork.addVerb("READ", () => {
   // <TELL "It is impossible to read in the dark." CR>)
 
   if (indirectObject && !indirectObject.flags?.includes("TRANSBIT")) {
-    return zork.tell(
-      `How does one look through a ${indirectObject.description}?"`
-    );
+    return zork.tell(`How does one look through a ${indirectObject.description}?"`);
   }
 
   if (!directObject?.flags?.includes("READBIT")) {
@@ -1568,8 +1566,7 @@ function walk() {
   }
   let currentLocation = zork.rooms[zork.here];
   try {
-    let nextLocation =
-      currentLocation?.[direction.toLowerCase() as "north"]?.();
+    let nextLocation = currentLocation?.[direction.toLowerCase() as "north"]?.();
     if (nextLocation && zork.rooms[nextLocation]) {
       zork.here = nextLocation;
       zork.perform("LOOK");

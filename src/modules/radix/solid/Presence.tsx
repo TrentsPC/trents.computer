@@ -1,11 +1,4 @@
-import {
-  JSX,
-  Show,
-  children,
-  createMemo,
-  createSignal,
-  onCleanup,
-} from "solid-js";
+import { JSX, Show, children, createMemo, createSignal, onCleanup } from "solid-js";
 import { isServer } from "solid-js/web";
 
 function nextFrame(fn: () => void) {
@@ -15,11 +8,7 @@ function nextFrame(fn: () => void) {
 }
 
 function hasAnimation(el: HTMLElement) {
-  return (
-    window
-      .getComputedStyle(el as HTMLElement)
-      .getPropertyValue("animation-name") !== "none"
-  );
+  return window.getComputedStyle(el as HTMLElement).getPropertyValue("animation-name") !== "none";
 }
 
 export function Presence(props: { visible: boolean; children: JSX.Element }) {

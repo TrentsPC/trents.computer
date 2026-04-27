@@ -12,9 +12,7 @@ import { createWRAM, WRAM } from "./wram";
 
 // const ONE_FRAME = 1_000_000 / 60;
 //
-export type GetColor = (
-  index: number
-) => [red: number, green: number, blue: number];
+export type GetColor = (index: number) => [red: number, green: number, blue: number];
 
 export type GameBoy = {
   cpu: CPU;

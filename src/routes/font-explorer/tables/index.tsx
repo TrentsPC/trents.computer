@@ -11,9 +11,7 @@ export const Route = createFileRoute("/font-explorer/tables/")({
 function TablesPage() {
   return (
     <div>
-      <Show when={parsedFont()}>
-        {(tableDirectory) => <TableGrid font={tableDirectory()} />}
-      </Show>
+      <Show when={parsedFont()}>{(tableDirectory) => <TableGrid font={tableDirectory()} />}</Show>
     </div>
   );
 }
@@ -28,9 +26,7 @@ function TableGrid(props: { font: Font }) {
           const data = FONT_TABLES.find((d) => d.tag === record.tag);
           return (
             <Link
-              to={
-                `/font-explorer/tables/${encodeURIComponent(record.tag)}` as any
-              }
+              to={`/font-explorer/tables/${encodeURIComponent(record.tag)}` as any}
               css={{
                 display: "block",
                 background: colors.gray2,

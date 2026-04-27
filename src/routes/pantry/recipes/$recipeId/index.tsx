@@ -27,10 +27,7 @@ function Page() {
           <Show when={recipe.data?.image}>
             <img
               css={{ flex: "1 0 0px", minWidth: 0 }}
-              src={getResizedImageUrl(
-                recipe.data?.image?.storage_path || "",
-                600
-              )}
+              src={getResizedImageUrl(recipe.data?.image?.storage_path || "", 600)}
             />
           </Show>
           <div css={{ padding: 16, flex: "1 0 0px" }}>
@@ -52,10 +49,7 @@ function Page() {
                 <Show when={recipe.data?.book}>
                   <p css={{ fontSize: 16 }}>
                     From{" "}
-                    <a
-                      href={`/pantry/books/${recipe.data?.book?.id}`}
-                      css={{ fontWeight: 600 }}
-                    >
+                    <a href={`/pantry/books/${recipe.data?.book?.id}`} css={{ fontWeight: 600 }}>
                       {recipe.data?.book?.title}
                     </a>
                   </p>
@@ -85,9 +79,7 @@ function Page() {
                                 ml: -8,
                               }}
                             >
-                              <span css={{ fontWeight: 600 }}>
-                                {group.name}
-                              </span>
+                              <span css={{ fontWeight: 600 }}>{group.name}</span>
                               <ul
                                 css={{
                                   pl: "1em",
@@ -96,9 +88,7 @@ function Page() {
                                 }}
                               >
                                 <For each={group.ingredients}>
-                                  {(ingredient) => (
-                                    <li>{ingredient.ingredient}</li>
-                                  )}
+                                  {(ingredient) => <li>{ingredient.ingredient}</li>}
                                 </For>
                               </ul>
                             </div>
@@ -108,9 +98,7 @@ function Page() {
                     </Show>
 
                     <ol css={{ spaceY: 20 }}>
-                      <For each={section.steps}>
-                        {(step) => <li>{step.step}</li>}
-                      </For>
+                      <For each={section.steps}>{(step) => <li>{step.step}</li>}</For>
                     </ol>
                   </div>
                 </div>

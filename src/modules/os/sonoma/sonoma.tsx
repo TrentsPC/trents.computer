@@ -46,7 +46,7 @@ const APPLICATIONS: Application[] = [
     component: lazy(() =>
       import("./apps/finder.lazy").then((m) => ({
         default: m.FinderWindow,
-      }))
+      })),
     ),
   },
   {
@@ -56,7 +56,7 @@ const APPLICATIONS: Application[] = [
     component: lazy(() =>
       import("./apps/messages.lazy").then((m) => ({
         default: m.MessagesWindow,
-      }))
+      })),
     ),
   },
   {
@@ -66,7 +66,7 @@ const APPLICATIONS: Application[] = [
     component: lazy(() =>
       import("./apps/safari.lazy").then((m) => ({
         default: m.SafariWindow,
-      }))
+      })),
     ),
   },
   {
@@ -76,7 +76,7 @@ const APPLICATIONS: Application[] = [
     component: lazy(() =>
       import("./apps/simulator.lazy").then((m) => ({
         default: m.SimulatorWindow,
-      }))
+      })),
     ),
   },
 ];
@@ -90,8 +90,7 @@ export function TrentOS() {
 }
 
 function TrentOSInner() {
-  const { openedApplicationIds, bringToFront, closeApplication } =
-    useContext(OSContext);
+  const { openedApplicationIds, bringToFront, closeApplication } = useContext(OSContext);
   if (document?.body) {
     document.body.style.overflow = "hidden";
   }
@@ -328,9 +327,7 @@ function MenuBar(props: { isEmpty: boolean }) {
               <MenubarMenu>
                 <MenubarTrigger>{menu.title}</MenubarTrigger>
                 <MenubarContent>
-                  <For each={menu.items}>
-                    {(item) => <SmartMenubarItem item={item} />}
-                  </For>
+                  <For each={menu.items}>{(item) => <SmartMenubarItem item={item} />}</For>
                 </MenubarContent>
               </MenubarMenu>
             )}
@@ -368,9 +365,7 @@ function SmartMenubarItem(props: { item: MenuBarItem }) {
           <ChevronRightIcon css={{ transform: "translateX(5px)" }} />
         </MenubarSubTrigger>
         <MenubarSubContent>
-          <For each={props.item.submenu}>
-            {(subitem) => <SmartMenubarItem item={subitem} />}
-          </For>
+          <For each={props.item.submenu}>{(subitem) => <SmartMenubarItem item={subitem} />}</For>
         </MenubarSubContent>
       </MenubarSub>
     </Show>
@@ -415,7 +410,7 @@ const parseCsvAsync = (text: string) => {
         } else {
           resolve(data);
         }
-      }
+      },
     );
   });
 };

@@ -155,12 +155,7 @@ const Grid = styled("div", {
 
 function BlueskyLogoIcon() {
   return (
-    <svg
-      fill="none"
-      viewBox="0 0 64 57"
-      width="64"
-      style="width: 64px; height: 64px;"
-    >
+    <svg fill="none" viewBox="0 0 64 57" width="64" style="width: 64px; height: 64px;">
       <path
         fill="#0085ff"
         d="M13.873 3.805C21.21 9.332 29.103 20.537 32 26.55v15.882c0-.338-.13.044-.41.867-1.512 4.456-7.418 21.847-20.923 7.944-7.111-7.32-3.819-14.64 9.125-16.85-7.405 1.264-15.73-.825-18.014-9.015C1.12 23.022 0 8.51 0 6.55 0-3.268 8.579-.182 13.873 3.805ZM50.127 3.805C42.79 9.332 34.897 20.537 32 26.55v15.882c0-.338.13.044.41.867 1.512 4.456 7.418 21.847 20.923 7.944 7.111-7.32 3.819-14.64-9.125-16.85 7.405 1.264 15.73-.825 18.014-9.015C62.88 23.022 64 8.51 64 6.55c0-9.818-8.578-6.732-13.873-2.745Z"
@@ -171,12 +166,7 @@ function BlueskyLogoIcon() {
 
 function GithubLogoIcon() {
   return (
-    <svg
-      width="60"
-      height="60"
-      viewBox="0 0 98 96"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="60" height="60" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg">
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
@@ -198,9 +188,7 @@ function GivenwellLogoIcon() {
     >
       <defs>
         <style>
-          {
-            ".cls-1{fill:#5cc1bf;}.cls-1,.cls-2{stroke-width:0px;}.cls-2{fill:#2e2d75;}"
-          }
+          {".cls-1{fill:#5cc1bf;}.cls-1,.cls-2{stroke-width:0px;}.cls-2{fill:#2e2d75;}"}
         </style>
       </defs>
       <path
@@ -225,20 +213,8 @@ function LetterboxdLogoIcon() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <rect
-          id="path-1"
-          x="0"
-          y="0"
-          width="129.847328"
-          height="141.389313"
-        ></rect>
-        <rect
-          id="path-3"
-          x="0"
-          y="0"
-          width="129.847328"
-          height="141.389313"
-        ></rect>
+        <rect id="path-1" x="0" y="0" width="129.847328" height="141.389313"></rect>
+        <rect id="path-3" x="0" y="0" width="129.847328" height="141.389313"></rect>
       </defs>
       <g
         id="letterboxd-decal-dots-pos-rgb"
@@ -305,12 +281,7 @@ function LetterboxdLogoIcon() {
 
 function TwitterLogoIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="60"
-      height="60"
-      viewBox="0 0 248 204"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 248 204">
       <path
         fill="#1DA1F2"
         // fill="#ffffff"

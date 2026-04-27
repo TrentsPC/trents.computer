@@ -49,9 +49,7 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     background: "#EB6707",
-    icon: () => (
-      <img src={managemyhealth} css={{ width: "100%", height: "100%" }} />
-    ),
+    icon: () => <img src={managemyhealth} css={{ width: "100%", height: "100%" }} />,
   },
   {
     background: "#24292E",
@@ -154,11 +152,7 @@ export function SocialLinksItem(props: Record<string, unknown>) {
   });
 
   return (
-    <GridItem
-      {...props}
-      component="div"
-      css={{ height: 52, padding: 0, position: "relative" }}
-    >
+    <GridItem {...props} component="div" css={{ height: 52, padding: 0, position: "relative" }}>
       <div
         ref={element}
         css={{
@@ -305,20 +299,8 @@ function LetterboxdLogoIcon() {
   return (
     <svg viewBox="0 0 500 500" css={{ width: "100%", height: "100%" }}>
       <defs>
-        <rect
-          id="path-1"
-          x="0"
-          y="0"
-          width="129.847328"
-          height="141.389313"
-        ></rect>
-        <rect
-          id="path-3"
-          x="0"
-          y="0"
-          width="129.847328"
-          height="141.389313"
-        ></rect>
+        <rect id="path-1" x="0" y="0" width="129.847328" height="141.389313"></rect>
+        <rect id="path-3" x="0" y="0" width="129.847328" height="141.389313"></rect>
       </defs>
       <g
         id="letterboxd-decal-dots-pos-rgb"

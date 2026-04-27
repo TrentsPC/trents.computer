@@ -33,7 +33,7 @@ export function random(bytes: number) {
 export function customRandom(
   alphabet: string,
   defaultSize: number,
-  getRandom: (step: number) => Buffer
+  getRandom: (step: number) => Buffer,
 ) {
   // First, a bitmask is necessary to generate the ID. The bitmask makes bytes
   // values closer to the alphabet size. The bitmask calculates the closest

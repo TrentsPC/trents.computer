@@ -28,7 +28,7 @@ const FLAGS = [
   "TOUCHBIT",
   "DOORBIT",
 ] as const;
-type GameFlag = typeof FLAGS[number];
+type GameFlag = (typeof FLAGS)[number];
 
 const ROOM_GLOBALS = [
   "WHITE_HOUSE",
@@ -37,7 +37,7 @@ const ROOM_GLOBALS = [
   "BOARDED_WINDOW",
   "KITCHEN_WINDOW",
 ] as const;
-type RoomGlobal = typeof ROOM_GLOBALS[number];
+type RoomGlobal = (typeof ROOM_GLOBALS)[number];
 
 type GameSyntaxObject = {
   optional?: boolean;
@@ -210,10 +210,9 @@ class Zork {
   }
 
   tell(...parts: Array<string | boolean | null | undefined | TellOptions>) {
-    let opts: TellOptions =
-      (parts.find((p) => p && typeof p === "object") as TellOptions) || {};
+    let opts: TellOptions = (parts.find((p) => p && typeof p === "object") as TellOptions) || {};
     this.listeners.forEach((s) =>
-      s(parts.filter((p) => p && typeof p === "string").join(""), opts)
+      s(parts.filter((p) => p && typeof p === "string").join(""), opts),
     );
   }
 
@@ -235,7 +234,7 @@ class Zork {
 
     let { text: requestTemplate, objects: foundObjects } = extractTemplate(
       request,
-      Object.values(this.objects)
+      Object.values(this.objects),
     );
 
     // Early return on direction
@@ -243,17 +242,11 @@ class Zork {
       this.perform("WALK", request);
       return;
     }
-    if (
-      request.startsWith("WALK ") &&
-      VALID_DIRECTIONS.includes(request.slice(5))
-    ) {
+    if (request.startsWith("WALK ") && VALID_DIRECTIONS.includes(request.slice(5))) {
       this.perform("WALK", request.slice(5));
       return;
     }
-    if (
-      request.startsWith("GO ") &&
-      VALID_DIRECTIONS.includes(request.slice(3))
-    ) {
+    if (request.startsWith("GO ") && VALID_DIRECTIONS.includes(request.slice(3))) {
       this.perform("WALK", request.slice(3));
       return;
     }
@@ -272,11 +265,7 @@ class Zork {
         if (foundObjects.length !== sentence.objects.length) {
           continue;
         }
-        return this.perform(
-          sentence.action,
-          foundObjects[0]?.id,
-          foundObjects[1]?.id
-        );
+        return this.perform(sentence.action, foundObjects[0]?.id, foundObjects[1]?.id);
       }
     }
 

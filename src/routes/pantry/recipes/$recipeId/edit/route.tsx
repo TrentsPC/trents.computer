@@ -25,20 +25,11 @@ function Page() {
       <div css={{ display: "flex" }}>
         <div css={{ flex: "1 0 0px" }}>
           <Show when={recipe.data?.image}>
-            <img
-              src={getResizedImageUrl(
-                recipe.data?.image?.storage_path || "",
-                400
-              )}
-            />
+            <img src={getResizedImageUrl(recipe.data?.image?.storage_path || "", 400)} />
           </Show>
           <UploadImage recipeId={Number(params().recipeId)} />
-          <h1 css={{ fontSize: 26, lineHeight: "32px", weight: 700 }}>
-            {recipe.data?.name}
-          </h1>
-          <p css={{ width: "100%", maxWidth: "64ch" }}>
-            {recipe.data?.description}
-          </p>
+          <h1 css={{ fontSize: 26, lineHeight: "32px", weight: 700 }}>{recipe.data?.name}</h1>
+          <p css={{ width: "100%", maxWidth: "64ch" }}>{recipe.data?.description}</p>
           <EditDescription
             recipeId={recipe.data?.id!}
             description={recipe.data?.description || ""}
@@ -70,9 +61,7 @@ function Page() {
                               }}
                             >
                               <For each={group.ingredients}>
-                                {(ingredient) => (
-                                  <li>{ingredient.ingredient}</li>
-                                )}
+                                {(ingredient) => <li>{ingredient.ingredient}</li>}
                               </For>
                               <NewIngredient
                                 groupId={group.id}
@@ -98,10 +87,7 @@ function Page() {
                           )}
                         </For>
                         <li>
-                          <NewStep
-                            sectionId={section.id}
-                            sequence={section.steps.length}
-                          />
+                          <NewStep sectionId={section.id} sequence={section.steps.length} />
                         </li>
                       </ol>
                     </div>
@@ -109,10 +95,7 @@ function Page() {
                 </div>
               )}
             </For>
-            <NewSection
-              recipeId={recipe.data?.id!}
-              sequence={recipe.data?.sections.length || 0}
-            />
+            <NewSection recipeId={recipe.data?.id!} sequence={recipe.data?.sections.length || 0} />
           </div>
         </div>
       </div>
@@ -204,11 +187,9 @@ function NewIngredientGroup(props: { sectionId: number; sequence: number }) {
   const qc = useQueryClient();
   return (
     <form
-      css={
-        {
-          // border: `1px solid black`,
-        }
-      }
+      css={{
+        // border: `1px solid black`,
+      }}
       onSubmit={async (e) => {
         e.preventDefault();
         await createRecipeIngredientGroup({
@@ -235,11 +216,9 @@ function NewIngredient(props: { groupId: number; sequence: number }) {
   const qc = useQueryClient();
   return (
     <form
-      css={
-        {
-          // border: `1px solid black`,
-        }
-      }
+      css={{
+        // border: `1px solid black`,
+      }}
       onSubmit={async (e) => {
         e.preventDefault();
         await createRecipeIngredient({

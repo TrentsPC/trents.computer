@@ -21,10 +21,7 @@ const listThingChildrenQuery = (thingId: string, path: Path) =>
       if (!thing) {
         return [];
       }
-      const childrenIds = thing
-        .getChildren()
-        .flat()
-        .filter(Boolean) as string[];
+      const childrenIds = thing.getChildren().flat().filter(Boolean) as string[];
 
       const children = childrenIds
         .map((id) => {
@@ -56,9 +53,7 @@ function Nested() {
 function ListItem(props: { thing: { id: string; name: string }; path: Path }) {
   const [open, setOpen] = createSignal(false);
 
-  const query = createQuery(() =>
-    listThingChildrenQuery(props.thing.id, props.path)
-  );
+  const query = createQuery(() => listThingChildrenQuery(props.thing.id, props.path));
   return (
     <>
       <ThingButton
@@ -70,9 +65,7 @@ function ListItem(props: { thing: { id: string; name: string }; path: Path }) {
       {open() && (
         <ListRoot>
           <For each={query.data}>
-            {(thing, index) => (
-              <ListItem thing={thing} path={[...props.path, index()]} />
-            )}
+            {(thing, index) => <ListItem thing={thing} path={[...props.path, index()]} />}
           </For>
         </ListRoot>
       )}
@@ -86,9 +79,7 @@ function ThingButton(props: {
   thing: { id: string; name: string };
   path: Path;
 }) {
-  const query = createQuery(() =>
-    listThingChildrenQuery(props.thing.id, props.path)
-  );
+  const query = createQuery(() => listThingChildrenQuery(props.thing.id, props.path));
   const hasChildren = () => !!query.data && query.data?.length > 0;
   const icon = () => (hasChildren() ? folder : document);
   return (

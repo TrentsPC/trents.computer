@@ -40,10 +40,7 @@ export function FooterText() {
         <span textContent={feeling()}></span>?
       </span>{" "}
       by Trent at{" "}
-      <a
-        href="mailto:trent@trents.computer"
-        css={{ textDecoration: "underline" }}
-      >
+      <a href="mailto:trent@trents.computer" css={{ textDecoration: "underline" }}>
         trent@trents.computer
       </a>
       <br />

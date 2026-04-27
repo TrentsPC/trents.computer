@@ -53,9 +53,7 @@ export function MacOSWindow(props: MacOSWindowProps) {
               padding: 20,
             }}
             style={{
-              padding: props.trafficLights
-                ? props.trafficLights + "px"
-                : undefined,
+              padding: props.trafficLights ? props.trafficLights + "px" : undefined,
             }}
           >
             <TrafficLights applicationId={props.applicationId} />

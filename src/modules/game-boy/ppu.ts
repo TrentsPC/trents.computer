@@ -12,7 +12,7 @@ export type PPU = {
 export function createPPU(
   gameBoy: GameBoy,
   getCanvas: () => HTMLCanvasElement,
-  isGBDoctor?: boolean
+  isGBDoctor?: boolean,
 ): PPU {
   let lcdX = 0;
   let lcdY = 0;
@@ -38,28 +38,22 @@ export function createPPU(
       if (lcdY === lyc) {
         gameBoy.addressBus.writeByte(
           Address.STAT,
-          gameBoy.addressBus.readByte(Address.STAT) | 0x04
+          gameBoy.addressBus.readByte(Address.STAT) | 0x04,
         );
         // If the LYC=LY coincidence interrupt is enabled
         if (gameBoy.addressBus.readByte(Address.STAT) & 0x40) {
-          gameBoy.addressBus.writeByte(
-            Address.IF,
-            gameBoy.addressBus.readByte(Address.IF) | 0x02
-          );
+          gameBoy.addressBus.writeByte(Address.IF, gameBoy.addressBus.readByte(Address.IF) | 0x02);
         }
       } else {
         gameBoy.addressBus.writeByte(
           Address.STAT,
-          gameBoy.addressBus.readByte(Address.STAT) & ~0x04
+          gameBoy.addressBus.readByte(Address.STAT) & ~0x04,
         );
       }
       if (lcdY === 144) {
         // renderScreen(gameBoy, getCanvas());
         commitFrame();
-        gameBoy.addressBus.writeByte(
-          0xff0f,
-          gameBoy.addressBus.readByte(0xff0f) | 0x01
-        );
+        gameBoy.addressBus.writeByte(0xff0f, gameBoy.addressBus.readByte(0xff0f) | 0x01);
       }
     }
   }
@@ -90,11 +84,7 @@ export function createPPU(
     tileDataCache.delete(startingAddress);
   }
 
-  function renderTile(
-    gameBoy: GameBoy,
-    startingAddress: number,
-    transparent?: boolean
-  ) {
+  function renderTile(gameBoy: GameBoy, startingAddress: number, transparent?: boolean) {
     const canvas = new OffscreenCanvas(8, 8);
     const ctx = canvas.getContext("2d")!;
     for (let y = 0; y < 8; y++) {
@@ -232,12 +222,7 @@ export function createPPU(
   const inProgressCtx = inProgressCanvas.getContext("2d")!;
 
   function clearFrame() {
-    inProgressCtx.clearRect(
-      0,
-      0,
-      inProgressCtx.canvas.width,
-      inProgressCtx.canvas.height
-    );
+    inProgressCtx.clearRect(0, 0, inProgressCtx.canvas.width, inProgressCtx.canvas.height);
   }
 
   function drawScanline() {

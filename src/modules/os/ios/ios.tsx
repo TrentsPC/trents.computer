@@ -1,10 +1,4 @@
-import {
-  ComponentProps,
-  createMemo,
-  createSignal,
-  Show,
-  Suspense,
-} from "solid-js";
+import { ComponentProps, createMemo, createSignal, Show, Suspense } from "solid-js";
 import { useSquircle } from "~/utils/squircle";
 import { CALENDAR } from "./apps/calendar";
 import { GAME_BOY } from "./apps/game-boy";
@@ -32,13 +26,9 @@ export function FakeIOSGen3(props: { cornerRadius?: number }) {
   //   document.body.style.overflow = "hidden";
   // }
 
-  const [currentAppId, setCurrentAppId] = createSignal<string | undefined>(
-    "calendar"
-  );
+  const [currentAppId, setCurrentAppId] = createSignal<string | undefined>("calendar");
 
-  const currentApp = createMemo(() =>
-    APPLICATIONS.find((a) => a.id === currentAppId())
-  );
+  const currentApp = createMemo(() => APPLICATIONS.find((a) => a.id === currentAppId()));
 
   const Component = () => currentApp()?.component?.({}) || null;
 
@@ -64,12 +54,7 @@ export function FakeIOSGen3(props: { cornerRadius?: number }) {
     >
       <Show
         when={currentApp()}
-        fallback={
-          <HomeScreen
-            onAppClick={setCurrentAppId}
-            cornerRadius={props.cornerRadius}
-          />
-        }
+        fallback={<HomeScreen onAppClick={setCurrentAppId} cornerRadius={props.cornerRadius} />}
       >
         <Suspense fallback={<div>Loading...</div>}>
           <Component />
@@ -117,14 +102,8 @@ function HomeScreen({
           width: "100%",
         }}
       >
-        <AppButton
-          appId="com.apple.Safari"
-          onClick={() => onAppClick("com.apple.Safari")}
-        />
-        <AppButton
-          appId="com.apple.Messages"
-          onClick={() => onAppClick("com.apple.Messages")}
-        />
+        <AppButton appId="com.apple.Safari" onClick={() => onAppClick("com.apple.Safari")} />
+        <AppButton appId="com.apple.Messages" onClick={() => onAppClick("com.apple.Messages")} />
         <AppButton appId="game-boy" onClick={() => onAppClick("game-boy")} />
         <AppButton appId="calendar" onClick={() => onAppClick("calendar")} />
         <AppButton appId="com.apple.Empty" onClick={() => {}} />
@@ -162,14 +141,8 @@ function HomeScreen({
         >
           <span />
           {/* <DockButton appId="com.apple.Empty" onClick={() => {}} /> */}
-          <DockButton
-            appId="com.apple.Safari"
-            onClick={() => onAppClick("com.apple.Safari")}
-          />
-          <DockButton
-            appId="com.apple.Messages"
-            onClick={() => onAppClick("com.apple.Messages")}
-          />
+          <DockButton appId="com.apple.Safari" onClick={() => onAppClick("com.apple.Safari")} />
+          <DockButton appId="com.apple.Messages" onClick={() => onAppClick("com.apple.Messages")} />
           <span />
           {/* <DockButton appId="com.apple.Empty" onClick={() => {}} /> */}
         </div>
@@ -227,10 +200,7 @@ function AppButton({ appId, onClick }: { appId: string; onClick: () => void }) {
           backgroundColor: "white",
         }}
       >
-        <img
-          css={{ width: "100%", height: "100%" }}
-          src={app()?.iconSrc || ""}
-        />
+        <img css={{ width: "100%", height: "100%" }} src={app()?.iconSrc || ""} />
       </div>
       <div
         css={{
@@ -248,13 +218,7 @@ function AppButton({ appId, onClick }: { appId: string; onClick: () => void }) {
     </button>
   );
 }
-function DockButton({
-  appId,
-  onClick,
-}: {
-  appId: string;
-  onClick: () => void;
-}) {
+function DockButton({ appId, onClick }: { appId: string; onClick: () => void }) {
   const app = () => APPLICATIONS.find((a) => a.id === appId);
   return (
     <button

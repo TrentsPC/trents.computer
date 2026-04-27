@@ -1,17 +1,7 @@
 import { styled } from "@hypergood/css";
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useNavigate,
-} from "@tanstack/solid-router";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/solid-router";
 import { For, onMount, Show } from "solid-js";
-import {
-  Font,
-  parsedFont,
-  setFontFile,
-  useFontFile,
-} from "~/modules/font-explorer";
+import { Font, parsedFont, setFontFile, useFontFile } from "~/modules/font-explorer";
 import { colors } from "~/theme.styles";
 
 export const Route = createFileRoute("/font-explorer")({
@@ -70,9 +60,7 @@ function Inner() {
                 </Li>
 
                 <Li>
-                  <a href="/font-explorer/tables">
-                    {font().offsetTable.numTables} tables
-                  </a>
+                  <a href="/font-explorer/tables">{font().offsetTable.numTables} tables</a>
 
                   <TableList font={font()} />
                 </Li>
@@ -97,11 +85,7 @@ function TableList(props: { font: Font }) {
       <For each={tables()}>
         {(table) => (
           <Li>
-            <Link
-              to={
-                `/font-explorer/tables/${encodeURIComponent(table.tag)}` as any
-              }
-            >
+            <Link to={`/font-explorer/tables/${encodeURIComponent(table.tag)}` as any}>
               {table.tag}
             </Link>
           </Li>

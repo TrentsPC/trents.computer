@@ -13,9 +13,7 @@ export function describeDTRoot(node: DTRoot): JSX.Element {
   }
   switch (true) {
     case matches(["century"]):
-      return (
-        <span>{ordinal((node.next as DTCentury).value.value + 1)} century</span>
-      );
+      return <span>{ordinal((node.next as DTCentury).value.value + 1)} century</span>;
     case matches(["decade"]):
       return <span>the {(node.next as DTCentury).value.value}0s</span>;
     case matches(["year"]):

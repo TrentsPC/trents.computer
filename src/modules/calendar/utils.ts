@@ -3,10 +3,7 @@
 // -------------------------------------------------------------------------------------------------
 
 export function getWeekView(date: Date, startOfWeek: number) {
-  return getDateInterval(
-    getStartOfWeek(date, startOfWeek),
-    getEndOfWeek(date, startOfWeek)
-  );
+  return getDateInterval(getStartOfWeek(date, startOfWeek), getEndOfWeek(date, startOfWeek));
 }
 
 export type MonthViewItem = {
@@ -47,10 +44,7 @@ export function getYearView(date: Date, startOfWeek: number) {
 // -------------------------------------------------------------------------------------------------
 
 export function sameMonth(date1: Date, date2: Date) {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth()
-  );
+  return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth();
 }
 
 export function sameDate(date1: Date, date2: Date) {

@@ -10,6 +10,6 @@ export const Route = createFileRoute("/")({
         x: fallback(optional(number()), undefined),
         os: fallback(optional(string()), undefined),
       }),
-      search
+      search,
     ),
 });

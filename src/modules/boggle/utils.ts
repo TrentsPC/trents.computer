@@ -1,23 +1,16 @@
 function createBooleanBoard() {
-  return Array.from({ length: 4 }, () =>
-    Array.from({ length: 4 }, () => false)
-  );
+  return Array.from({ length: 4 }, () => Array.from({ length: 4 }, () => false));
 }
 
 export function getValidWordPath(
   board: string[][],
-  word: string
+  word: string,
 ): Array<{ x: number; y: number }> | undefined {
   const alreadyUsed = createBooleanBoard();
   for (let y = 0; y < 4; y++) {
     for (let x = 0; x < 4; x++) {
       if (!board[y][x].toUpperCase().startsWith(word[0])) continue;
-      let result = getValidWordPathRecursive(
-        board,
-        word,
-        { x, y },
-        alreadyUsed
-      );
+      let result = getValidWordPathRecursive(board, word, { x, y }, alreadyUsed);
       if (result) return result;
     }
   }
@@ -29,7 +22,7 @@ function getValidWordPathRecursive(
   remainingWord: string,
   startingAt: { x: number; y: number },
   alreadyUsed: boolean[][] = createBooleanBoard(),
-  pathSoFar: Array<{ x: number; y: number }> = []
+  pathSoFar: Array<{ x: number; y: number }> = [],
 ): Array<{ x: number; y: number }> | undefined {
   const { x, y } = startingAt;
   if (alreadyUsed[y][x]) return undefined;
@@ -54,7 +47,7 @@ function getValidWordPathRecursive(
         newRemainingWord,
         { x: newX, y: newY },
         alreadyUsed,
-        pathSoFar
+        pathSoFar,
       );
       if (result) return result;
     }

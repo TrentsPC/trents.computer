@@ -20,21 +20,15 @@ function HexViewer() {
   const fontBuffer = useFontBuffer();
 
   const dataView = () => {
-    if (fontBuffer())
-      return new DataView(fontBuffer()!, 0, ROW_COUNT * BYTES_PER_ROW);
-    return new DataView(
-      new ArrayBuffer(ROW_COUNT * BYTES_PER_ROW),
-      0,
-      ROW_COUNT * BYTES_PER_ROW,
-    );
+    if (fontBuffer()) return new DataView(fontBuffer()!, 0, ROW_COUNT * BYTES_PER_ROW);
+    return new DataView(new ArrayBuffer(ROW_COUNT * BYTES_PER_ROW), 0, ROW_COUNT * BYTES_PER_ROW);
   };
 
   return (
     <div>
       <div>
         <p css={{ fontFamily: fonts.mono, fontScale: -1 }}>
-          {new Intl.NumberFormat([], {}).format(fontBuffer()?.byteLength || 0)}{" "}
-          bytes
+          {new Intl.NumberFormat([], {}).format(fontBuffer()?.byteLength || 0)} bytes
         </p>
         <table
           css={{
@@ -84,16 +78,14 @@ function HexViewer() {
                   </td>
                 ))}
                 <td></td>
-                {range(BYTES_PER_ROW / 2, BYTES_PER_ROW).map(
-                  (offsetFromRow) => (
-                    <td>
-                      {dataView()
-                        .getUint8(row * BYTES_PER_ROW + offsetFromRow)
-                        .toString(16)
-                        .padStart(2, "0")}
-                    </td>
-                  ),
-                )}
+                {range(BYTES_PER_ROW / 2, BYTES_PER_ROW).map((offsetFromRow) => (
+                  <td>
+                    {dataView()
+                      .getUint8(row * BYTES_PER_ROW + offsetFromRow)
+                      .toString(16)
+                      .padStart(2, "0")}
+                  </td>
+                ))}
                 <td />
                 <td>
                   {range(0, BYTES_PER_ROW).map((n) =>

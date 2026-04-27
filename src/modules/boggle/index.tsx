@@ -1,13 +1,5 @@
 import { getRouteApi, useNavigate } from "@tanstack/solid-router";
-import {
-  For,
-  Show,
-  createEffect,
-  createMemo,
-  createSignal,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { For, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { MixerHorizontalIcon, ReloadIcon, ResetIcon } from "solid-radix-icons";
 import { useSquircle } from "~/utils/squircle";
 import { createSpring } from "../spring";
@@ -161,9 +153,7 @@ export function BoggleGame(props: { dictionary: string[] }) {
     }
     if (validWordList.secondPass().includes(word)) {
       setAttempt("");
-      setFoundWords(
-        [...foundWords(), word].sort().sort((a, b) => a.length - b.length)
-      );
+      setFoundWords([...foundWords(), word].sort().sort((a, b) => a.length - b.length));
     } else {
     }
   }
@@ -195,9 +185,7 @@ export function BoggleGame(props: { dictionary: string[] }) {
   const wordsPercentage = () =>
     validWordList.secondPass().length === 0
       ? 0
-      : Math.trunc(
-          (foundWords().length / validWordList.secondPass().length) * 100
-        );
+      : Math.trunc((foundWords().length / validWordList.secondPass().length) * 100);
 
   const pointsPercentage = () => Math.trunc((score() / maxScore()) * 100);
 
@@ -269,8 +257,8 @@ export function BoggleGame(props: { dictionary: string[] }) {
           <div>
             <div css={{ display: "flex", mt: 16 }}>
               <h2 css={{ flex: "1 0 0px" }}>
-                {foundWords().length} words ({wordsPercentage()}%), {score()}{" "}
-                points ({pointsPercentage()}%)
+                {foundWords().length} words ({wordsPercentage()}%), {score()} points (
+                {pointsPercentage()}%)
               </h2>
               <p>{validWordList.secondPass().length} valid words</p>
             </div>
@@ -279,10 +267,7 @@ export function BoggleGame(props: { dictionary: string[] }) {
             </div>
           </div>
         </div>
-        <div
-          css={{ overflow: "hidden" }}
-          style={{ width: panelSpring() * 316 + "px" }}
-        >
+        <div css={{ overflow: "hidden" }} style={{ width: panelSpring() * 316 + "px" }}>
           <div css={{ w: 300, pl: 16 }}>
             <button css={{ w: "100%" }} onClick={() => setPanelOpen((o) => !o)}>
               Close
@@ -290,9 +275,7 @@ export function BoggleGame(props: { dictionary: string[] }) {
             <For each={[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}>
               {(length) => {
                 const words = () =>
-                  validWordList
-                    .secondPass()
-                    .filter((word) => word.length === length);
+                  validWordList.secondPass().filter((word) => word.length === length);
                 return (
                   <Show when={words().length}>
                     <div>

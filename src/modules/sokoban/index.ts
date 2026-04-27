@@ -105,14 +105,7 @@ export class Sokoban {
     if (to === "AIR") {
       this.player.y--;
     } else if (to === "CRATE") {
-      if (
-        this.moveCrate(
-          this.player.x,
-          this.player.y - 1,
-          this.player.x,
-          this.player.y - 2
-        )
-      ) {
+      if (this.moveCrate(this.player.x, this.player.y - 1, this.player.x, this.player.y - 2)) {
         this.player.y--;
       }
     }
@@ -122,14 +115,7 @@ export class Sokoban {
     if (to === "AIR") {
       this.player.y++;
     } else if (to === "CRATE") {
-      if (
-        this.moveCrate(
-          this.player.x,
-          this.player.y + 1,
-          this.player.x,
-          this.player.y + 2
-        )
-      ) {
+      if (this.moveCrate(this.player.x, this.player.y + 1, this.player.x, this.player.y + 2)) {
         this.player.y++;
       }
     }
@@ -139,14 +125,7 @@ export class Sokoban {
     if (to === "AIR") {
       this.player.x--;
     } else if (to === "CRATE") {
-      if (
-        this.moveCrate(
-          this.player.x - 1,
-          this.player.y,
-          this.player.x - 2,
-          this.player.y
-        )
-      ) {
+      if (this.moveCrate(this.player.x - 1, this.player.y, this.player.x - 2, this.player.y)) {
         this.player.x--;
       }
     }
@@ -156,14 +135,7 @@ export class Sokoban {
     if (to === "AIR") {
       this.player.x++;
     } else if (to === "CRATE") {
-      if (
-        this.moveCrate(
-          this.player.x + 1,
-          this.player.y,
-          this.player.x + 2,
-          this.player.y
-        )
-      ) {
+      if (this.moveCrate(this.player.x + 1, this.player.y, this.player.x + 2, this.player.y)) {
         this.player.x++;
       }
     }

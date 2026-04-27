@@ -1265,8 +1265,7 @@ zork.addRoom({
     if (reason === "M_LOOK") {
       zork.tell(
         "You are standing in an open field west of a white house, with a boarded front door.",
-        zork.globals.WON_FLAG &&
-          " A secret path leads southwest into the forest."
+        zork.globals.WON_FLAG && " A secret path leads southwest into the forest.",
       );
     }
   },

@@ -23,35 +23,26 @@ function sortListItems(listItems: ListItem[], query: string) {
   return search.map((result) => result.obj);
 }
 
-const clamp = (x: number, min: number, max: number) =>
-  Math.max(min, Math.min(x, max));
+const clamp = (x: number, min: number, max: number) => Math.max(min, Math.min(x, max));
 
 export function List(props: ListProps) {
   const { canGoBack, close, pop } = useContext(CmdContext);
 
-  const [localSearchText, setLocalSearchText] = createSignal(
-    props.searchText || ""
-  );
+  const [localSearchText, setLocalSearchText] = createSignal(props.searchText || "");
   const searchText = () => props.searchText ?? localSearchText();
   const setSearchText = (txt: string) =>
-    props.onSearchTextChange
-      ? props.onSearchTextChange(txt)
-      : setLocalSearchText(txt);
+    props.onSearchTextChange ? props.onSearchTextChange(txt) : setLocalSearchText(txt);
 
-  const sortedListItems = createMemo(() =>
-    sortListItems(props.content, searchText())
-  );
+  const sortedListItems = createMemo(() => sortListItems(props.content, searchText()));
 
   const [selectedIndex, _setSelectedIndex] = createSignal(0);
   function setSelectedIndex(index: number) {
     _setSelectedIndex(clamp(index, 0, sortedListItems().length - 1));
   }
 
-  const selectedListItem = () =>
-    sortedListItems()[selectedIndex()] as ListItem | undefined;
+  const selectedListItem = () => sortedListItems()[selectedIndex()] as ListItem | undefined;
 
-  const selectedActions = () =>
-    addDefaultShortcuts(selectedListItem()?.actions || []);
+  const selectedActions = () => addDefaultShortcuts(selectedListItem()?.actions || []);
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -122,9 +113,7 @@ export function List(props: ListProps) {
               }}
               style={{
                 "background-color":
-                  selectedIndex() === index()
-                    ? "rgba(0,0,0,0.05)"
-                    : "transparent",
+                  selectedIndex() === index() ? "rgba(0,0,0,0.05)" : "transparent",
               }}
             >
               {listItem.title}

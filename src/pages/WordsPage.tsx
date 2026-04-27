@@ -6,8 +6,7 @@ export function WordsPage() {
   return (
     <Prose
       css={{
-        "font-family":
-          'ui-serif, "New York", Georgia, Cambria, "Times New Roman", Times, serif',
+        "font-family": 'ui-serif, "New York", Georgia, Cambria, "Times New Roman", Times, serif',
       }}
     >
       <h1

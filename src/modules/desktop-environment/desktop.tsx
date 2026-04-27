@@ -1,11 +1,4 @@
-import {
-  Accessor,
-  createContext,
-  createSignal,
-  JSX,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { Accessor, createContext, createSignal, JSX, onCleanup, onMount } from "solid-js";
 import { Insets, Rect } from "./types";
 
 export type DesktopProps = {
@@ -47,9 +40,5 @@ export function Desktop(props: DesktopProps) {
     });
   });
 
-  return (
-    <DesktopContext.Provider value={{ rect: rect }}>
-      {props.children}
-    </DesktopContext.Provider>
-  );
+  return <DesktopContext.Provider value={{ rect: rect }}>{props.children}</DesktopContext.Provider>;
 }

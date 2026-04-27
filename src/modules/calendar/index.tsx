@@ -18,9 +18,7 @@ const DATES: Record<string, Date> = {
 const MILESTONES = {
   days: [100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000],
   weeks: [10, 20, 30, 40, 50, 60, 69, 70, 80, 90, 100],
-  months: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 18, 20, 30, 40, 50, 70, 80, 90, 100,
-  ],
+  months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 18, 20, 30, 40, 50, 70, 80, 90, 100],
   years: [1, 2, 3, 4, 5],
 };
 
@@ -61,9 +59,7 @@ function createEvents() {
           case "years":
             newDate.setFullYear(newDate.getFullYear() + milestone);
             events.push({
-              name: `${milestone} ${
-                milestone === 1 ? "year" : "years"
-              } since ${name}`,
+              name: `${milestone} ${milestone === 1 ? "year" : "years"} since ${name}`,
               date: newDate,
             });
             break;
@@ -100,9 +96,7 @@ export function Calendar() {
   const days = () => getMonthView(cursor(), 1);
 
   return (
-    <div
-      css={{ h: "100%", d: "flex", flexDir: "column", fontFamily: "system-ui" }}
-    >
+    <div css={{ h: "100%", d: "flex", flexDir: "column", fontFamily: "system-ui" }}>
       {/* <div css={{ h: 36, d: "flex" }}></div> */}
       <div css={{ h: 82, d: "flex", flexDir: "column" }}>
         <div css={{ flex: 1, d: "flex", items: "center", px: 13 }}>
@@ -127,10 +121,7 @@ export function Calendar() {
             >
               <ChevronLeftIcon />
             </IconPushButton>
-            <PushButton
-              style={{ width: "63px" }}
-              onClick={() => setCursor(new Date())}
-            >
+            <PushButton style={{ width: "63px" }} onClick={() => setCursor(new Date())}>
               Today
             </PushButton>
             <IconPushButton
@@ -185,10 +176,7 @@ export function Calendar() {
       >
         <For each={days()}>
           {(item) => {
-            const events = () =>
-              CALENDAR_EVENTS.filter((event) =>
-                sameDate(event.date, item.date)
-              );
+            const events = () => CALENDAR_EVENTS.filter((event) => sameDate(event.date, item.date));
             return (
               <div css={{ bg: "white" }}>
                 <div
@@ -209,8 +197,7 @@ export function Calendar() {
                     }}
                   >
                     {item.date.getDate()}
-                    {item.date.getDate() === 1 &&
-                      ` ${MONTHS_SHORT[item.date.getMonth()]}`}
+                    {item.date.getDate() === 1 && ` ${MONTHS_SHORT[item.date.getMonth()]}`}
                   </div>
                 </div>
                 <div css={{ spaceY: 1, px: 2.5 }}>

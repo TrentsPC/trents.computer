@@ -1,10 +1,4 @@
-import {
-  Accessor,
-  createEffect,
-  createMemo,
-  createSignal,
-  untrack,
-} from "solid-js";
+import { Accessor, createEffect, createMemo, createSignal, untrack } from "solid-js";
 
 export type CreateSpringOptions = {
   value: number;
@@ -34,9 +28,7 @@ export type CreateSpringOptions = {
 /**
  * Creates a readonly derived reactive springy signal
  */
-export function createSpring(
-  opts: Accessor<CreateSpringOptions>
-): Accessor<number> {
+export function createSpring(opts: Accessor<CreateSpringOptions>): Accessor<number> {
   const [value, setValue] = createSignal(opts().value);
   const [velocity, setVelocity] = createSignal(0);
 
@@ -66,10 +58,7 @@ export function createSpring(
   });
 
   function step(millis: number): boolean {
-    if (
-      Math.abs(velocity()) < 0.001 &&
-      Math.abs(value() - equilibrium()) < 0.001
-    ) {
+    if (Math.abs(velocity()) < 0.001 && Math.abs(value() - equilibrium()) < 0.001) {
       setVelocity(0);
       setValue(equilibrium());
       return false;

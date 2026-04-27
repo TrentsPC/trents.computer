@@ -49,8 +49,7 @@ function Card(props: ComponentProps<"div"> & { card: Card }) {
         mx: "auto",
         w: "100%",
         maxW: 350,
-        boxShadow:
-          "0px 10px 100px rgba(0, 0, 0, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.55)",
+        boxShadow: "0px 10px 100px rgba(0, 0, 0, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.55)",
         background: "white",
         px: "2.5rem",
         borderRadius: 20,

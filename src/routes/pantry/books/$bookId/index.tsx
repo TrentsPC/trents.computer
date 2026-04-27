@@ -113,11 +113,7 @@ function NewRecipe() {
         setName("");
       }}
     >
-      <input
-        type="text"
-        value={name()}
-        onInput={(e) => setName(e.currentTarget.value)}
-      />
+      <input type="text" value={name()} onInput={(e) => setName(e.currentTarget.value)} />
       <button>Create Recipe</button>
     </form>
   );

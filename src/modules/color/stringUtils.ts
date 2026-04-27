@@ -72,9 +72,7 @@ export const argbFromHex = (hex: string) => {
     b = parseIntHex(hex.slice(6, 8));
   }
 
-  return (
-    ((255 << 24) | ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff)) >>> 0
-  );
+  return ((255 << 24) | ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff)) >>> 0;
 };
 
 function parseIntHex(value: string) {

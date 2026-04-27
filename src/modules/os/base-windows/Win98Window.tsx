@@ -46,12 +46,7 @@ export function Win98Window(props: Win98WindowProps) {
             alignItems: "center",
           }}
         >
-          <img
-            src={icon}
-            width={16 * 2}
-            height={16 * 2}
-            css={{ imageRendering: "pixelated" }}
-          />
+          <img src={icon} width={16 * 2} height={16 * 2} css={{ imageRendering: "pixelated" }} />
           <span
             css={{
               fontSize: 11 * 2,

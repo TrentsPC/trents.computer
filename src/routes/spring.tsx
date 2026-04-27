@@ -211,12 +211,7 @@ function SpringChart(props: { response: number; dampingRatio: number }) {
 
 const STEP_SIZE = 5;
 
-function getSpringChart(
-  stiffness: number,
-  damping: number,
-  mass: number,
-  duration = 2
-) {
+function getSpringChart(stiffness: number, damping: number, mass: number, duration = 2) {
   let value = 0;
   let velocity = 0;
   let equilibrium = 1;

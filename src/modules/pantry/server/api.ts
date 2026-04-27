@@ -80,7 +80,7 @@ export async function createRecipe(name: string, bookId: number) {
 
 export async function updateRecipe(
   recipeId: number,
-  data: Partial<typeof schema.recipes.$inferSelect>
+  data: Partial<typeof schema.recipes.$inferSelect>,
 ) {
   const { id, created_at, ...permittedData } = data;
   const db = await getRecipeDB();
@@ -162,7 +162,7 @@ export async function createRecipeStep(opts: {
 
 export async function updateRecipeStep(
   stepId: number,
-  data: Partial<typeof schema.steps.$inferSelect>
+  data: Partial<typeof schema.steps.$inferSelect>,
 ) {
   const { id, ...permittedData } = data;
   const db = await getRecipeDB();

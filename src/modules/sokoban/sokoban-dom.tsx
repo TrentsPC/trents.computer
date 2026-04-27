@@ -1,11 +1,4 @@
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { parseLevelSet, Sokoban } from "~/modules/sokoban";
 import { MICROBAN1 } from "~/modules/sokoban/levelsets/microban";
 import { MICROBAN2 } from "~/modules/sokoban/levelsets/microban-2";
@@ -99,9 +92,7 @@ function PageInner() {
   const pixelSize = () => {
     const grid = level();
     const gridHeight = grid.level.length;
-    const gridWidth = grid.level
-      .slice()
-      .sort((a, b) => b.length - a.length)[0].length;
+    const gridWidth = grid.level.slice().sort((a, b) => b.length - a.length)[0].length;
     const width = window.innerWidth - 0;
     const height = window.innerHeight - 64;
     const widthScale = width / gridWidth;
@@ -178,7 +169,7 @@ function recolor(str: string) {
       line
         .split("")
         .map((char) => recolorMap[char] || char)
-        .join("")
+        .join(""),
     )
     .join("\n");
 }

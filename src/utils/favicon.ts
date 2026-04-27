@@ -38,7 +38,7 @@ export function createAnimatedFavicon() {
   function faviconTemplate(color: string) {
     return `
       <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>${percentEncode(
-        `<polygon points="50,0 100,50 50,100 0,50" fill="${color}" />`
+        `<polygon points="50,0 100,50 50,100 0,50" fill="${color}" />`,
       )}
       </svg>
     `.trim();
@@ -48,9 +48,7 @@ export function createAnimatedFavicon() {
 
   setInterval(() => {
     i++;
-    let newFavicon = faviconTemplate(
-      visible() ? hcl(hue(), 25, 70) : "#888888"
-    );
+    let newFavicon = faviconTemplate(visible() ? hcl(hue(), 25, 70) : "#888888");
     linkForFavicon?.setAttribute(`href`, `data:image/svg+xml,${newFavicon}`);
   }, 50);
 }

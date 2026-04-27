@@ -1,11 +1,5 @@
 import { RegisteredThingIds } from "../types";
-import {
-  choose,
-  collectThings,
-  createThing,
-  maybe,
-  repeatThings,
-} from "../utils";
+import { choose, collectThings, createThing, maybe, repeatThings } from "../utils";
 
 const multiverse = createThing({
   id: "multiverse",
@@ -70,10 +64,7 @@ const galaxy = createThing({
   id: "galaxy",
   getName: () => "Galaxy",
 });
-galaxy.getChildren = () => [
-  "galaxy_center",
-  ...repeatThings("galaxy_arm", 2, 6),
-];
+galaxy.getChildren = () => ["galaxy_center", ...repeatThings("galaxy_arm", 2, 6)];
 
 const galaxyArm = createThing({
   id: "galaxy_arm",
@@ -310,10 +301,7 @@ terraformedPlanet.getChildren = () => [
   repeatThings("continent", 2, 7),
   repeatThings("ocean", 1, 7),
   "terraformed_sky",
-  maybe(
-    terraformedMoon.getChildren().filter(Boolean) as RegisteredThingIds[],
-    0.3
-  ),
+  maybe(terraformedMoon.getChildren().filter(Boolean) as RegisteredThingIds[], 0.3),
   ...planetComposition.getChildren(),
 ];
 
@@ -385,10 +373,7 @@ const asteroidBelt = createThing({
   id: "asteroid_belt",
   getName: () => "Asteroid Belt",
 });
-asteroidBelt.getChildren = () => [
-  maybe("galactic_life", 0.2),
-  repeatThings("asteroid", 10, 30),
-];
+asteroidBelt.getChildren = () => [maybe("galactic_life", 0.2), repeatThings("asteroid", 10, 30)];
 
 const earth = createThing({
   id: "earth",
@@ -400,11 +385,7 @@ const asteroid = createThing({
   id: "asteroid",
   getName: () => "Asteroid",
 });
-asteroid.getChildren = () => [
-  maybe("space_animal", 0.005),
-  "rock",
-  maybe("ice", 0.3),
-];
+asteroid.getChildren = () => [maybe("space_animal", 0.005), "rock", maybe("ice", 0.3)];
 
 const gasGiant = createThing({
   id: "gas_giant",
@@ -474,10 +455,7 @@ everything.getChildren = () => ["universe"];
 const endOfUniverseNote = createThing({
   id: "end_of_universe_note",
   getName: () =>
-    choose([
-      "Help! I'm trapped in a universe factory!",
-      "Okay, you can stop clicking now.",
-    ]),
+    choose(["Help! I'm trapped in a universe factory!", "Okay, you can stop clicking now."]),
 });
 endOfUniverseNote.getChildren = () => [maybe("pasta", 0.001)];
 

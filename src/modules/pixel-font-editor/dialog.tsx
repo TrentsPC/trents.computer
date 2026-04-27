@@ -74,23 +74,13 @@ export function Dialog(props: { children?: JSX.Element }) {
     ctx.shadowColor = "rgba(0,0,0,1)";
     ctx.shadowOffsetY = 16;
     ctx.fillStyle = "white";
-    ctx.fillRect(
-      midPointX - dialogContentWidth / 2,
-      top,
-      dialogContentWidth,
-      dialogContentHeight,
-    );
+    ctx.fillRect(midPointX - dialogContentWidth / 2, top, dialogContentWidth, dialogContentHeight);
 
     ctx.shadowBlur = 4;
     ctx.shadowColor = "rgba(0,0,0,1)";
     ctx.shadowOffsetY = 0;
     ctx.fillStyle = "white";
-    ctx.fillRect(
-      midPointX - dialogContentWidth / 2,
-      top,
-      dialogContentWidth,
-      dialogContentHeight,
-    );
+    ctx.fillRect(midPointX - dialogContentWidth / 2, top, dialogContentWidth, dialogContentHeight);
 
     function ditherPixel(x: number, y: number, data: number): boolean {
       x = Math.floor(x);

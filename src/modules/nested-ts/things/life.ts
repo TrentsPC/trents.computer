@@ -1,10 +1,4 @@
-import {
-  choose,
-  chooseThing,
-  createThing,
-  maybe,
-  repeatThings,
-} from "../utils";
+import { choose, chooseThing, createThing, maybe, repeatThings } from "../utils";
 // //life
 // new Thing("life",[["bird", "poultry", "fish", "shark", "crustacean", "cnidaria", "worm", "mollusk", "clam", "plankton", "reptile", "amphibian", "snake", "small mammal", "herbivorous mammal", "predatory mammal", "monkey", "bear", "horse", "cat", "dog", "dinosaur", "medieval person", "caveman", "dragon", "person", "space animal", "insect", "tree", "grass blade"]],"Life");
 // new Thing("sea life",["sea monster,0.5%", "fish,5-10", "cetacean,0-4", "shark,0-4", "crustacean,1-4", "cnidaria,1-4", "mollusk,1-4", "clam,1-4", "plankton,2-8"],"life");
@@ -180,22 +174,7 @@ const spaceAnimal = createThing({
   getName: () =>
     [
       choose(["e", "a", "o", "", "", "", "", "", ""]),
-      choose([
-        "sm",
-        "cr",
-        "shn",
-        "sh",
-        "sn",
-        "gl",
-        "g",
-        "m",
-        "c",
-        "x",
-        "h",
-        "dr",
-        "r",
-        "l",
-      ]),
+      choose(["sm", "cr", "shn", "sh", "sn", "gl", "g", "m", "c", "x", "h", "dr", "r", "l"]),
       choose(["o", "a", "u", "i", "e", "ee"]),
       choose([
         "x",
@@ -245,10 +224,7 @@ const spaceAnimal = createThing({
       ]),
     ].join(""),
 });
-spaceAnimal.getChildren = () => [
-  maybe("space_animal_thoughts", 0.85),
-  "space_animal_body",
-];
+spaceAnimal.getChildren = () => [maybe("space_animal_thoughts", 0.85), "space_animal_body"];
 
 const spaceAnimalBody = createThing({
   id: "space_animal_body",
@@ -262,7 +238,7 @@ spaceAnimalBody.getChildren = () => [
       repeatThings("fish_fin", 0, 4),
       repeatThings("mammal_leg", 1, 6),
     ]),
-    0.67
+    0.67,
   ),
   maybe(repeatThings("insect_wing", 0, 6), 0.33),
   maybe(repeatThings("crustacean_claw", 0, 4), 0.33),
@@ -271,10 +247,7 @@ spaceAnimalBody.getChildren = () => [
   maybe("stinger", 0.1),
   maybe("whiskers", 0.03),
   maybe(chooseThing(["crustacean_shell", "scales", "fur", "exoskeleton"]), 0.8),
-  maybe(
-    chooseThing([repeatThings("mouth", 1, 4), repeatThings("beak", 1, 4)]),
-    0.67
-  ),
+  maybe(chooseThing([repeatThings("mouth", 1, 4), repeatThings("beak", 1, 4)]), 0.67),
   maybe("skull", 0.3),
   maybe("brain", 0.5),
   maybe(
@@ -283,7 +256,7 @@ spaceAnimalBody.getChildren = () => [
       repeatThings("eye", 1, 6),
       repeatThings("simple_eye", 1, 6),
     ]),
-    0.75
+    0.75,
   ),
   maybe("weird_soft_organ", 0.5),
   maybe("weird_soft_organ", 0.2),
@@ -296,9 +269,7 @@ const spaceAnimalThoughts = createThing({
   id: "space_animal_thoughts",
   getName: () => "Thoughts",
 });
-spaceAnimalThoughts.getChildren = () => [
-  repeatThings("space_animal_thought", 1, 3),
-];
+spaceAnimalThoughts.getChildren = () => [repeatThings("space_animal_thought", 1, 3)];
 
 // new Thing("space animal thought",[],[["sk'", "mop", "nanu", "nug", "gmap", "shmu", "dna", "no", "xle", "doda", "daia", "de", ""], ["g ", "gek ", "th ", "iap ", "glib ", "ph ", "d't ", "neig'", "dip ", "shna ", "sh "], ["sk'", "mop", "nanu", "nug", "gmap", "shmu", "dna", "no", "xle", "doda", "daia", "de", ""], ["g ", "gek ", "th ", "iap ", "glib ", "ph ", "d't ", "neig'", "dip ", "shna ", "sh "], ["mi", "di", "glu", "dra", "shwa", "ama", ""], ["ben", "ri", "nap", "dap", "top", "gog"], [".", ".", ".", ".", "!", "?"]]);
 const spaceAnimalThought = createThing({
@@ -449,9 +420,4 @@ const spaceAnimalThought = createThing({
 // new Thing("dog thoughts",["dog thought,2-3"],["thoughts"]);
 // new Thing("dog thought",[],["HAY I'M DOG", "I AM DOG HAY", "WE DOG NOW???", "HEY LET'S DOG OK???", "CAN WE DOG NOW OK???", "DOG STUFF YAYYYYY", "BUTTS COME IN MANY FLAVORS", "BUTTS YES", "HURRAY!!!!!!!! BUTTS", "YOUR BUTT SMELLS LEGIT", "WOOF", "BWURF", "BAWF WOOF", "GUESS WHAT?????????? WOOF", "MY SPECIALTY. IS ROOFING.", "HEY EVERYDOGGY", "DOG DOG DOG DOG DOG DOG DOG", "MY NAME. IS DOG. AND I HAVE MET YOU. HI!!!", "!!!!!!!!!!!!!!!!!!!!!WHOAH", "!!!!!!!!!YES NICE", "EVERYTHING SO NICE WOW", "WE GO MANGLE SQUIRREL NOW????? PLS", "WOW!!!!!!!! SO EXCITE", "I'M RLY EXCITE RIGHT NOW", "DO YOU KNOW JUST HOW EXCITE I AM", "DO YOU HAVE. ANY IDEA. JUST HOW EXCITE I AM.", "A WALK????? YES WALK LOVE WALKS HURRAY!!!!!!", "PEE ON THINGS HURRAY!!!!!!", "YIP YIP YIP YIP YIP", "YIP", "I COULD GO FOR SOME SQUIRREL RIGHT ABOUT NOW", "IF TEARING UP SQUIRRELS IS WRONG THEN WOOF WOOF WOOF WOOF WOOF WOOF WOOF", "DOG??????????? DOG", "I LICK YOUR FACE NOW OK???????", "VERI GOOD :DDDDDDDD", "I WAS RUNNING BUT I FORGOT WHY I WAS RUNNING SO THEN I STOPPED RUNNING AND NOW I AM NOT RUNNING ANYMORE.", "I DON'T UNDERSTAND!!!!! BUT OK", "UH", "HELP I AM CHOKE ON SQUIRREL HELP", "ARE YOU A SQUIRREL", "NO WAY", "DUDE THERE IS NO WAY", "IS THAT, UH, OH NEVERMIND", "OHNO WHY", "MEOW I MEAN WOOF????? YES", "All of this must of course remain absolutely confidenOH HEY WOOF WOOF WOOF", "I AM THE DOGGEST", "MORE DOG YES DOG", "LESS CAT MORE DOG", "HAHA I LOVE YOU", "ONE DAY I WAKE UP AND I AM DOG WOW", "IS THIS REAL LIFE", "I AM SO DOG RIGHT NOW", "WOW", "WHY THIS", "THIS IS GREAT"]);
 
-export const life = [
-  galacticLife,
-  spaceAnimal,
-  spaceAnimalThoughts,
-  spaceAnimalThought,
-];
+export const life = [galacticLife, spaceAnimal, spaceAnimalThoughts, spaceAnimalThought];

@@ -27,9 +27,7 @@ function ConversationList() {
         pb: "var(--safe-area-inset-bottom)",
       }}
     >
-      <LargeTitle css={{ fontWeight: 690, pt: 40, px: 20 }}>
-        Messages
-      </LargeTitle>
+      <LargeTitle css={{ fontWeight: 690, pt: 40, px: 20 }}>Messages</LargeTitle>
       <For each={conversations}>
         {(conversation, i) => (
           <button
@@ -73,10 +71,7 @@ function ConversationList() {
                     color: colors.secondaryLabel,
                   }}
                 >
-                  {
-                    conversation.messages[conversation.messages.length - 1]
-                      ?.text
-                  }
+                  {conversation.messages[conversation.messages.length - 1]?.text}
                 </Body>
               </div>
             </div>
@@ -90,8 +85,7 @@ function ConversationList() {
 }
 
 function ChatWidget() {
-  const selectedGroup = () =>
-    conversations[selectedGroupId()] as Group | undefined;
+  const selectedGroup = () => conversations[selectedGroupId()] as Group | undefined;
 
   return (
     <Show when={selectedGroup()}>
@@ -171,10 +165,7 @@ function Conversation(props: {
           Back
         </button>
       </div>
-      <div
-        css={{ flex: "1 0 0px", overflowY: "auto", py: 16, spaceY: 12 }}
-        ref={scrollRef}
-      >
+      <div css={{ flex: "1 0 0px", overflowY: "auto", py: 16, spaceY: 12 }} ref={scrollRef}>
         <For each={props.messages}>
           {(message) => (
             <div
@@ -183,8 +174,7 @@ function Conversation(props: {
                 px: 20,
               }}
               style={{
-                "justify-content":
-                  message.from === "user" ? "flex-end" : "flex-start",
+                "justify-content": message.from === "user" ? "flex-end" : "flex-start",
               }}
             >
               <div
@@ -198,9 +188,7 @@ function Conversation(props: {
                 }}
                 style={{
                   background:
-                    message.from === "user"
-                      ? "var(--color-brand)"
-                      : colors.secondaryBackground,
+                    message.from === "user" ? "var(--color-brand)" : colors.secondaryBackground,
                   color: message.from === "user" ? "white" : "black",
                   "text-align": message.from === "user" ? "right" : "left",
                 }}

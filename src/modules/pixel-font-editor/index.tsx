@@ -1,12 +1,4 @@
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-  For,
-  JSX,
-  Show,
-} from "solid-js";
+import { createEffect, createMemo, createResource, createSignal, For, JSX, Show } from "solid-js";
 import { CHARACTER_DATA, CharacterSet } from "./character-data";
 import "./font.css";
 import newYork from "./new-york.pxfont.json";
@@ -22,8 +14,7 @@ for (const ch of CHARSET) {
   CHARSET_AS_ARRAY.push(ch);
 }
 
-const cpKey = (cp: number) =>
-  `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
+const cpKey = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
 const emptyBm = (w: number, h: number) =>
   Array.from({ length: h }, () => Array(w).fill(0).join(""));
 
@@ -217,8 +208,7 @@ export function PixelFontEditor() {
   ) => {
     setFont((f) => {
       const g = f.glyphs[key];
-      const next =
-        typeof updater === "function" ? updater(g) : { ...g, ...updater };
+      const next = typeof updater === "function" ? updater(g) : { ...g, ...updater };
       return {
         ...f,
         glyphs: { ...f.glyphs, [key]: next },
@@ -279,10 +269,7 @@ export function PixelFontEditor() {
   );
 }
 
-function FontSection(props: {
-  font: FontData;
-  onFontChange: (font: FontData) => void;
-}) {
+function FontSection(props: { font: FontData; onFontChange: (font: FontData) => void }) {
   const font = () => props.font;
 
   const saveFont = () => {
@@ -373,10 +360,7 @@ function FontSection(props: {
           }}
         />
       </div>
-      <div
-        css={{ height: 2, mb: 10 }}
-        style={{ "background-color": colors.border }}
-      />
+      <div css={{ height: 2, mb: 10 }} style={{ "background-color": colors.border }} />
       <div css={{ pl: 10 + 8, pr: 10 }}>
         {Object.entries(font().metrics).map(([k, v]) => (
           <NumInput
@@ -521,12 +505,7 @@ function FontSection(props: {
           }}
         >
           📂 Load font
-          <input
-            type="file"
-            accept=".json"
-            onInput={loadFont}
-            style={{ display: "none" }}
-          />
+          <input type="file" accept=".json" onInput={loadFont} style={{ display: "none" }} />
         </label>
         <button
           onClick={() => props.onFontChange(makeFont())}
@@ -627,10 +606,7 @@ function GlyphSelectorSection(props: {
                             advanceWidth: font().metrics.capHeight,
                             width: GLYPH_CANVAS_SIZE,
                             height: GLYPH_CANVAS_SIZE,
-                            bitmap: emptyBm(
-                              GLYPH_CANVAS_SIZE,
-                              GLYPH_CANVAS_SIZE,
-                            ),
+                            bitmap: emptyBm(GLYPH_CANVAS_SIZE, GLYPH_CANVAS_SIZE),
                           },
                         },
                       });
@@ -695,8 +671,7 @@ function GraphemeSetComp(props: {
             {(character) => {
               const codepoint = () => character.codePointAt(0)!;
               const key = () => cpKey(codepoint());
-              const exists = () =>
-                props.font.glyphs[cpKey(character.codePointAt(0)!)]!!;
+              const exists = () => props.font.glyphs[cpKey(character.codePointAt(0)!)]!!;
               const selected = () => key() === props.selectedGlyphId;
 
               return (
@@ -721,11 +696,7 @@ function GraphemeSetComp(props: {
             )`,
                     cursor: "pointer",
                     border: `2px solid ${selected() ? colors.text : exists() ? colors.text2 : "transparent"}`,
-                    background: selected()
-                      ? colors.text
-                      : exists()
-                        ? "transparent"
-                        : "transparent",
+                    background: selected() ? colors.text : exists() ? "transparent" : "transparent",
                     color: selected() ? colors.background : undefined,
                     // opacity: exists() ? 1 : 0.5,
                   }}
@@ -740,9 +711,7 @@ function GraphemeSetComp(props: {
       <div>
         <Show when={props.set.children}>
           <For each={props.set.children}>
-            {(child) => (
-              <GraphemeSetComp {...props} depth={props.depth + 1} set={child} />
-            )}
+            {(child) => <GraphemeSetComp {...props} depth={props.depth + 1} set={child} />}
           </For>
         </Show>
       </div>
@@ -802,10 +771,7 @@ function GlyphEditorHeader(props: {
   const glyphOfficialName = () => {
     let data = unicodeNames();
     if (!data) return undefined;
-    const codepointStr = props.glyph.codePoint
-      .toString(16)
-      .toUpperCase()
-      .padStart(4, "0");
+    const codepointStr = props.glyph.codePoint.toString(16).toUpperCase().padStart(4, "0");
     const searchStr = "\n" + codepointStr + ";";
     const index = data.indexOf(searchStr);
     if (index === -1) return undefined;
@@ -865,9 +831,7 @@ function GlyphEditorHeader(props: {
         <NumInput
           label="Width"
           value={glyph().advanceWidth}
-          onChange={(v) =>
-            props.onGlyphChange((g) => ({ ...g, advanceWidth: +v }))
-          }
+          onChange={(v) => props.onGlyphChange((g) => ({ ...g, advanceWidth: +v }))}
         />
       </Show>
 
@@ -987,8 +951,7 @@ function GlyphEditorCanvas(props: {
   const onGridMove = (e: any) => {
     if (!drawing || !glyph()) return;
     const [r, c] = getCell(e);
-    if (r >= 0 && r < glyph().height && c >= 0 && c < glyph().width)
-      setPixel(r, c, drawVal);
+    if (r >= 0 && r < glyph().height && c >= 0 && c < glyph().width) setPixel(r, c, drawVal);
   };
 
   // Grid canvas
@@ -1014,8 +977,7 @@ function GlyphEditorCanvas(props: {
     // Draw checkerboard background
     for (let r = 0; r < g.height; r++) {
       for (let c = 0; c < g.width; c++) {
-        ctx.fillStyle =
-          (r + c) % 2 === 0 ? colors.canvas.bg2 : colors.canvas.bg1;
+        ctx.fillStyle = (r + c) % 2 === 0 ? colors.canvas.bg2 : colors.canvas.bg1;
         ctx.fillRect(c * z, r * z, z, z);
       }
     }
@@ -1062,18 +1024,11 @@ function GlyphEditorCanvas(props: {
         ctx.fillRect(start, (g.height / 2 - row.offset) * z, end, 2);
       }
       for (let column of fontHorizontalGuidelines()) {
-        const highestVerticalGuide = Math.max(
-          ...fontVerticalGuidelines().map((g) => g.offset),
-        );
-        const lowestVerticalGuide = Math.min(
-          ...fontVerticalGuidelines().map((g) => g.offset),
-        );
-        const start =
-          column.offset === -1 ? 0 : (g.height / 2 - highestVerticalGuide) * z;
+        const highestVerticalGuide = Math.max(...fontVerticalGuidelines().map((g) => g.offset));
+        const lowestVerticalGuide = Math.min(...fontVerticalGuidelines().map((g) => g.offset));
+        const start = column.offset === -1 ? 0 : (g.height / 2 - highestVerticalGuide) * z;
         const end =
-          column.offset === -1
-            ? g.height * z
-            : (highestVerticalGuide - lowestVerticalGuide) * z;
+          column.offset === -1 ? g.height * z : (highestVerticalGuide - lowestVerticalGuide) * z;
         const x = (g.width / 2 + column.offset) * z;
         ctx.fillRect(x, start, 2, end);
       }
@@ -1250,13 +1205,7 @@ function PreviewSection(props: { font: FontData }) {
           }}
         />
         <span style={{ color: colors.text2 }}>Font size</span>
-        <Slider
-          min={2}
-          max={16}
-          step={1}
-          value={previewScale()}
-          onValueChange={setPreviewScale}
-        />
+        <Slider min={2} max={16} step={1} value={previewScale()} onValueChange={setPreviewScale} />
         <span
           style={{
             color: colors.text,
@@ -1285,10 +1234,7 @@ function PreviewSection(props: { font: FontData }) {
           "max-height": "33vh",
         }}
       >
-        <canvas
-          ref={previewRef}
-          style={{ display: "block", "image-rendering": "pixelated" }}
-        />
+        <canvas ref={previewRef} style={{ display: "block", "image-rendering": "pixelated" }} />
       </div>
     </div>
   );

@@ -95,9 +95,7 @@ export function MenubarContent(props: ComponentProps<typeof Menubar.Content>) {
   );
 }
 export const MenubarSub = Menubar.Sub;
-export function MenubarSubContent(
-  props: ComponentProps<typeof Menubar.SubContent>
-) {
+export function MenubarSubContent(props: ComponentProps<typeof Menubar.SubContent>) {
   return (
     <Menubar.Portal>
       <Menubar.SubContent
@@ -142,9 +140,7 @@ export function MenubarItem(props: ComponentProps<typeof Menubar.Item>) {
   );
 }
 
-export function MenubarSubTrigger(
-  props: ComponentProps<typeof Menubar.SubTrigger>
-) {
+export function MenubarSubTrigger(props: ComponentProps<typeof Menubar.SubTrigger>) {
   return (
     <Menubar.SubTrigger
       {...props}
@@ -170,9 +166,7 @@ export function MenubarSubTrigger(
   );
 }
 
-export function MenubarSeparator(
-  props: ComponentProps<typeof Menubar.Separator>
-) {
+export function MenubarSeparator(props: ComponentProps<typeof Menubar.Separator>) {
   return (
     <Menubar.Separator
       {...props}

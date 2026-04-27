@@ -1,8 +1,4 @@
-import {
-  linkOptions,
-  NavigateOptions,
-  useNavigate,
-} from "@tanstack/solid-router";
+import { linkOptions, NavigateOptions, useNavigate } from "@tanstack/solid-router";
 import { useContext } from "solid-js";
 import { List } from "../components/List";
 import { CmdContext } from "../context";

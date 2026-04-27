@@ -44,13 +44,7 @@ const WHITE_POINT_D65 = [95.047, 100.0, 108.883] as const;
  * Converts a color from RGB components to ARGB format.
  */
 export function argbFromRgb(red: number, green: number, blue: number): number {
-  return (
-    ((255 << 24) |
-      ((red & 255) << 16) |
-      ((green & 255) << 8) |
-      (blue & 255)) >>>
-    0
-  );
+  return ((255 << 24) | ((red & 255) << 16) | ((green & 255) << 8) | (blue & 255)) >>> 0;
 }
 
 /**
@@ -152,12 +146,9 @@ export function labFromArgb(argb: number): number[] {
   const linearG = linearized(greenFromArgb(argb));
   const linearB = linearized(blueFromArgb(argb));
   const matrix = SRGB_TO_XYZ;
-  const x =
-    matrix[0][0] * linearR + matrix[0][1] * linearG + matrix[0][2] * linearB;
-  const y =
-    matrix[1][0] * linearR + matrix[1][1] * linearG + matrix[1][2] * linearB;
-  const z =
-    matrix[2][0] * linearR + matrix[2][1] * linearG + matrix[2][2] * linearB;
+  const x = matrix[0][0] * linearR + matrix[0][1] * linearG + matrix[0][2] * linearB;
+  const y = matrix[1][0] * linearR + matrix[1][1] * linearG + matrix[1][2] * linearB;
+  const z = matrix[2][0] * linearR + matrix[2][1] * linearG + matrix[2][2] * linearB;
   const whitePoint = WHITE_POINT_D65;
   const xNormalized = x / whitePoint[0];
   const yNormalized = y / whitePoint[1];

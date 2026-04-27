@@ -10,8 +10,7 @@ const [conversations, setConversations] = useChatbots();
 
 export function MessagesWindow(props: MacOSWindowProps) {
   const [selectedGroupId, setSelectedGroupId] = createSignal(0);
-  const selectedGroup = () =>
-    conversations[selectedGroupId()] as Group | undefined;
+  const selectedGroup = () => conversations[selectedGroupId()] as Group | undefined;
 
   const { closeApplication } = useOSContext();
 
@@ -47,8 +46,7 @@ export function MessagesWindow(props: MacOSWindowProps) {
           css={{
             w: 320,
             backgroundColor: "rgba(246, 246, 246, 0.84)",
-            backgroundImage:
-              "linear-gradient(to left, #0000000D, #00000000 5px)",
+            backgroundImage: "linear-gradient(to left, #0000000D, #00000000 5px)",
           }}
         >
           <FrameDragArea css={{ w: "100%", h: 20 + 12 + 20 }} />
@@ -71,10 +69,7 @@ export function MessagesWindow(props: MacOSWindowProps) {
                         fontWeight: 400,
                       }}
                     >
-                      {
-                        conversation.messages[conversation.messages.length - 1]
-                          ?.text
-                      }
+                      {conversation.messages[conversation.messages.length - 1]?.text}
                     </p>
                   </SidebarItem>
                 )}
@@ -181,10 +176,7 @@ function Conversation(props: {
   let scrollRef: HTMLDivElement = null!;
   return (
     <>
-      <div
-        css={{ flex: "1 0 0px", overflowY: "auto", py: 16, spaceY: 12 }}
-        ref={scrollRef}
-      >
+      <div css={{ flex: "1 0 0px", overflowY: "auto", py: 16, spaceY: 12 }} ref={scrollRef}>
         <For each={props.messages}>
           {(message) => (
             <div
@@ -193,8 +185,7 @@ function Conversation(props: {
                 px: 20,
               }}
               style={{
-                "justify-content":
-                  message.from === "user" ? "flex-end" : "flex-start",
+                "justify-content": message.from === "user" ? "flex-end" : "flex-start",
               }}
             >
               <div
@@ -208,9 +199,7 @@ function Conversation(props: {
                 }}
                 style={{
                   background:
-                    message.from === "user"
-                      ? "var(--color-brand)"
-                      : colors.secondaryBackground,
+                    message.from === "user" ? "var(--color-brand)" : colors.secondaryBackground,
                   color: message.from === "user" ? "white" : "black",
                   "text-align": message.from === "user" ? "right" : "left",
                 }}

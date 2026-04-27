@@ -6,11 +6,7 @@ import { colors } from "~/theme.styles";
 
 // 52.5 pixel per cm
 
-export function Board(props: {
-  board: string[][];
-  word: string;
-  rotations: number;
-}) {
+export function Board(props: { board: string[][]; word: string; rotations: number }) {
   const path = () => getValidWordPath(props.board, props.word) || [];
   const rotationSpring = createSpring(() => ({
     value: props.rotations,
@@ -41,10 +37,8 @@ export function Board(props: {
         {(row, y) => (
           <For each={row}>
             {(letter, x) => {
-              const pathIdx = () =>
-                path().findIndex((pos) => pos.x === x() && pos.y === y());
-              const hasLine = () =>
-                pathIdx() !== -1 && pathIdx() !== path().length - 1;
+              const pathIdx = () => path().findIndex((pos) => pos.x === x() && pos.y === y());
+              const hasLine = () => pathIdx() !== -1 && pathIdx() !== path().length - 1;
 
               return (
                 <div
@@ -60,8 +54,7 @@ export function Board(props: {
                     zIndex: 1,
                   }}
                   style={{
-                    "background-color":
-                      pathIdx() !== -1 ? colors.green8 : undefined,
+                    "background-color": pathIdx() !== -1 ? colors.green8 : undefined,
 
                     "grid-column": x() + 1 + " / span 1",
                     "grid-row": y() + 1 + " / span 1",
@@ -88,8 +81,7 @@ export function Board(props: {
 
       <For each={path()}>
         {(coord, i) => {
-          const lastCoord = () =>
-            i() === 0 ? { x: 0, y: 0 } : path()[i() - 1];
+          const lastCoord = () => (i() === 0 ? { x: 0, y: 0 } : path()[i() - 1]);
           const dx = () => lastCoord().x - coord.x;
           const dy = () => lastCoord().y - coord.y;
 

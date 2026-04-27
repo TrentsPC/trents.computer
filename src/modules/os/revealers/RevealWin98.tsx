@@ -4,10 +4,8 @@ const button = css({
   background: "#c0c0c0",
   borderWidth: 2,
   borderStyle: "solid",
-  borderColor:
-    "rgb(255, 255, 255) rgb(10, 10, 10) rgb(10, 10, 10)rgb(255, 255, 255)",
-  boxShadow:
-    " rgb(132, 133, 132) -1px -1px 0px 1px inset,rgb(224, 224, 224) 1px 1px 0px 1px inset",
+  borderColor: "rgb(255, 255, 255) rgb(10, 10, 10) rgb(10, 10, 10)rgb(255, 255, 255)",
+  boxShadow: " rgb(132, 133, 132) -1px -1px 0px 1px inset,rgb(224, 224, 224) 1px 1px 0px 1px inset",
   width: 32,
   height: 28,
   margin: 0,

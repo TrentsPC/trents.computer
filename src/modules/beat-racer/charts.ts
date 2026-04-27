@@ -264,7 +264,7 @@ function beatChart(chart: string): Note[] {
             ...n,
             beat: bar * beatsPerBar + n.beat * beatsPerLine,
           };
-        })
+        }),
       );
 
       bar++;

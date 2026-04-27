@@ -6,9 +6,7 @@ export type CreateThingOptions<ThingId extends string> = {
   getName: () => string;
 };
 
-export function createThing<ThingId extends string>(
-  thingOpts: CreateThingOptions<ThingId>
-) {
+export function createThing<ThingId extends string>(thingOpts: CreateThingOptions<ThingId>) {
   const thing: Thing<ThingId> = {
     id: thingOpts.id,
     getName: thingOpts.getName,
@@ -17,9 +15,7 @@ export function createThing<ThingId extends string>(
   return thing;
 }
 
-export function collectThings<ThingId extends string>(
-  things: Array<Thing<ThingId>>
-) {
+export function collectThings<ThingId extends string>(things: Array<Thing<ThingId>>) {
   return things.flat();
 }
 
@@ -28,9 +24,7 @@ export function thingIds(things: RegisteredThingIds[]) {
 }
 
 function randomInt(minInclusive: number, maxInclusive: number) {
-  return (
-    Math.floor(Math.random() * (maxInclusive - minInclusive + 1)) + minInclusive
-  );
+  return Math.floor(Math.random() * (maxInclusive - minInclusive + 1)) + minInclusive;
 }
 
 export function choose(strings: string[]) {
@@ -39,11 +33,7 @@ export function choose(strings: string[]) {
 
 const debugModeSignal = createSignal(true);
 
-export function repeatThings(
-  thing: RegisteredThingIds,
-  min: number,
-  max?: number
-) {
+export function repeatThings(thing: RegisteredThingIds, min: number, max?: number) {
   const [debugMode] = debugModeSignal;
   if (debugMode()) {
     min = min || 1;
@@ -55,7 +45,7 @@ export function repeatThings(
 }
 
 export function chooseThing(
-  things: RegisteredThingIds[] | RegisteredThingIds[][]
+  things: RegisteredThingIds[] | RegisteredThingIds[][],
 ): RegisteredThingIds | RegisteredThingIds[] {
   const [debugMode] = debugModeSignal;
   if (debugMode()) {
@@ -70,7 +60,7 @@ export function chooseThing(
 
 export function maybe(
   thing: RegisteredThingIds | RegisteredThingIds[],
-  chance: number
+  chance: number,
 ): RegisteredThingIds | RegisteredThingIds[] | undefined {
   const [debugMode] = debugModeSignal;
   if (debugMode()) {

@@ -45,8 +45,7 @@ export const fonts = {
   mono: '"Söhne Mono", Menlo, Monaco, "Courier New", monospace',
   systemSans:
     'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-  systemSerif:
-    'ui-serif, "New York", Georgia, Cambria, "Times New Roman", Times, serif',
+  systemSerif: 'ui-serif, "New York", Georgia, Cambria, "Times New Roman", Times, serif',
   systemMono:
     'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
 };

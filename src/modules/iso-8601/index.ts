@@ -21,9 +21,7 @@ export function getPossibleNextSegments(segmentType: DTNodeType): DTNodeType[] {
   }
 }
 
-export function getDefaultSegment<NodeType extends DTNodeType>(
-  segmentType: NodeType
-): DTNode {
+export function getDefaultSegment<NodeType extends DTNodeType>(segmentType: NodeType): DTNode {
   switch (segmentType) {
     case "root":
       return {

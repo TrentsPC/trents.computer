@@ -23,8 +23,8 @@ import { Measurable } from "../core/rect";
 const SIDE_OPTIONS = ["top", "right", "bottom", "left"] as const;
 const ALIGN_OPTIONS = ["start", "center", "end"] as const;
 
-type Side = typeof SIDE_OPTIONS[number];
-type Align = typeof ALIGN_OPTIONS[number];
+type Side = (typeof SIDE_OPTIONS)[number];
+type Align = (typeof ALIGN_OPTIONS)[number];
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
@@ -46,9 +46,7 @@ type PopoverContextValue = {
   modal: Accessor<boolean>;
 };
 
-const PopoverContext = createContext<PopoverContextValue>(
-  undefined as any as PopoverContextValue
-);
+const PopoverContext = createContext<PopoverContextValue>(undefined as any as PopoverContextValue);
 
 interface PopoverProps {
   children?: JSX.Element;
@@ -119,10 +117,7 @@ type PopoverTriggerProps = JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const DialogTrigger = (triggerProps: PopoverTriggerProps) => {
   const context = useContext(PopoverContext);
-  const composedTriggerRef = mergeRefs(
-    (el) => (context.triggerRef = el),
-    triggerProps.ref
-  );
+  const composedTriggerRef = mergeRefs((el) => (context.triggerRef = el), triggerProps.ref);
   return (
     <button
       type="button"
@@ -192,9 +187,7 @@ const PopoverClose = (props: PopoverCloseProps) => {
     <button
       type="button"
       {...props}
-      onClick={composeEventHandlers(props.onClick, () =>
-        context.onOpenChange(false)
-      )}
+      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
     />
   );
 };

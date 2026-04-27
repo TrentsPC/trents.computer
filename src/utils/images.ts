@@ -10,15 +10,11 @@ function getImageUrl(path: string) {
 }
 
 export function getResizedImageUrl(path: string, width: number) {
-  return `https://trents.computer/cdn-cgi/image/width=${width},quality=100/${getImageUrl(
-    path
-  )}`;
+  return `https://trents.computer/cdn-cgi/image/width=${width},quality=100/${getImageUrl(path)}`;
 }
 
 export function getImageJsonUrl(path: string) {
-  return `https://trents.computer/cdn-cgi/image/format=json/${getImageUrl(
-    path
-  )}`;
+  return `https://trents.computer/cdn-cgi/image/format=json/${getImageUrl(path)}`;
 }
 
 export async function uploadRecipeImage(file: File) {
@@ -39,11 +35,7 @@ export async function uploadRecipeImage(file: File) {
   return imageId;
 }
 
-async function updateImageDimensions(
-  imageId: number,
-  width: number,
-  height: number
-) {
+async function updateImageDimensions(imageId: number, width: number, height: number) {
   "use server";
   const db = await getRemoteDatabase();
   const driz = drizzle(db, {

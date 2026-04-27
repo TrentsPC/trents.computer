@@ -3,7 +3,7 @@ import { JSX } from "solid-js";
 function composeEventHandlers<T, E extends Event>(
   originalEventHandler?: JSX.EventHandlerUnion<T, E>,
   ourEventHandler?: JSX.EventHandler<T, E>,
-  { checkForDefaultPrevented = true } = {}
+  { checkForDefaultPrevented = true } = {},
 ) {
   return function handleEvent(event: E) {
     if (originalEventHandler) {
@@ -14,10 +14,7 @@ function composeEventHandlers<T, E extends Event>(
       }
     }
 
-    if (
-      checkForDefaultPrevented === false ||
-      !(event as unknown as Event).defaultPrevented
-    ) {
+    if (checkForDefaultPrevented === false || !(event as unknown as Event).defaultPrevented) {
       return ourEventHandler?.(event as any);
     }
   };

@@ -20,10 +20,7 @@ const listThingChildrenQuery = (thingId: string, path: Path) =>
       if (!thing) {
         return [];
       }
-      const childrenIds = thing
-        .getChildren()
-        .flat()
-        .filter(Boolean) as string[];
+      const childrenIds = thing.getChildren().flat().filter(Boolean) as string[];
 
       const children = childrenIds
         .map((id) => {
@@ -69,7 +66,7 @@ export function FinderWindow(props: MacOSWindowProps) {
   const canGoBack = () => historyStack().length > 1;
 
   const childrenQuery = createQuery(() =>
-    listThingChildrenQuery(currentHistory().id, currentHistory().path)
+    listThingChildrenQuery(currentHistory().id, currentHistory().path),
   );
 
   const { closeApplication } = useOSContext();
@@ -107,8 +104,7 @@ export function FinderWindow(props: MacOSWindowProps) {
           css={{
             w: 149,
             backgroundColor: "rgba(246, 246, 246, 0.84)",
-            backgroundImage:
-              "linear-gradient(to left, #0000000D, #00000000 5px)",
+            backgroundImage: "linear-gradient(to left, #0000000D, #00000000 5px)",
           }}
         >
           <FrameDragArea css={{ w: "100%", h: 20 + 12 + 20 }} />
@@ -172,9 +168,7 @@ function ThingButton(props: {
   thing: { id: string; name: string };
   path: Path;
 }) {
-  const query = createQuery(() =>
-    listThingChildrenQuery(props.thing.id, props.path)
-  );
+  const query = createQuery(() => listThingChildrenQuery(props.thing.id, props.path));
   const hasChildren = () => !!query.data && query.data?.length > 0;
   const icon = () => (hasChildren() ? folder : document);
 

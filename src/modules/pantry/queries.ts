@@ -1,10 +1,5 @@
 import { queryOptions } from "@tanstack/solid-query";
-import {
-  getRecipe,
-  getRecipeBook,
-  getRecipeBooks,
-  getRecipes,
-} from "./server/api";
+import { getRecipe, getRecipeBook, getRecipeBooks, getRecipes } from "./server/api";
 
 export const recipeBooksQuery = queryOptions({
   queryKey: ["recipes", "books", "list"],

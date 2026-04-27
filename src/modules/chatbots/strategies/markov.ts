@@ -16,9 +16,7 @@ function trainMarkovModel(data: string) {
   const record: MarkovRecord = {};
 
   for (let dataset of datasets) {
-    let words = dataset
-      .replaceAll(/\s*\n+\s*/g, " " + LINE_BREAK + " ")
-      .split(/\s+/g);
+    let words = dataset.replaceAll(/\s*\n+\s*/g, " " + LINE_BREAK + " ").split(/\s+/g);
     words = [START_TOKEN, ...words, END_TOKEN];
 
     for (let i = 0; i < words.length - 1; i++) {

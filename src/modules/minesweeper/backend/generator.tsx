@@ -9,10 +9,7 @@ function cloneMinefield(minefield: Minefield): Minefield {
   };
 }
 
-function hideCluesUntilBarelySolvable(
-  minefield: Minefield,
-  difficulty: number,
-) {
+function hideCluesUntilBarelySolvable(minefield: Minefield, difficulty: number) {
   let unsolvable = false;
   let loops = 0;
 
@@ -37,10 +34,7 @@ function hideCluesUntilBarelySolvable(
   return minefield;
 }
 
-function removeCluesUntilBarelySolvable(
-  minefield: Minefield,
-  difficulty: number,
-) {
+function removeCluesUntilBarelySolvable(minefield: Minefield, difficulty: number) {
   let unsolvable = false;
   const { width, height } = minefield;
   let loops = 0;
@@ -141,9 +135,7 @@ export function generateMinefield({
     grid[y][x] = CellClue.Mine;
     minesSoFar++;
   }
-  const solveState = grid.map((row) =>
-    row.map((v) => (v === CellClue.Mine ? undefined : false)),
-  );
+  const solveState = grid.map((row) => row.map((v) => (v === CellClue.Mine ? undefined : false)));
   let baseMinefield: Minefield = {
     cellClues: grid,
     grid: gridType,
@@ -185,10 +177,7 @@ export function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
 
   for (let n = 1; n <= 10; n++) {
     const randomMinefield = generateMinefield(opts);
-    const simpleAttempt = solveMinefield(
-      cloneMinefield(randomMinefield),
-      simpleSolverDifficulty,
-    );
+    const simpleAttempt = solveMinefield(cloneMinefield(randomMinefield), simpleSolverDifficulty);
     if (!isSolved(simpleAttempt)) {
       return randomMinefield;
     }

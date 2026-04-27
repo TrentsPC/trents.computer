@@ -28,27 +28,18 @@ export function addDefaultShortcuts(actions: Action[]): Action[] {
   return next;
 }
 
-export function findIntendedAction(
-  e: KeyboardEvent,
-  actions: Action[]
-): Action | undefined {
-  return actions.find(
-    (action) => action.shortcut && isShortcutPressed(e, action.shortcut)
-  );
+export function findIntendedAction(e: KeyboardEvent, actions: Action[]): Action | undefined {
+  return actions.find((action) => action.shortcut && isShortcutPressed(e, action.shortcut));
 }
 
 export const IS_MAC =
-  typeof window != "undefined" &&
-  /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
+  typeof window != "undefined" && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
 
 export function isShortcutPressed(event: KeyboardEvent, shortcut: Shortcut) {
   if (event.key !== shortcut.key) return false;
   const modifiers: Modifier[] = ["mod", "shift", "option"];
   for (const modifier of modifiers) {
-    if (
-      shortcut.modifiers.includes(modifier) !==
-      isModifierPressed(event, modifier)
-    ) {
+    if (shortcut.modifiers.includes(modifier) !== isModifierPressed(event, modifier)) {
       return false;
     }
   }

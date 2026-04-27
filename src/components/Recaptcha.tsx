@@ -16,20 +16,14 @@ export function Recaptcha() {
             <LogoText>reCAPTCHA</LogoText>
           </LogoPortrait>
           <AnchorPT>
-            <a
-              href="https://www.google.com/intl/en/policies/privacy/"
-              target="_blank"
-            >
+            <a href="https://www.google.com/intl/en/policies/privacy/" target="_blank">
               Privacy
             </a>
             <span aria-hidden="true" role="presentation">
               {" "}
               -{" "}
             </span>
-            <a
-              href="https://www.google.com/intl/en/policies/terms/"
-              target="_blank"
-            >
+            <a href="https://www.google.com/intl/en/policies/terms/" target="_blank">
               Terms
             </a>
           </AnchorPT>
@@ -140,12 +134,7 @@ function Square() {
   });
   return (
     <div style={{ position: "relative" }}>
-      <canvas
-        ref={canvas}
-        width="50"
-        height="50"
-        style={{ width: "100%", height: "100%" }}
-      />
+      <canvas ref={canvas} width="50" height="50" style={{ width: "100%", height: "100%" }} />
     </div>
   );
 }

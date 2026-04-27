@@ -7,7 +7,7 @@ import { customAlphabet } from "~/utils/nanoid";
 
 const randomImageId = customAlphabet(
   "1234567890abcdefhiklmnorstuvwxzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  10
+  10,
 );
 
 export async function POST(event: APIEvent) {

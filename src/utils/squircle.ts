@@ -21,15 +21,9 @@ export function createSquircle(ref: HTMLElement) {
         height: rect.height,
         topRightCornerRadius: getPixelValue(styles, "border-top-right-radius"),
         topLeftCornerRadius: getPixelValue(styles, "border-top-left-radius"),
-        bottomRightCornerRadius: getPixelValue(
-          styles,
-          "border-bottom-right-radius"
-        ),
-        bottomLeftCornerRadius: getPixelValue(
-          styles,
-          "border-bottom-left-radius"
-        ),
-      })}")`
+        bottomRightCornerRadius: getPixelValue(styles, "border-bottom-right-radius"),
+        bottomLeftCornerRadius: getPixelValue(styles, "border-bottom-left-radius"),
+      })}")`,
     );
     ref.style.setProperty("overflow", "hidden");
   };

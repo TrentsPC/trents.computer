@@ -1,11 +1,4 @@
-import {
-  Accessor,
-  createEffect,
-  createSignal,
-  onCleanup,
-  onMount,
-  untrack,
-} from "solid-js";
+import { Accessor, createEffect, createSignal, onCleanup, onMount, untrack } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Chart } from "./types";
 import { createAudio } from "./createAudio";
@@ -39,10 +32,7 @@ const MINUTE_IN_MILLIS = 1000 * 60;
 const SLOP_BEATS = 0.125;
 const GLOBAL_OFFSET = -50;
 
-export function createBeatRacer({
-  column,
-  gridSize,
-}: BeatRacerOptions): BeatRacer {
+export function createBeatRacer({ column, gridSize }: BeatRacerOptions): BeatRacer {
   const [status, setStatus] = createSignal<RacerStatus>("idle");
   const [chart, setChart] = createStore(GIRLS);
   const [startTime, setStartTime] = createSignal<number | undefined>();
@@ -54,10 +44,7 @@ export function createBeatRacer({
     if (status() !== "playing") {
       return 0;
     }
-    return (
-      chart.bpm *
-      ((currentTime() - (chart.offset || 0) - GLOBAL_OFFSET) / MINUTE_IN_MILLIS)
-    );
+    return chart.bpm * ((currentTime() - (chart.offset || 0) - GLOBAL_OFFSET) / MINUTE_IN_MILLIS);
   };
 
   const notes: BeatRacer["notes"] = chart.notes.map((note) => ({

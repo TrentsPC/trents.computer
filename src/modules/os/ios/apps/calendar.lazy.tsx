@@ -39,14 +39,10 @@ function YearView(props: { cursor: Date }) {
         flexDirection: "column",
       }}
     >
-      <LargeTitle css={{ fontWeight: 700 }}>
-        {props.cursor.getFullYear()}
-      </LargeTitle>
+      <LargeTitle css={{ fontWeight: 700 }}>{props.cursor.getFullYear()}</LargeTitle>
       <div css={{ display: "grid", gridCols: 3, flex: "1 0 0px", gap: 10 }}>
         <For each={months}>
-          {(month) => (
-            <Month cursor={new Date(props.cursor.getFullYear(), month)} />
-          )}
+          {(month) => <Month cursor={new Date(props.cursor.getFullYear(), month)} />}
         </For>
       </div>
     </div>
@@ -164,9 +160,7 @@ function MonthView(props: { cursor: Date }) {
             setView("year");
           }}
         >
-          <LargeTitle css={{ fontWeight: 700 }}>
-            {LONG_MONTH_NAMES[idx()]}
-          </LargeTitle>
+          <LargeTitle css={{ fontWeight: 700 }}>{LONG_MONTH_NAMES[idx()]}</LargeTitle>
         </div>
         <div
           css={{
@@ -182,8 +176,7 @@ function MonthView(props: { cursor: Date }) {
             <div></div>
           ))}
           {dates().map((date) => {
-            const events = () =>
-              CALENDAR_EVENTS.filter((event) => sameDate(event.date, date));
+            const events = () => CALENDAR_EVENTS.filter((event) => sameDate(event.date, date));
             return (
               <div css={{ boxShadow: `inset 0 1px ${colors.gray5}` }}>
                 {date.getDate()}

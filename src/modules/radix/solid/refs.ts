@@ -22,7 +22,7 @@
  */
 export function mergeRefs<T extends Element>(
   setRef: (el: T) => void,
-  propsRef: T | ((el: T) => void) | undefined
+  propsRef: T | ((el: T) => void) | undefined,
 ): (el: T) => void {
   return (el) => {
     setRef(el);

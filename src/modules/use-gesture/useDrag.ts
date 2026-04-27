@@ -1,9 +1,5 @@
 import { dragAction, registerAction } from "@use-gesture/core/actions";
-import type {
-  EventTypes,
-  Handler,
-  UserDragConfig,
-} from "@use-gesture/core/types";
+import type { EventTypes, Handler, UserDragConfig } from "@use-gesture/core/types";
 import { useRecognizers } from "./useRecognizers";
 
 /**
@@ -14,7 +10,7 @@ import { useRecognizers } from "./useRecognizers";
  */
 export function useDrag<
   EventType = EventTypes["drag"],
-  Config extends UserDragConfig = UserDragConfig
+  Config extends UserDragConfig = UserDragConfig,
 >(handler: Handler<"drag", EventType>, config?: Config) {
   registerAction(dragAction);
   return useRecognizers({ drag: handler }, config || {}, "drag");

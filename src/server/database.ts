@@ -1,8 +1,4 @@
-import {
-  D1Database,
-  D1ExecResult,
-  D1PreparedStatement,
-} from "@cloudflare/workers-types";
+import { D1Database, D1ExecResult, D1PreparedStatement } from "@cloudflare/workers-types";
 import { ofetch } from "ofetch";
 import type { H3Error } from "vinxi/http";
 import { getCloudflareEnv } from "./cloudflare";

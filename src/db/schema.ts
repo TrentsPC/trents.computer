@@ -51,17 +51,14 @@ export const recipeSections = sqliteTable("recipe_sections", {
   sequence: int().notNull(),
 });
 
-export const recipeSectionsRelations = relations(
-  recipeSections,
-  ({ one, many }) => ({
-    recipe: one(recipes, {
-      fields: [recipeSections.recipe_id],
-      references: [recipes.id],
-    }),
-    ingredientGroups: many(ingredientGroups),
-    steps: many(steps),
-  })
-);
+export const recipeSectionsRelations = relations(recipeSections, ({ one, many }) => ({
+  recipe: one(recipes, {
+    fields: [recipeSections.recipe_id],
+    references: [recipes.id],
+  }),
+  ingredientGroups: many(ingredientGroups),
+  steps: many(steps),
+}));
 
 export const ingredientGroups = sqliteTable("recipe_ingredient_groups", {
   id: int().primaryKey({ autoIncrement: true }),
@@ -70,16 +67,13 @@ export const ingredientGroups = sqliteTable("recipe_ingredient_groups", {
   sequence: int().notNull(),
 });
 
-export const ingredientGroupsRelations = relations(
-  ingredientGroups,
-  ({ one, many }) => ({
-    recipeSection: one(recipeSections, {
-      fields: [ingredientGroups.recipe_section_id],
-      references: [recipeSections.id],
-    }),
-    ingredients: many(ingredients),
-  })
-);
+export const ingredientGroupsRelations = relations(ingredientGroups, ({ one, many }) => ({
+  recipeSection: one(recipeSections, {
+    fields: [ingredientGroups.recipe_section_id],
+    references: [recipeSections.id],
+  }),
+  ingredients: many(ingredients),
+}));
 
 export const ingredients = sqliteTable("recipe_ingredients", {
   id: int().primaryKey({ autoIncrement: true }),

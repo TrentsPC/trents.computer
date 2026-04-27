@@ -1,19 +1,8 @@
 import { styled } from "@hypergood/css";
 import { createFileRoute } from "@tanstack/solid-router";
-import {
-  Component,
-  createEffect,
-  createSignal,
-  For,
-  onCleanup,
-  Show,
-} from "solid-js";
+import { Component, createEffect, createSignal, For, onCleanup, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import {
-  getDefaultSegment,
-  getPossibleNextSegments,
-  getSegmentName,
-} from "~/modules/iso-8601";
+import { getDefaultSegment, getPossibleNextSegments, getSegmentName } from "~/modules/iso-8601";
 import { describeDTRoot } from "~/modules/iso-8601/describers";
 import { formatDTNode } from "~/modules/iso-8601/formatters";
 import {
@@ -100,10 +89,7 @@ function BigText(props: { children: string }) {
   );
 }
 
-function RootEditor(props: {
-  value: DTRoot;
-  onValueChange: (value: DTRoot) => void;
-}) {
+function RootEditor(props: { value: DTRoot; onValueChange: (value: DTRoot) => void }) {
   return (
     <>
       <Column>
@@ -139,10 +125,7 @@ function NextSegmentSelector(props: {
 }) {
   const nextSegments = () => getPossibleNextSegments(props.thisSegment);
   return (
-    <Show
-      when={nextSegments().length > 0}
-      fallback={<div>No more segments</div>}
-    >
+    <Show when={nextSegments().length > 0} fallback={<div>No more segments</div>}>
       <select
         value={props.nextSegment}
         onChange={(e) => {
@@ -156,9 +139,7 @@ function NextSegmentSelector(props: {
         </option>
         <option value="">None</option>
         <For each={nextSegments()}>
-          {(segmentType) => (
-            <option value={segmentType}>{getSegmentName(segmentType)}</option>
-          )}
+          {(segmentType) => <option value={segmentType}>{getSegmentName(segmentType)}</option>}
         </For>
       </select>
     </Show>
@@ -332,10 +313,7 @@ function DecadeEditor(props: NodeEditorProps<DTDecade>) {
   );
 }
 
-function YearEditor(props: {
-  value: DTYear;
-  onValueChange: (value: DTYear) => void;
-}) {
+function YearEditor(props: { value: DTYear; onValueChange: (value: DTYear) => void }) {
   return (
     <>
       <Column>
@@ -549,10 +527,7 @@ function DayOfMonthEditor(props: {
   );
 }
 
-function HourEditor(props: {
-  value: DTHour;
-  onValueChange: (value: DTHour) => void;
-}) {
+function HourEditor(props: { value: DTHour; onValueChange: (value: DTHour) => void }) {
   return (
     <>
       <Column>

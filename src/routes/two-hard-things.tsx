@@ -51,9 +51,7 @@ type Names = Record<string, Array<NamingAuthority>>;
 
 function Page() {
   return (
-    <div
-      css={{ spaceY: 64, py: 64, width: "100%", mx: "auto", maxW: 500, px: 16 }}
-    >
+    <div css={{ spaceY: 64, py: 64, width: "100%", mx: "auto", maxW: 500, px: 16 }}>
       <h1>Two hard things</h1>
 
       <NameBox

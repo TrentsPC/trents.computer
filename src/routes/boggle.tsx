@@ -10,13 +10,11 @@ export const Route = createFileRoute("/boggle")({
       object({
         board: fallback(optional(string()), undefined),
       }),
-      params
+      params,
     ),
 });
 
-const Thing = clientOnly(() =>
-  import("~/modules/boggle").then((m) => ({ default: m.BoggleGame }))
-);
+const Thing = clientOnly(() => import("~/modules/boggle").then((m) => ({ default: m.BoggleGame })));
 
 function Page() {
   const [words, setWords] = createSignal<string[]>([]);
@@ -39,11 +37,7 @@ function Page() {
   return (
     <>
       {/* <Title>Boogle</Title> */}
-      {words().length ? (
-        <Thing dictionary={words()} />
-      ) : (
-        <p>loading dictionary</p>
-      )}
+      {words().length ? <Thing dictionary={words()} /> : <p>loading dictionary</p>}
     </>
   );
 }

@@ -67,7 +67,7 @@ export class Cam16 {
     readonly s: number,
     readonly jstar: number,
     readonly astar: number,
-    readonly bstar: number
+    readonly bstar: number,
   ) {}
 
   /**
@@ -99,10 +99,7 @@ export class Cam16 {
    *     was observed.
    * @return CAM16 color.
    */
-  static fromIntInViewingConditions(
-    argb: number,
-    viewingConditions: ViewingConditions
-  ): Cam16 {
+  static fromIntInViewingConditions(argb: number, viewingConditions: ViewingConditions): Cam16 {
     const red = (argb & 0x00ff0000) >> 16;
     const green = (argb & 0x0000ff00) >> 8;
     const blue = argb & 0x000000ff;
@@ -139,17 +136,13 @@ export class Cam16 {
       atanDegrees < 0
         ? atanDegrees + 360.0
         : atanDegrees >= 360
-        ? atanDegrees - 360.0
-        : atanDegrees;
+          ? atanDegrees - 360.0
+          : atanDegrees;
     const hueRadians = (hue * Math.PI) / 180.0;
 
     const ac = p2 * viewingConditions.nbb;
     const j =
-      100.0 *
-      Math.pow(
-        ac / viewingConditions.aw,
-        viewingConditions.c * viewingConditions.z
-      );
+      100.0 * Math.pow(ac / viewingConditions.aw, viewingConditions.c * viewingConditions.z);
     const q =
       (4.0 / viewingConditions.c) *
       Math.sqrt(j / 100.0) *
@@ -157,17 +150,12 @@ export class Cam16 {
       viewingConditions.fLRoot;
     const huePrime = hue < 20.14 ? hue + 360 : hue;
     const eHue = 0.25 * (Math.cos((huePrime * Math.PI) / 180.0 + 2.0) + 3.8);
-    const p1 =
-      (50000.0 / 13.0) * eHue * viewingConditions.nc * viewingConditions.ncb;
+    const p1 = (50000.0 / 13.0) * eHue * viewingConditions.nc * viewingConditions.ncb;
     const t = (p1 * Math.sqrt(a * a + b * b)) / (u + 0.305);
-    const alpha =
-      Math.pow(t, 0.9) *
-      Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73);
+    const alpha = Math.pow(t, 0.9) * Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73);
     const c = alpha * Math.sqrt(j / 100.0);
     const m = c * viewingConditions.fLRoot;
-    const s =
-      50.0 *
-      Math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0));
+    const s = 50.0 * Math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0));
     const jstar = ((1.0 + 100.0 * 0.007) * j) / (1.0 + 0.007 * j);
     const mstar = (1.0 / 0.0228) * Math.log(1.0 + 0.0228 * m);
     const astar = mstar * Math.cos(hueRadians);
@@ -196,7 +184,7 @@ export class Cam16 {
     j: number,
     c: number,
     h: number,
-    viewingConditions: ViewingConditions
+    viewingConditions: ViewingConditions,
   ): Cam16 {
     const q =
       (4.0 / viewingConditions.c) *
@@ -205,9 +193,7 @@ export class Cam16 {
       viewingConditions.fLRoot;
     const m = c * viewingConditions.fLRoot;
     const alpha = c / Math.sqrt(j / 100.0);
-    const s =
-      50.0 *
-      Math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0));
+    const s = 50.0 * Math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0));
     const hueRadians = (h * Math.PI) / 180.0;
     const jstar = ((1.0 + 100.0 * 0.007) * j) / (1.0 + 0.007 * j);
     const mstar = (1.0 / 0.0228) * Math.log(1.0 + 0.0228 * m);
@@ -224,12 +210,7 @@ export class Cam16 {
    *     coordinate on the X axis.
    */
   static fromUcs(jstar: number, astar: number, bstar: number): Cam16 {
-    return Cam16.fromUcsInViewingConditions(
-      jstar,
-      astar,
-      bstar,
-      ViewingConditions.DEFAULT
-    );
+    return Cam16.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.DEFAULT);
   }
 
   /**
@@ -245,7 +226,7 @@ export class Cam16 {
     jstar: number,
     astar: number,
     bstar: number,
-    viewingConditions: ViewingConditions
+    viewingConditions: ViewingConditions,
   ): Cam16 {
     const a = astar;
     const b = bstar;
@@ -276,13 +257,11 @@ export class Cam16 {
    */
   viewed(viewingConditions: ViewingConditions): number {
     const alpha =
-      this.chroma === 0.0 || this.j === 0.0
-        ? 0.0
-        : this.chroma / Math.sqrt(this.j / 100.0);
+      this.chroma === 0.0 || this.j === 0.0 ? 0.0 : this.chroma / Math.sqrt(this.j / 100.0);
 
     const t = Math.pow(
       alpha / Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73),
-      1.0 / 0.9
+      1.0 / 0.9,
     );
     const hRad = (this.hue * Math.PI) / 180.0;
 
@@ -290,16 +269,13 @@ export class Cam16 {
     const ac =
       viewingConditions.aw *
       Math.pow(this.j / 100.0, 1.0 / viewingConditions.c / viewingConditions.z);
-    const p1 =
-      eHue * (50000.0 / 13.0) * viewingConditions.nc * viewingConditions.ncb;
+    const p1 = eHue * (50000.0 / 13.0) * viewingConditions.nc * viewingConditions.ncb;
     const p2 = ac / viewingConditions.nbb;
 
     const hSin = Math.sin(hRad);
     const hCos = Math.cos(hRad);
 
-    const gamma =
-      (23.0 * (p2 + 0.305) * t) /
-      (23.0 * p1 + 11.0 * t * hCos + 108.0 * t * hSin);
+    const gamma = (23.0 * (p2 + 0.305) * t) / (23.0 * p1 + 11.0 * t * hCos + 108.0 * t * hSin);
     const a = gamma * hCos;
     const b = gamma * hSin;
     const rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0;
@@ -307,20 +283,11 @@ export class Cam16 {
     const bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0;
 
     const rCBase = Math.max(0, (27.13 * Math.abs(rA)) / (400.0 - Math.abs(rA)));
-    const rC =
-      math.signum(rA) *
-      (100.0 / viewingConditions.fl) *
-      Math.pow(rCBase, 1.0 / 0.42);
+    const rC = math.signum(rA) * (100.0 / viewingConditions.fl) * Math.pow(rCBase, 1.0 / 0.42);
     const gCBase = Math.max(0, (27.13 * Math.abs(gA)) / (400.0 - Math.abs(gA)));
-    const gC =
-      math.signum(gA) *
-      (100.0 / viewingConditions.fl) *
-      Math.pow(gCBase, 1.0 / 0.42);
+    const gC = math.signum(gA) * (100.0 / viewingConditions.fl) * Math.pow(gCBase, 1.0 / 0.42);
     const bCBase = Math.max(0, (27.13 * Math.abs(bA)) / (400.0 - Math.abs(bA)));
-    const bC =
-      math.signum(bA) *
-      (100.0 / viewingConditions.fl) *
-      Math.pow(bCBase, 1.0 / 0.42);
+    const bC = math.signum(bA) * (100.0 / viewingConditions.fl) * Math.pow(bCBase, 1.0 / 0.42);
     const rF = rC / viewingConditions.rgbD[0];
     const gF = gC / viewingConditions.rgbD[1];
     const bF = bC / viewingConditions.rgbD[2];

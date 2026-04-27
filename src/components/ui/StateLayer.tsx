@@ -73,8 +73,7 @@ export function StateLayer(props: JSX.HTMLAttributes<HTMLSpanElement>) {
           width: "200%",
           pt: "200%",
           margin: 0,
-          background:
-            "radial-gradient(circle closest-side at center, currentColor, transparent)",
+          background: "radial-gradient(circle closest-side at center, currentColor, transparent)",
 
           opacity: 0.5,
           pointerEvents: "none",

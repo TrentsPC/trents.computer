@@ -16,9 +16,7 @@ function Page() {
   const currentOMoves = createMemo(() => oMoves().slice(-3));
 
   const board = createMemo(() => {
-    const emptyBoard = Array.from({ length: 9 }).fill("") as Array<
-      "" | "x" | "o"
-    >;
+    const emptyBoard = Array.from({ length: 9 }).fill("") as Array<"" | "x" | "o">;
 
     for (const move of currentXMoves()) {
       emptyBoard[move] = "x";

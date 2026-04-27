@@ -1,11 +1,4 @@
-import {
-  createContext,
-  createMemo,
-  createSignal,
-  JSX,
-  onCleanup,
-  useContext,
-} from "solid-js";
+import { createContext, createMemo, createSignal, JSX, onCleanup, useContext } from "solid-js";
 
 export type MenuBarItem = {
   label: string;
@@ -27,10 +20,7 @@ export type OSContextValue = {
   bringToFront: (applicationId: string) => void;
 
   menuBar: () => MenuBarMenu[];
-  registerMenuBar: (
-    applicationId: string,
-    menuBar: () => MenuBarMenu[]
-  ) => Destructor;
+  registerMenuBar: (applicationId: string, menuBar: () => MenuBarMenu[]) => Destructor;
 };
 
 export const OSContext = createContext<OSContextValue>({
@@ -46,12 +36,8 @@ export const OSContext = createContext<OSContextValue>({
 export const useOSContext = () => useContext(OSContext);
 
 export function OSContextProvider(props: { children: JSX.Element }) {
-  const [openApplicationIds, setOpenApplicationIds] = createSignal<string[]>(
-    []
-  );
-  const [menuBarMap, setMenuBarMap] = createSignal<
-    Map<string, () => MenuBarMenu[]>
-  >(new Map());
+  const [openApplicationIds, setOpenApplicationIds] = createSignal<string[]>([]);
+  const [menuBarMap, setMenuBarMap] = createSignal<Map<string, () => MenuBarMenu[]>>(new Map());
 
   const menuBar = createMemo(() => {
     const ids = openApplicationIds();
@@ -74,17 +60,15 @@ export function OSContextProvider(props: { children: JSX.Element }) {
         openedApplicationIds: openApplicationIds,
         openApplication: (applicationId) => {
           setOpenApplicationIds((ids) =>
-            ids.filter((id) => id !== applicationId).concat(applicationId)
+            ids.filter((id) => id !== applicationId).concat(applicationId),
           );
         },
         closeApplication: (applicationId) => {
-          setOpenApplicationIds((ids) =>
-            ids.filter((id) => id !== applicationId)
-          );
+          setOpenApplicationIds((ids) => ids.filter((id) => id !== applicationId));
         },
         bringToFront: (applicationId) => {
           setOpenApplicationIds((ids) =>
-            ids.filter((id) => id !== applicationId).concat(applicationId)
+            ids.filter((id) => id !== applicationId).concat(applicationId),
           );
         },
 
@@ -110,10 +94,7 @@ export function OSContextProvider(props: { children: JSX.Element }) {
   );
 }
 
-export function useMenuBar(
-  applicationId: string,
-  menuBar: () => MenuBarMenu[]
-) {
+export function useMenuBar(applicationId: string, menuBar: () => MenuBarMenu[]) {
   const { registerMenuBar } = useContext(OSContext);
   const cleanup = registerMenuBar(applicationId, menuBar);
   onCleanup(cleanup);

@@ -30,14 +30,14 @@ export async function POST({ request, nativeEvent }: APIEvent) {
         await db
           .prepare(query)
           .bind(...params)
-          .first(colName)
+          .first(colName),
       );
     }
     return json(
       await db
         .prepare(query)
         .bind(...params)
-        .first()
+        .first(),
     );
   }
 
@@ -46,8 +46,8 @@ export async function POST({ request, nativeEvent }: APIEvent) {
     return json(
       await db.batch(
         // @ts-expect-error overload on command
-        statements.map((stmt) => db.prepare(stmt.query).bind(...stmt.params))
-      )
+        statements.map((stmt) => db.prepare(stmt.query).bind(...stmt.params)),
+      ),
     );
   }
 
@@ -58,7 +58,7 @@ export async function POST({ request, nativeEvent }: APIEvent) {
       await db
         .prepare(query)
         .bind(...params)
-        .raw({ columnNames })
+        .raw({ columnNames }),
     );
   }
 
@@ -69,6 +69,6 @@ export async function POST({ request, nativeEvent }: APIEvent) {
     await db
       .prepare(query)
       .bind(...params)
-      [command]()
+      [command](),
   );
 }

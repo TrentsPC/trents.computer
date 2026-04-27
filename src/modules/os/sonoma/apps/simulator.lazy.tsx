@@ -5,10 +5,7 @@ import { FrameContextType } from "~/modules/desktop-environment/frame";
 import { createGameBoy } from "~/modules/game-boy/gameBoy";
 import "~/modules/zork";
 import { useSquircle } from "~/utils/squircle";
-import {
-  MacOSWindowProps,
-  TrafficLights,
-} from "../../base-windows/MacOSWindow";
+import { MacOSWindowProps, TrafficLights } from "../../base-windows/MacOSWindow";
 import { OSContext, useMenuBar } from "../provider";
 
 const TOOLBAR_HEIGHT = 52;
@@ -42,8 +39,7 @@ const DEVICES: Device[] = [IPHONE, GAME_BOY];
 export function SimulatorWindow(props: MacOSWindowProps) {
   const { closeApplication } = useContext(OSContext);
   const [activeDeviceId, setActiveDeviceId] = createSignal("iphone-16");
-  const activeDevice = () =>
-    DEVICES.find((device) => device.id === activeDeviceId())!;
+  const activeDevice = () => DEVICES.find((device) => device.id === activeDeviceId())!;
   const ActiveDeviceComponent = () => activeDevice().component;
   let ref: FrameContextType;
 

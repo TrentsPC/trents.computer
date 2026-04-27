@@ -26,9 +26,7 @@ function Page() {
             >
               <img
                 src={
-                  book.image?.storage_path
-                    ? getResizedImageUrl(book.image?.storage_path, 320)
-                    : ""
+                  book.image?.storage_path ? getResizedImageUrl(book.image?.storage_path, 320) : ""
                 }
               />
               {book.title}

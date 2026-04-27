@@ -54,7 +54,5 @@ export function truncate(rect: Rect) {
 }
 
 export function equals(a: Rect, b: Rect) {
-  return (
-    a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
-  );
+  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 }

@@ -30,9 +30,7 @@ type DialogContextValue = {
   modal: Accessor<boolean>;
 };
 
-const DialogContext = createContext<DialogContextValue>(
-  undefined as any as DialogContextValue
-);
+const DialogContext = createContext<DialogContextValue>(undefined as any as DialogContextValue);
 
 interface DialogProps {
   children?: JSX.Element;
@@ -78,10 +76,7 @@ type DialogTriggerProps = JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const DialogTrigger = (triggerProps: DialogTriggerProps) => {
   const context = useContext(DialogContext);
-  const composedTriggerRef = mergeRefs(
-    (el) => (context.triggerRef = el),
-    triggerProps.ref
-  );
+  const composedTriggerRef = mergeRefs((el) => (context.triggerRef = el), triggerProps.ref);
   return (
     <button
       type="button"
@@ -125,9 +120,7 @@ const DialogOverlay = (props: DialogOverlayProps) => {
   const overlayProps = props;
   const context = useContext(DialogContext);
   const style =
-    overlayProps.style && typeof overlayProps.style === "object"
-      ? overlayProps.style
-      : {};
+    overlayProps.style && typeof overlayProps.style === "object" ? overlayProps.style : {};
   return (
     <Presence visible={context.open()}>
       <div
@@ -198,8 +191,7 @@ type DialogContentImplElement = HTMLDivElement;
 type DismissableLayerProps = JSX.HTMLAttributes<DialogContentElement>;
 type FocusScopeProps = JSX.HTMLAttributes<HTMLDivElement>;
 
-interface DialogContentImplProps
-  extends Omit<DismissableLayerProps, "onDismiss"> {
+interface DialogContentImplProps extends Omit<DismissableLayerProps, "onDismiss"> {
   // /**
   //  * When `true`, focus cannot escape the `Content` via keyboard,
   //  * pointer, or a programmatic focus.
@@ -292,9 +284,7 @@ const DialogClose = (props: DialogCloseProps) => {
     <button
       type="button"
       {...props}
-      onClick={composeEventHandlers(props.onClick, () =>
-        context.onOpenChange(false)
-      )}
+      onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
     />
   );
 };

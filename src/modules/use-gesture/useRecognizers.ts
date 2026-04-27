@@ -8,11 +8,10 @@ import type {
 import { onCleanup, onMount } from "solid-js";
 import type { SolidDOMAttributes } from "./types";
 
-type HookReturnType<Config extends GenericOptions> =
-  Config["target"] extends object
-    ? void
-    : // eslint-disable-next-line no-unused-vars
-      (...args: any[]) => SolidDOMAttributes;
+type HookReturnType<Config extends GenericOptions> = Config["target"] extends object
+  ? void
+  : // eslint-disable-next-line no-unused-vars
+    (...args: any[]) => SolidDOMAttributes;
 
 /**
  * Utility hook called by all gesture hooks and that will be responsible for
@@ -28,7 +27,7 @@ export function useRecognizers<Config extends GenericOptions>(
   handlers: InternalHandlers,
   config: Config | {} = {},
   gestureKey?: GestureKey,
-  nativeHandlers?: NativeHandlers
+  nativeHandlers?: NativeHandlers,
 ): HookReturnType<Config> {
   const ctrl = new Controller(handlers);
   ctrl.applyHandlers(handlers, nativeHandlers);

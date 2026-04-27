@@ -126,9 +126,7 @@ export function buildTTF(fontData: FontData) {
     };
   }
 
-  const sorted = Object.values(fontData.glyphs).sort(
-    (a: any, b: any) => a.codePoint - b.codePoint,
-  );
+  const sorted = Object.values(fontData.glyphs).sort((a: any, b: any) => a.codePoint - b.codePoint);
   /**
    * notdef width
    */
@@ -352,9 +350,7 @@ export function buildTTF(fontData: FontData) {
   maxpB.u16(0);
 
   // OS/2 (96 bytes, version 4)
-  const avgW = Math.round(
-    grecs.slice(1).reduce((s, g) => s + g.advW, 0) / Math.max(1, N - 1),
-  );
+  const avgW = Math.round(grecs.slice(1).reduce((s, g) => s + g.advW, 0) / Math.max(1, N - 1));
   const asc = sc(ascender),
     desc = sc(descender);
   const xH = sc(fontData.metrics.xHeight),
@@ -412,10 +408,7 @@ export function buildTTF(fontData: FontData) {
 
   // name
   const fName = fontData.meta.name || "Untitled";
-  const psName = (fName.replace(/[^A-Za-z0-9]/g, "") || "Untitled").slice(
-    0,
-    63,
-  );
+  const psName = (fName.replace(/[^A-Za-z0-9]/g, "") || "Untitled").slice(0, 63);
   const nRecs = [
     { id: 1, s: fName },
     { id: 2, s: "Regular" },
@@ -515,8 +508,7 @@ export function buildTTF(fontData: FontData) {
 
   // Fix checkSumAdjustment in head
   let fs = 0;
-  for (let i = 0; i < out.length; i += 4)
-    fs = (fs + dv.getUint32(i, false)) >>> 0;
+  for (let i = 0; i < out.length; i += 4) fs = (fs + dv.getUint32(i, false)) >>> 0;
   dv.setUint32(tOfs["head"] + 8, (0xb1b0afba - fs) >>> 0, false);
 
   return out.buffer;

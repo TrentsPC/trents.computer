@@ -10,10 +10,8 @@ const CHARSET =
   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const DW = 7,
   DH = 12;
-const cpKey = (cp: any) =>
-  `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
-const emptyBm = (w: any, h: any) =>
-  Array.from({ length: h }, () => Array(w).fill(0));
+const cpKey = (cp: any) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
+const emptyBm = (w: any, h: any) => Array.from({ length: h }, () => Array(w).fill(0));
 
 function makeFont() {
   const glyphs: any = {};
@@ -170,9 +168,7 @@ function buildTTF(fontData: any) {
     };
   }
 
-  const sorted = Object.values(fontData.glyphs).sort(
-    (a: any, b: any) => a.codePoint - b.codePoint,
-  );
+  const sorted = Object.values(fontData.glyphs).sort((a: any, b: any) => a.codePoint - b.codePoint);
   const nW = sc(fontData.metrics.defaultAdvanceWidth);
   // .notdef: solid rectangle
   const notdefRec = serGlyph([
@@ -324,9 +320,7 @@ function buildTTF(fontData: any) {
   maxpB.u16(0);
 
   // OS/2 (96 bytes, version 4)
-  const avgW = Math.round(
-    grecs.slice(1).reduce((s, g) => s + g.advW, 0) / Math.max(1, N - 1),
-  );
+  const avgW = Math.round(grecs.slice(1).reduce((s, g) => s + g.advW, 0) / Math.max(1, N - 1));
   const asc = sc(fontData.metrics.ascender),
     desc = sc(fontData.metrics.descender);
   const xH = sc(fontData.metrics.xHeight),
@@ -372,10 +366,7 @@ function buildTTF(fontData: any) {
 
   // name
   const fName = fontData.meta.name || "Untitled";
-  const psName = (fName.replace(/[^A-Za-z0-9]/g, "") || "Untitled").slice(
-    0,
-    63,
-  );
+  const psName = (fName.replace(/[^A-Za-z0-9]/g, "") || "Untitled").slice(0, 63);
   const nRecs = [
     { id: 1, s: fName },
     { id: 2, s: "Regular" },
@@ -475,22 +466,14 @@ function buildTTF(fontData: any) {
 
   // Fix checkSumAdjustment in head
   let fs = 0;
-  for (let i = 0; i < out.length; i += 4)
-    fs = (fs + dv.getUint32(i, false)) >>> 0;
+  for (let i = 0; i < out.length; i += 4) fs = (fs + dv.getUint32(i, false)) >>> 0;
   dv.setUint32(tOfs["head"] + 8, (0xb1b0afba - fs) >>> 0, false);
 
   return out.buffer;
 }
 
 // ─── UI helpers ────────────────────────────────────────────────────────────
-const Btn = ({
-  onClick,
-  active,
-  accent = "#6366f1",
-  children,
-  title,
-  small,
-}: any) => (
+const Btn = ({ onClick, active, accent = "#6366f1", children, title, small }: any) => (
   <button
     onClick={onClick}
     title={title}
@@ -567,8 +550,7 @@ function App() {
   const updateGlyph = (key: any, updater: any) => {
     setFont((f) => {
       const g = f.glyphs[key];
-      const next =
-        typeof updater === "function" ? updater(g) : { ...g, ...updater };
+      const next = typeof updater === "function" ? updater(g) : { ...g, ...updater };
       return {
         ...f,
         glyphs: { ...f.glyphs, [key]: next },
@@ -596,14 +578,7 @@ function App() {
       while (stack.length) {
         const [r, c] = stack.pop() as any,
           k = `${r},${c}`;
-        if (
-          seen.has(k) ||
-          r < 0 ||
-          r >= g.height ||
-          c < 0 ||
-          c >= g.width ||
-          bm[r][c] !== old
-        )
+        if (seen.has(k) || r < 0 || r >= g.height || c < 0 || c >= g.width || bm[r][c] !== old)
           continue;
         seen.add(k);
         bm[r][c] = fillVal;
@@ -638,8 +613,7 @@ function App() {
   const onGridMove = (e: any) => {
     if (!drawing || !glyph()) return;
     const [r, c] = getCell(e);
-    if (r >= 0 && r < glyph().height && c >= 0 && c < glyph().width)
-      setPixel(r, c, drawVal);
+    if (r >= 0 && r < glyph().height && c >= 0 && c < glyph().width) setPixel(r, c, drawVal);
   };
 
   const clearGlyph = () =>
@@ -659,8 +633,7 @@ function App() {
         for (let c = 0; c < g.width; c++) {
           const nr = r + dr,
             nc = c + dc;
-          if (nr >= 0 && nr < g.height && nc >= 0 && nc < g.width)
-            bm[nr][nc] = g.bitmap[r][c];
+          if (nr >= 0 && nr < g.height && nc >= 0 && nc < g.width) bm[nr][nc] = g.bitmap[r][c];
         }
       return { ...g, bitmap: bm };
     });
@@ -740,8 +713,7 @@ function App() {
       ctx.fillStyle = "#f8fafc";
       for (let r = 0; r < g.height; r++)
         for (let c = 0; c < g.width; c++)
-          if (g.bitmap[r][c])
-            ctx.fillRect(x + (g.bearingLeft + c) * s, top + r * s, s, s);
+          if (g.bitmap[r][c]) ctx.fillRect(x + (g.bearingLeft + c) * s, top + r * s, s, s);
       x += g.advanceWidth * s;
     }
   });
@@ -815,11 +787,7 @@ function App() {
           </Btn>
         ))}
         {divider}
-        <Btn
-          onClick={() => setShowGuides((v) => !v)}
-          active={showGuides()}
-          accent="#0ea5e9"
-        >
+        <Btn onClick={() => setShowGuides((v) => !v)} active={showGuides()} accent="#0ea5e9">
           📏 Guides
         </Btn>
         <div style={{ flex: 1 }} />
@@ -865,12 +833,7 @@ function App() {
           }}
         >
           📂 Load JSON
-          <input
-            type="file"
-            accept=".json"
-            onChange={loadFont}
-            style={{ display: "none" }}
-          />
+          <input type="file" accept=".json" onChange={loadFont} style={{ display: "none" }} />
         </label>
       </div>
 
@@ -921,11 +884,7 @@ function App() {
                       "border-radius": "3px",
                       cursor: "pointer",
                       border: `1px solid ${sel ? "#6366f1" : filled ? "#1e3a5f" : "transparent"}`,
-                      background: sel
-                        ? "#1e1b4b"
-                        : filled
-                          ? "#0f1e33"
-                          : "transparent",
+                      background: sel ? "#1e1b4b" : filled ? "#0f1e33" : "transparent",
                       color: sel ? "#a5b4fc" : filled ? "#7dd3fc" : "#334155",
                     }}
                   >
@@ -996,12 +955,8 @@ function App() {
                 </Btn>
               ))}
             </div>
-            <div
-              style={{ display: "flex", "align-items": "center", gap: "5px" }}
-            >
-              <span style={{ "font-size": "11px", color: "#475569" }}>
-                zoom
-              </span>
+            <div style={{ display: "flex", "align-items": "center", gap: "5px" }}>
+              <span style={{ "font-size": "11px", color: "#475569" }}>zoom</span>
               <input
                 type="range"
                 min={14}
@@ -1010,9 +965,7 @@ function App() {
                 onChange={(e) => setZoom(+e.target.value)}
                 style={{ width: "70px" }}
               />
-              <span
-                style={{ "font-size": "11px", color: "#334155", width: "26px" }}
-              >
+              <span style={{ "font-size": "11px", color: "#334155", width: "26px" }}>
                 {zoom()}px
               </span>
             </div>
@@ -1057,8 +1010,7 @@ function App() {
               {/* Advance width vertical guide */}
               {showGuides() &&
                 (() => {
-                  const x =
-                    (glyph().advanceWidth - glyph().bearingLeft) * zoom() - 0.5;
+                  const x = (glyph().advanceWidth - glyph().bearingLeft) * zoom() - 0.5;
                   return (
                     <div
                       style={{
@@ -1113,15 +1065,9 @@ function App() {
                         width: zoom() + "px",
                         height: zoom() + "px",
                         "box-sizing": "border-box",
-                        background: px
-                          ? "#f1f5f9"
-                          : (r + c) % 2 === 0
-                            ? "#111827"
-                            : "#0c1220",
-                        "border-right":
-                          c < glyph().width - 1 ? "1px solid #1a2535" : "none",
-                        "border-bottom":
-                          r < glyph().height - 1 ? "1px solid #1a2535" : "none",
+                        background: px ? "#f1f5f9" : (r + c) % 2 === 0 ? "#111827" : "#0c1220",
+                        "border-right": c < glyph().width - 1 ? "1px solid #1a2535" : "none",
+                        "border-bottom": r < glyph().height - 1 ? "1px solid #1a2535" : "none",
                       }}
                     />
                   )),
@@ -1178,10 +1124,7 @@ function App() {
                     ...g,
                     width: w,
                     bitmap: Array.from({ length: g.height }, (_, r) =>
-                      Array.from(
-                        { length: w },
-                        (_, c) => g.bitmap[r]?.[c] ?? 0,
-                      ),
+                      Array.from({ length: w }, (_, c) => g.bitmap[r]?.[c] ?? 0),
                     ),
                   }));
                 }}
@@ -1195,10 +1138,7 @@ function App() {
                     ...g,
                     height: h,
                     bitmap: Array.from({ length: h }, (_, r) =>
-                      Array.from(
-                        { length: g.width },
-                        (_, c) => g.bitmap[r]?.[c] ?? 0,
-                      ),
+                      Array.from({ length: g.width }, (_, c) => g.bitmap[r]?.[c] ?? 0),
                     ),
                   }));
                 }}
@@ -1221,9 +1161,7 @@ function App() {
               key={k}
               label={k}
               value={v}
-              onChange={(val) =>
-                setFont((f) => ({ ...f, metrics: { ...f.metrics, [k]: +val } }))
-              }
+              onChange={(val) => setFont((f) => ({ ...f, metrics: { ...f.metrics, [k]: +val } }))}
             />
           ))}
 
@@ -1379,9 +1317,7 @@ function App() {
               "font-size": 12 + "px",
             }}
           />
-          <span style={{ "font-size": 11 + "px", color: "#475569" }}>
-            scale
-          </span>
+          <span style={{ "font-size": 11 + "px", color: "#475569" }}>scale</span>
           <input
             type="range"
             min={1}
@@ -1409,10 +1345,7 @@ function App() {
             "max-height": 90 + "px",
           }}
         >
-          <canvas
-            ref={previewRef}
-            style={{ display: "block", "image-rendering": "pixelated" }}
-          />
+          <canvas ref={previewRef} style={{ display: "block", "image-rendering": "pixelated" }} />
         </div>
       </div>
     </div>

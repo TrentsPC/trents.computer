@@ -20,8 +20,7 @@ export function createControllableSignal<T>({
   const setValue: Setter<T | undefined> = (nextValue) => {
     if (isControlled()) {
       const setter = nextValue as (value: T | undefined) => T;
-      const value =
-        typeof nextValue === "function" ? setter(prop()) : nextValue;
+      const value = typeof nextValue === "function" ? setter(prop()) : nextValue;
       if (value !== prop()) handleChange?.(value as T);
     } else {
       setUncontrolledProp(nextValue);

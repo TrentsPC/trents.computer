@@ -1,20 +1,6 @@
-import {
-  ComponentProps,
-  createMemo,
-  createSignal,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { ComponentProps, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
-import {
-  array,
-  fallback,
-  finite,
-  number,
-  object,
-  Output,
-  parse,
-} from "valibot";
+import { array, fallback, finite, number, object, Output, parse } from "valibot";
 import { fonts } from "~/theme.styles";
 
 /**
@@ -44,7 +30,7 @@ let initialBuildingData = parse(buildingDataSchema, {});
 try {
   initialClickerData = parse(
     clickerDataSchema,
-    JSON.parse(localStorage.getItem("clickerData") || "{}")
+    JSON.parse(localStorage.getItem("clickerData") || "{}"),
   );
 } catch {}
 
@@ -57,10 +43,7 @@ export function Clicker() {
       ...data,
       pixels: data.pixels + pixels,
       pixelsEarned: data.pixelsEarned + pixels,
-      mostPixelsInWallet: Math.max(
-        data.pixels + pixels,
-        data.mostPixelsInWallet
-      ),
+      mostPixelsInWallet: Math.max(data.pixels + pixels, data.mostPixelsInWallet),
     }));
   }
 
@@ -212,8 +195,7 @@ function formatNumber(n: number) {
 
 function formatPPS(n: number) {
   if (!isFinite(n)) return "Infinity";
-  if (n < 1000)
-    return Intl.NumberFormat([], { maximumFractionDigits: 1 }).format(n);
+  if (n < 1000) return Intl.NumberFormat([], { maximumFractionDigits: 1 }).format(n);
   return formatNumber(n);
 }
 
@@ -232,15 +214,9 @@ function Pixel(props: ComponentProps<"span">) {
   );
 }
 
-function BuildingList(props: {
-  data: ClickerData;
-  setData: SetStoreFunction<ClickerData>;
-}) {
+function BuildingList(props: { data: ClickerData; setData: SetStoreFunction<ClickerData> }) {
   function handleBuyBuilding(index: number) {
-    const price = getPriceForNextBuilding(
-      index,
-      props.data.buildings[index]?.amountOwned ?? 0
-    );
+    const price = getPriceForNextBuilding(index, props.data.buildings[index]?.amountOwned ?? 0);
     if (props.data.pixels >= price) {
       props.setData("pixels", (pixels) => pixels - price);
       props.setData("buildings", index, (building) => {
@@ -469,12 +445,9 @@ function getInitialBuildingPrice(buildingIndex: number) {
   if (n < 1) return 15;
 
   let basePrice =
-    (n * 1 + 9 + (n < 5 ? 0 : Math.pow(n - 5, 1.75) * 5)) *
-    Math.pow(10, n) *
-    Math.max(1, n - 14);
+    (n * 1 + 9 + (n < 5 ? 0 : Math.pow(n - 5, 1.75) * 5)) * Math.pow(10, n) * Math.max(1, n - 14);
 
-  let digits =
-    Math.pow(10, Math.ceil(Math.log(Math.ceil(basePrice)) / Math.LN10)) / 100;
+  let digits = Math.pow(10, Math.ceil(Math.log(Math.ceil(basePrice)) / Math.LN10)) / 100;
 
   basePrice = Math.round(basePrice / digits) * digits;
 
@@ -486,17 +459,14 @@ function getInitialBuildingPrice(buildingIndex: number) {
 }
 
 function getPriceForNextBuilding(buildingIndex: number, amountOwned: number) {
-  return Math.ceil(
-    getInitialBuildingPrice(buildingIndex) * Math.pow(1.15, amountOwned)
-  );
+  return Math.ceil(getInitialBuildingPrice(buildingIndex) * Math.pow(1.15, amountOwned));
 }
 
 function getInitialPPS(buildingIndex: number) {
   const n = buildingIndex;
   if (n < 1) return 0.1;
   let baseCps = Math.ceil(Math.pow(n * 1, n * 0.5 + 2) * 10) / 10; //0.45 used to be 0.5
-  const digits =
-    Math.pow(10, Math.ceil(Math.log(Math.ceil(baseCps)) / Math.LN10)) / 100;
+  const digits = Math.pow(10, Math.ceil(Math.log(Math.ceil(baseCps)) / Math.LN10)) / 100;
   baseCps = Math.round(baseCps / digits) * digits;
   return baseCps;
 }
@@ -529,9 +499,7 @@ function Building(props: {
     >
       <div>
         <div css={{ fontWeight: 500 }}>{props.title}</div>
-        <div>
-          Cost {formatNumber(getPriceForNextBuilding(props.index, props.owned))}
-        </div>
+        <div>Cost {formatNumber(getPriceForNextBuilding(props.index, props.owned))}</div>
       </div>
       <span>{props.owned || null}</span>
     </button>

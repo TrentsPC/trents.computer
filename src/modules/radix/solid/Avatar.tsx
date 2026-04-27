@@ -19,16 +19,13 @@ type AvatarContextValue = {
   onImageLoadingStatusChange(status: ImageLoadingStatus): void;
 };
 
-const AvatarContext = createContext<AvatarContextValue>(
-  undefined as any as AvatarContextValue
-);
+const AvatarContext = createContext<AvatarContextValue>(undefined as any as AvatarContextValue);
 
 type PrimitiveSpanProps = JSX.HTMLAttributes<HTMLSpanElement>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
 const AvatarRoot = (props: AvatarProps) => {
-  const [imageLoadingStatus, setImageLoadingStatus] =
-    createSignal<ImageLoadingStatus>("idle");
+  const [imageLoadingStatus, setImageLoadingStatus] = createSignal<ImageLoadingStatus>("idle");
   return (
     <AvatarContext.Provider
       value={{
@@ -67,9 +64,7 @@ const AvatarImage = (props: AvatarImageProps) => {
     }
   });
 
-  return (
-    <>{imageLoadingStatus() === "loaded" ? <img {...imageProps} /> : null}</>
-  );
+  return <>{imageLoadingStatus() === "loaded" ? <img {...imageProps} /> : null}</>;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -90,10 +85,7 @@ const AvatarFallback = (props: AvatarFallbackProps) => {
 
   createEffect(() => {
     if (delayProps.delayMs !== undefined) {
-      const timerId = window.setTimeout(
-        () => setCanRender(true),
-        delayProps.delayMs
-      );
+      const timerId = window.setTimeout(() => setCanRender(true), delayProps.delayMs);
       return () => window.clearTimeout(timerId);
     }
   });
@@ -110,8 +102,7 @@ const AvatarFallback = (props: AvatarFallbackProps) => {
 /* -----------------------------------------------------------------------------------------------*/
 
 function useImageLoadingStatus(src: Accessor<string | undefined>) {
-  const [loadingStatus, setLoadingStatus] =
-    createSignal<ImageLoadingStatus>("idle");
+  const [loadingStatus, setLoadingStatus] = createSignal<ImageLoadingStatus>("idle");
 
   createEffect(() => {
     if (!src()) {

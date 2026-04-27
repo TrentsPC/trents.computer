@@ -1,10 +1,7 @@
 export function json<TData>(payload: TData, init?: ResponseInit) {
   return new Response(JSON.stringify(payload), {
     ...init,
-    headers: mergeHeaders(
-      { "content-type": "application/json" },
-      init?.headers
-    ),
+    headers: mergeHeaders({ "content-type": "application/json" }, init?.headers),
   });
 }
 // Function to merge headers with proper overrides

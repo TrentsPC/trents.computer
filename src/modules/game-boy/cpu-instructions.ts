@@ -35,8 +35,7 @@ export function createInstructions({
         const value = register.get();
         const carry = registers.flagC.get() ? 1 : 0;
         const result = registers.a.get() + value + carry;
-        const halfCarry =
-          (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
+        const halfCarry = (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
         const clampedResult = result % 256;
         registers.a.set(result % 256);
         registers.flagZ.set(clampedResult === 0);
@@ -57,8 +56,7 @@ export function createInstructions({
         const value = param;
         const carry = registers.flagC.get() ? 1 : 0;
         const result = registers.a.get() + value + carry;
-        const halfCarry =
-          (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
+        const halfCarry = (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
         registers.a.set(result % 256);
         registers.flagZ.set(result % 256 === 0);
         registers.flagN.set(false);
@@ -78,8 +76,7 @@ export function createInstructions({
         const value = memory.readByte(registers.hl.get());
         const carry = registers.flagC.get() ? 1 : 0;
         const result = registers.a.get() + value + carry;
-        const halfCarry =
-          (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
+        const halfCarry = (registers.a.get() & 0xf) + (value & 0xf) + carry > 0xf;
         registers.a.set(result % 256);
         registers.flagZ.set(result % 256 === 0);
         registers.flagN.set(false);
@@ -242,9 +239,7 @@ export function createInstructions({
     registerInstruction({
       mnemonic: "CALL a16",
       print: ([low, high]) =>
-        `CALL $0x${high.toString(16).padStart(2, "0")}${low
-          .toString(16)
-          .padStart(2, "0")}`,
+        `CALL $0x${high.toString(16).padStart(2, "0")}${low.toString(16).padStart(2, "0")}`,
       opcode,
       length: 3,
       cycles: 6,
@@ -272,10 +267,7 @@ export function createInstructions({
         if (condition()) {
           const addr = (high << 8) | low;
           registers.sp.set(registers.sp.get() - 1);
-          memory.writeByte(
-            registers.sp.get(),
-            (registers.pc.get() >> 8) & 0xff,
-          );
+          memory.writeByte(registers.sp.get(), (registers.pc.get() >> 8) & 0xff);
           registers.sp.set(registers.sp.get() - 1);
           memory.writeByte(registers.sp.get(), registers.pc.get() & 0xff);
           registers.pc.set(addr);
@@ -516,8 +508,7 @@ export function createInstructions({
   function registerJR_CC_n8(opcode: number, condition: () => boolean) {
     registerInstruction({
       mnemonic: `JR ${opcode === 0x20 ? "NZ" : "Z"},r8`,
-      print: ([offset]) =>
-        `JR ${opcode === 0x20 ? "NZ" : "Z"} $${toSigned(offset)}`,
+      print: ([offset]) => `JR ${opcode === 0x20 ? "NZ" : "Z"} $${toSigned(offset)}`,
       opcode,
       length: 2,
       cycles: () => (condition() ? 3 : 2),
@@ -571,9 +562,7 @@ export function createInstructions({
     registerInstruction({
       mnemonic: "LD [a16],SP",
       print: ([low, high]) =>
-        `LD [0x${high.toString(16).padStart(2, "0")}${low
-          .toString(16)
-          .padStart(2, "0")}],SP`,
+        `LD [0x${high.toString(16).padStart(2, "0")}${low.toString(16).padStart(2, "0")}],SP`,
       opcode,
       length: 3,
       cycles: 5,
@@ -700,9 +689,7 @@ export function createInstructions({
     registerInstruction({
       mnemonic: "LD [a16],A",
       print: ([low, high]) =>
-        `LD [0x${high.toString(16).padStart(2, "0")}${low
-          .toString(16)
-          .padStart(2, "0")}],A`,
+        `LD [0x${high.toString(16).padStart(2, "0")}${low.toString(16).padStart(2, "0")}],A`,
       opcode,
       length: 3,
       cycles: 4,
@@ -728,9 +715,7 @@ export function createInstructions({
     registerInstruction({
       mnemonic: "LD A,[a16]",
       print: ([low, high]) =>
-        `LD A,[0x${high.toString(16).padStart(2, "0")}${low
-          .toString(16)
-          .padStart(2, "0")}]`,
+        `LD A,[0x${high.toString(16).padStart(2, "0")}${low.toString(16).padStart(2, "0")}]`,
       opcode,
       length: 3,
       cycles: 4,
@@ -754,10 +739,7 @@ export function createInstructions({
     });
   }
 
-  function createLD16Register(
-    opcode: number,
-    destination: Register,
-  ): Instruction {
+  function createLD16Register(opcode: number, destination: Register): Instruction {
     return {
       mnemonic: `LD   ${destination.name},d16`,
       print: ([low, high]) =>
@@ -773,11 +755,7 @@ export function createInstructions({
     };
   }
 
-  function registerLDAddrFromRegister(
-    opcode: number,
-    destination: Register,
-    source: Register,
-  ) {
+  function registerLDAddrFromRegister(opcode: number, destination: Register, source: Register) {
     registerInstruction({
       mnemonic: `LD   (${destination.name}),${source.name}`,
       print: () => `LD   (${destination.name}) <- ${source.name}`,
@@ -1211,10 +1189,7 @@ export function createInstructions({
     });
   }
 
-  function createDEC8bitRegister(
-    opcode: number,
-    register: Register,
-  ): Instruction {
+  function createDEC8bitRegister(opcode: number, register: Register): Instruction {
     return {
       mnemonic: `DEC ${register.name}`,
       print: () => `DEC  ${register.name}`,
@@ -1589,9 +1564,7 @@ export function createInstructions({
   registerInstruction({
     mnemonic: "JP a16",
     print: ([param1, param2]) =>
-      `JP   $0x${param2.toString(16).padStart(2, "0")}${param1
-        .toString(16)
-        .padStart(2, "0")}`,
+      `JP   $0x${param2.toString(16).padStart(2, "0")}${param1.toString(16).padStart(2, "0")}`,
     opcode: 0xc3,
     length: 3,
     cycles: 16,
@@ -1622,10 +1595,7 @@ export function createInstructions({
       const instruction = prefixedInstructions[opcode];
       if (!instruction) {
         throw new Error(
-          `Unknown opcode CB ${opcode
-            .toString(16)
-            .padStart(2, "0")
-            .toUpperCase()} at ${registers.pc
+          `Unknown opcode CB ${opcode.toString(16).padStart(2, "0").toUpperCase()} at ${registers.pc
             .get()
             .toString(16)
             .padStart(4, "0")
@@ -1640,10 +1610,7 @@ export function createInstructions({
       const instruction = prefixedInstructions[opcode];
       if (!instruction) {
         throw new Error(
-          `Unknown opcode CB ${opcode
-            .toString(16)
-            .padStart(2, "0")
-            .toUpperCase()} at ${registers.pc
+          `Unknown opcode CB ${opcode.toString(16).padStart(2, "0").toUpperCase()} at ${registers.pc
             .get()
             .toString(16)
             .padStart(4, "0")
@@ -1670,8 +1637,7 @@ export function createInstructions({
 
   registerInstruction({
     mnemonic: "LDH (a8),A",
-    print: ([param1]) =>
-      `LD   0xff${param1.toString(16).padStart(2, "0")} <- A`,
+    print: ([param1]) => `LD   0xff${param1.toString(16).padStart(2, "0")} <- A`,
     opcode: 0xe0,
     length: 2,
     cycles: 3,
@@ -1707,8 +1673,7 @@ export function createInstructions({
 
   registerInstruction({
     mnemonic: "LDH A,(a8)",
-    print: ([param1]) =>
-      `LD   A <- 0xff${param1.toString(16).padStart(2, "0")}`,
+    print: ([param1]) => `LD   A <- 0xff${param1.toString(16).padStart(2, "0")}`,
     opcode: 0xf0,
     length: 2,
     cycles: 3,

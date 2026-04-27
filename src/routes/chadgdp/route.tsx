@@ -12,8 +12,7 @@ const [conversations, setConversations] = useChatbots();
 
 function ChatWidget() {
   const [selectedGroupId, setSelectedGroupId] = createSignal(0);
-  const selectedGroup = () =>
-    conversations[selectedGroupId()] as Group | undefined;
+  const selectedGroup = () => conversations[selectedGroupId()] as Group | undefined;
 
   return (
     <div
@@ -122,10 +121,7 @@ function ChatWidget() {
                         color: colors.secondaryLabel,
                       }}
                     >
-                      {
-                        conversation.messages[conversation.messages.length - 1]
-                          ?.text
-                      }
+                      {conversation.messages[conversation.messages.length - 1]?.text}
                     </p>
                   </div>
                 </div>
@@ -191,10 +187,7 @@ function Conversation(props: {
       >
         <span>{props.name}</span>
       </div>
-      <div
-        css={{ flex: "1 0 0px", overflowY: "auto", py: 16, spaceY: 12 }}
-        ref={scrollRef}
-      >
+      <div css={{ flex: "1 0 0px", overflowY: "auto", py: 16, spaceY: 12 }} ref={scrollRef}>
         <For each={props.messages}>
           {(message) => (
             <div
@@ -203,8 +196,7 @@ function Conversation(props: {
                 px: 20,
               }}
               style={{
-                "justify-content":
-                  message.from === "user" ? "flex-end" : "flex-start",
+                "justify-content": message.from === "user" ? "flex-end" : "flex-start",
               }}
             >
               <div
@@ -218,9 +210,7 @@ function Conversation(props: {
                 }}
                 style={{
                   background:
-                    message.from === "user"
-                      ? "var(--color-brand)"
-                      : colors.secondaryBackground,
+                    message.from === "user" ? "var(--color-brand)" : colors.secondaryBackground,
                   color: message.from === "user" ? "white" : "black",
                   "text-align": message.from === "user" ? "right" : "left",
                 }}

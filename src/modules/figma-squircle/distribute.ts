@@ -68,13 +68,9 @@ export function distributeAndNormalize({
             return 0;
           }
 
-          const adjacentCornerBudget =
-            roundingAndSmoothingBudgetMap[adjacent.corner];
+          const adjacentCornerBudget = roundingAndSmoothingBudgetMap[adjacent.corner];
 
-          const sideLength =
-            adjacent.side === "top" || adjacent.side === "bottom"
-              ? width
-              : height;
+          const sideLength = adjacent.side === "top" || adjacent.side === "bottom" ? width : height;
 
           // If the adjacent corner's already been given the rounding and smoothing budget,
           // we'll just take the rest
@@ -83,7 +79,7 @@ export function distributeAndNormalize({
           } else {
             return (radius / (radius + adjacentCornerRadius)) * sideLength;
           }
-        })
+        }),
       );
 
       roundingAndSmoothingBudgetMap[corner] = budget;

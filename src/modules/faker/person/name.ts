@@ -198,16 +198,8 @@ type Phoneme = Vowel | Consonant;
  */
 type Syllable = string;
 
-type StartingWordPart = [
-  pivotSyllable: Syllable,
-  partExcludingPivot: string,
-  pivot: string
-];
-type EndingWordPart = [
-  pivotSyllable: Syllable,
-  pivot: string,
-  partExcludingPivot: string
-];
+type StartingWordPart = [pivotSyllable: Syllable, partExcludingPivot: string, pivot: string];
+type EndingWordPart = [pivotSyllable: Syllable, pivot: string, partExcludingPivot: string];
 
 const firstNameStarts: StartingWordPart[] = [
   // Vowel + Consonant
@@ -315,9 +307,7 @@ export function generateFirstName() {
 
       const pivotSyllable = start[0];
 
-      const potentialEnds = firstNameEnds.filter(
-        (end) => end[0] === pivotSyllable
-      );
+      const potentialEnds = firstNameEnds.filter((end) => end[0] === pivotSyllable);
       const end = randomElement(potentialEnds);
       if (end) {
         return `${start[1]}${start[2]}${end[2]}`;

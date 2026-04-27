@@ -28,8 +28,7 @@ export function HistoryRacer() {
     gridSize: () => GAP,
   });
 
-  const currentLyric = () =>
-    chart().lyrics?.findLast?.((l) => l.start <= currentBeat());
+  const currentLyric = () => chart().lyrics?.findLast?.((l) => l.start <= currentBeat());
 
   function reset() {
     setMaxX(0);
@@ -80,8 +79,8 @@ export function HistoryRacer() {
                 fill: note.parried()
                   ? "var(--color-brand-vibrant)"
                   : note.caught()
-                  ? colors.secondaryLabel
-                  : "var(--color-brand)",
+                    ? colors.secondaryLabel
+                    : "var(--color-brand)",
                 transform: `translate(${note.transformX()}px, ${note.transformY()}px)`,
                 opacity: note.transformY() > 450 ? 0 : 1,
                 transition: "opacity 0.3s linear",
@@ -113,10 +112,7 @@ export function HistoryRacer() {
         }}
       >
         {maxX() === 5 && status() === "idle" && (
-          <button
-            style={{ height: GAP + "px", padding: "0 12px" }}
-            onClick={() => play()}
-          >
+          <button style={{ height: GAP + "px", padding: "0 12px" }} onClick={() => play()}>
             play
           </button>
         )}

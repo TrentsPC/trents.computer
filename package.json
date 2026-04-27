@@ -7,7 +7,9 @@
     "wrangle": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "serve": "vite serve ./.vite-inspect",
-    "start": "wrangler dev .output/server/index.mjs --site .output/public --local"
+    "start": "wrangler dev .output/server/index.mjs --site .output/public --local",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "dependencies": {
     "@hypergood/css": "^0.0.6",
@@ -39,9 +41,6 @@
     "vinxi": "^0.5.5",
     "wrangler": "^4.84.0"
   },
-  "engines": {
-    "node": ">=18"
-  },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250610.0",
     "@tanstack/router-plugin": "^1.167.22",
@@ -49,8 +48,12 @@
     "@types/qrcode": "^1.5.6",
     "@vinxi/rollup-plugin-visualizer": "^5.7.1",
     "drizzle-kit": "^0.31.10",
+    "oxfmt": "^0.46.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "tsx": "^4.21.0",
     "vite-plugin-inspect": "^11.3.3"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

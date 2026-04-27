@@ -27,9 +27,7 @@ function Page() {
             >
               <img
                 src={
-                  book.image?.storage_path
-                    ? getResizedImageUrl(book.image?.storage_path, 320)
-                    : ""
+                  book.image?.storage_path ? getResizedImageUrl(book.image?.storage_path, 320) : ""
                 }
               />
               {book.title}
@@ -54,11 +52,7 @@ function NewBook() {
         qc.invalidateQueries(recipeBooksQuery);
       }}
     >
-      <input
-        type="text"
-        value={title()}
-        onInput={(e) => setTitle(e.currentTarget.value)}
-      />
+      <input type="text" value={title()} onInput={(e) => setTitle(e.currentTarget.value)} />
       <button type="submit">Create Book</button>
     </form>
   );

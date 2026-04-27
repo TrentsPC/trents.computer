@@ -19,21 +19,15 @@ function Page() {
       },
       (error, data) => {
         setCards(data);
-      }
+      },
     );
   });
 
   return (
     <div>
       {/* <Title>Secret Word</Title> */}
-      <h1 css={{ mx: "auto", fontScale: 1, align: "center", fontWeight: 700 }}>
-        Secret Word
-      </h1>
-      {cards().length > 0 ? (
-        <SecretWordGame cards={cards()} />
-      ) : (
-        <p>Loading...</p>
-      )}
+      <h1 css={{ mx: "auto", fontScale: 1, align: "center", fontWeight: 700 }}>Secret Word</h1>
+      {cards().length > 0 ? <SecretWordGame cards={cards()} /> : <p>Loading...</p>}
     </div>
   );
 }

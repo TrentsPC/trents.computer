@@ -3,8 +3,7 @@ import html2canvas from "html2canvas";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { bezier } from "./bezier";
-const getNewPage = () =>
-  import("~/modules/os/sonoma/sonoma").then((m) => m.TrentOS);
+const getNewPage = () => import("~/modules/os/sonoma/sonoma").then((m) => m.TrentOS);
 
 export async function genieMinimise() {
   let screenshot = await getCanvas();
@@ -33,7 +32,7 @@ export async function genieMinimise() {
         <Component />
       </QueryClientProvider>
     ),
-    container
+    container,
   );
   container.appendChild(canvas);
 
@@ -69,7 +68,7 @@ const getCanvas = async () => {
     0,
     0,
     window.innerWidth * dpr,
-    window.innerHeight * dpr
+    window.innerHeight * dpr,
   );
 
   return croppedCanvas;
@@ -79,7 +78,7 @@ function drawImage(
   ctx: CanvasRenderingContext2D,
   image: HTMLCanvasElement,
   squishFactor: number,
-  shiftFactor: number
+  shiftFactor: number,
 ) {
   const squishCurve = bezier(0.42, 0, 0.58, 1);
   const { width, height } = image;
@@ -88,17 +87,7 @@ function drawImage(
 
   for (let y = 0; y < height; y++) {
     const ySquish = squishCurve((height - y) / height) * squish;
-    ctx.drawImage(
-      image,
-      0,
-      y + shift,
-      width,
-      1,
-      ySquish / 2,
-      y,
-      width - ySquish,
-      1
-    );
+    ctx.drawImage(image, 0, y + shift, width, 1, ySquish / 2, y, width - ySquish, 1);
   }
 }
 

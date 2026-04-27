@@ -53,8 +53,7 @@ export function getPathParamsForCorner({
   // In a normal rounded rectangle (cornerSmoothing = 0), this is 90
   // The larger the smoothing, the smaller the arc
   const arcMeasure = 90 * (1 - cornerSmoothing);
-  const arcSectionLength =
-    Math.sin(toRadians(arcMeasure / 2)) * cornerRadius * Math.sqrt(2);
+  const arcSectionLength = Math.sin(toRadians(arcMeasure / 2)) * cornerRadius * Math.sqrt(2);
 
   // In the article this is the distance between 2 control points: P3 and P4
   const angleAlpha = (90 - arcMeasure) / 2;
@@ -70,8 +69,7 @@ export function getPathParamsForCorner({
 
   // Adjust the P1 and P2 control points if there's not enough space left
   if (preserveSmoothing && p > roundingAndSmoothingBudget) {
-    const p1ToP3MaxDistance =
-      roundingAndSmoothingBudget - d - arcSectionLength - c;
+    const p1ToP3MaxDistance = roundingAndSmoothingBudget - d - arcSectionLength - c;
 
     // Try to maintain some distance between P1 and P2 so the curve wouldn't look weird
     const minA = p1ToP3MaxDistance / 6;
@@ -125,15 +123,7 @@ export function getSVGPathFromPathParams({
     .trim();
 }
 
-function drawTopRightPath({
-  cornerRadius,
-  a,
-  b,
-  c,
-  d,
-  p,
-  arcSectionLength,
-}: CornerPathParams) {
+function drawTopRightPath({ cornerRadius, a, b, c, d, p, arcSectionLength }: CornerPathParams) {
   if (cornerRadius) {
     return rounded`
     c ${a} 0 ${a + b} 0 ${a + b + c} ${d}
@@ -146,15 +136,7 @@ function drawTopRightPath({
   }
 }
 
-function drawBottomRightPath({
-  cornerRadius,
-  a,
-  b,
-  c,
-  d,
-  p,
-  arcSectionLength,
-}: CornerPathParams) {
+function drawBottomRightPath({ cornerRadius, a, b, c, d, p, arcSectionLength }: CornerPathParams) {
   if (cornerRadius) {
     return rounded`
     c 0 ${a}
@@ -169,15 +151,7 @@ function drawBottomRightPath({
   }
 }
 
-function drawBottomLeftPath({
-  cornerRadius,
-  a,
-  b,
-  c,
-  d,
-  p,
-  arcSectionLength,
-}: CornerPathParams) {
+function drawBottomLeftPath({ cornerRadius, a, b, c, d, p, arcSectionLength }: CornerPathParams) {
   if (cornerRadius) {
     return rounded`
     c ${-a} 0
@@ -192,15 +166,7 @@ function drawBottomLeftPath({
   }
 }
 
-function drawTopLeftPath({
-  cornerRadius,
-  a,
-  b,
-  c,
-  d,
-  p,
-  arcSectionLength,
-}: CornerPathParams) {
+function drawTopLeftPath({ cornerRadius, a, b, c, d, p, arcSectionLength }: CornerPathParams) {
   if (cornerRadius) {
     return rounded`
     c 0 ${-a}

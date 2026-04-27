@@ -24,12 +24,9 @@ const TYPES: Array<{ id: DeviceType; name: string }> = [
 
 export function ResponsiveDesignDemo(props: { initialPath: string }) {
   const [selectedDeviceId, setSelectedDeviceId] = createSignal("");
-  const [selectedMaterial, setSelectedMaterial] =
-    createSignal<Material>("signature");
+  const [selectedMaterial, setSelectedMaterial] = createSignal<Material>("signature");
   const [background, setBackground] = createSignal("#fffbe6");
-  const device = createMemo(
-    () => DEVICES.find((d) => d.id === selectedDeviceId()) || PORTRAIT
-  );
+  const device = createMemo(() => DEVICES.find((d) => d.id === selectedDeviceId()) || PORTRAIT);
   const xxs = createMemo(() => DEVICES.findLast((d) => d.width < 320)!);
   const xs = createMemo(() => DEVICES.find((d) => d.width >= 320)!);
   const sm = createMemo(() => DEVICES.find((d) => d.width >= 600)!);
@@ -76,7 +73,7 @@ export function ResponsiveDesignDemo(props: { initialPath: string }) {
                       <>
                         <For
                           each={DEVICES.filter((d) => d.type === type.id).sort(
-                            (a, b) => a.width - b.width
+                            (a, b) => a.width - b.width,
                           )}
                         >
                           {(device) => (
@@ -160,9 +157,7 @@ export function ResponsiveDesignDemo(props: { initialPath: string }) {
               <DropdownMenuItem onSelect={() => setSelectedMaterial("white")}>
                 White
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setSelectedMaterial("signature")}
-              >
+              <DropdownMenuItem onSelect={() => setSelectedMaterial("signature")}>
                 Signature
               </DropdownMenuItem>
             </>
@@ -209,16 +204,8 @@ export function ResponsiveDesignDemo(props: { initialPath: string }) {
             style={{
               top: -device().margin.top + "px",
               left: -device().margin.left + "px",
-              "min-width":
-                device().width +
-                device().margin.left +
-                device().margin.right +
-                "px",
-              "min-height":
-                device().height +
-                device().margin.top +
-                device().margin.bottom +
-                "px",
+              "min-width": device().width + device().margin.left + device().margin.right + "px",
+              "min-height": device().height + device().margin.top + device().margin.bottom + "px",
             }}
             src={device().bezels[selectedMaterial()]}
           />

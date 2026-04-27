@@ -55,10 +55,7 @@ export function HomePage() {
             <Clicker />
           </h1> */}
           <br />
-          <p>
-            Trent was released in late 2002 and software has been better ever
-            since.
-          </p>
+          <p>Trent was released in late 2002 and software has been better ever since.</p>
           <br />
           {/* <ul css={{ pl: "2ch", listStyleType: "'- '", spaceY: "0.25lh" }}>
             <li>

@@ -233,8 +233,7 @@ export const CHARACTER_DATA: CharacterSet[] = [
           },
           {
             name: "Prepared",
-            characters:
-              "🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫",
+            characters: "🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫",
           },
           { name: "Asian", characters: "🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡" },
           { name: "Sweet", characters: "🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯" },
@@ -252,8 +251,7 @@ export const CHARACTER_DATA: CharacterSet[] = [
           { name: "Geographic", characters: "🏔⛰🛘🌋🗻🏕🏖🏜🏝🏞" },
           {
             name: "Building",
-            characters:
-              "🏟🏛🏗🧱🪨🪵🛖🏘🏚🏠🏡🏢🏣🏤🏥🏦🏨🏩🏪🏫🏬🏭🏯🏰💒🗼🗽",
+            characters: "🏟🏛🏗🧱🪨🪵🛖🏘🏚🏠🏡🏢🏣🏤🏥🏦🏨🏩🏪🏫🏬🏭🏯🏰💒🗼🗽",
           },
           { name: "Religious", characters: "⛪🕌🛕🕍⛩🕋" },
           { name: "Other", characters: "⛲⛺🌁🌃🏙🌄🌅🌆🌇🌉♨🎠🛝🎡🎢💈🎪" },
@@ -267,8 +265,7 @@ export const CHARACTER_DATA: CharacterSet[] = [
           { name: "Hotel", characters: "🛎🧳" },
           {
             name: "Time",
-            characters:
-              "⌛⏳⌚⏰⏱⏲🕰🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕡🕖🕢🕗🕣🕘🕤🕙🕥🕚🕦",
+            characters: "⌛⏳⌚⏰⏱⏲🕰🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕡🕖🕢🕗🕣🕘🕤🕙🕥🕚🕦",
           },
           {
             name: "Sky & Weather",
@@ -290,8 +287,7 @@ export const CHARACTER_DATA: CharacterSet[] = [
           },
           {
             name: "Sport",
-            characters:
-              "⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸🎣🤿🎽🎿🛷🥌",
+            characters: "⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸🎣🤿🎽🎿🛷🥌",
           },
           {
             name: "Game",
@@ -374,13 +370,11 @@ export const CHARACTER_DATA: CharacterSet[] = [
           { name: "Keycap", characters: "🔟" },
           {
             name: "Alphanum",
-            characters:
-              "🔠🔡🔢🔣🔤🅰🆎🅱🆑🆒🆓ℹ🆔Ⓜ🆕🆖🅾🆗🅿🆘🆙🆚🈁🈂🈷🈶🈯🉐🈹🈚🈲🉑🈸🈴🈳㊗㊙🈺🈵",
+            characters: "🔠🔡🔢🔣🔤🅰🆎🅱🆑🆒🆓ℹ🆔Ⓜ🆕🆖🅾🆗🅿🆘🆙🆚🈁🈂🈷🈶🈯🉐🈹🈚🈲🉑🈸🈴🈳㊗㊙🈺🈵",
           },
           {
             name: "Geometric",
-            characters:
-              "🔴🟠🟡🟢🔵🟣🟤⚫⚪🟥🟧🟨🟩🟦🟪🟫⬛⬜◼◻◾◽▪▫🔶🔷🔸🔹🔺🔻💠🔘🔳🔲",
+            characters: "🔴🟠🟡🟢🔵🟣🟤⚫⚪🟥🟧🟨🟩🟦🟪🟫⬛⬜◼◻◾◽▪▫🔶🔷🔸🔹🔺🔻💠🔘🔳🔲",
           },
         ],
       },

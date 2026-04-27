@@ -1,0 +1,2 @@
+- Add cache for clue values
+- Add support for non-number clue values (e.g. "?", "[1,1,3]", etc)

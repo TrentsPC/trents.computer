@@ -48,7 +48,7 @@ export type FrameProps = {
 export function Frame(props: FrameProps) {
   const ctx = useContext(DesktopContext);
   const [rectBeforeDrag, setRectBeforeDrag] = createSignal<Rect>(
-    getInitialFrameRect(ctx.rect(), props.initialWidth, props.initialHeight)
+    getInitialFrameRect(ctx.rect(), props.initialWidth, props.initialHeight),
   );
   const [unboundedDragDelta, setUnboundedDragDelta] = createStore<Rect>({
     x: 0,
@@ -71,12 +71,12 @@ export function Frame(props: FrameProps) {
     const horizontalBoundedDelta = getBoundedDelta(
       rectBeforeDrag(),
       getHorizontalComponent(unboundedDragDelta),
-      getIsWithinConstraints
+      getIsWithinConstraints,
     );
     const verticalBoundedDelta = getBoundedDelta(
       rectBeforeDrag(),
       getVerticalComponent(unboundedDragDelta),
-      getIsWithinConstraints
+      getIsWithinConstraints,
     );
     return addRect(horizontalBoundedDelta, verticalBoundedDelta);
   });
@@ -161,9 +161,7 @@ const RESIZE_TARGET_INSET = "-4px";
 function ResizeHandles() {
   const ctx = useContext(FrameContext);
 
-  const createHandler = (
-    getDelta: ([mx, my]: [number, number], altKey: boolean) => Rect
-  ) => {
+  const createHandler = (getDelta: ([mx, my]: [number, number], altKey: boolean) => Rect) => {
     return useDrag(({ pressed, delta: [dx, dy], altKey }) => {
       if (pressed) {
         ctx.dragRectBy(getDelta([dx, dy], altKey));
@@ -186,7 +184,7 @@ function ResizeHandles() {
           y: dy,
           width: 0,
           height: -dy,
-        }
+        },
   );
 
   const bottom = createHandler(([dx, dy], altKey) =>
@@ -202,7 +200,7 @@ function ResizeHandles() {
           y: 0,
           width: 0,
           height: dy,
-        }
+        },
   );
 
   const left = createHandler(([dx, dy], altKey) =>
@@ -218,7 +216,7 @@ function ResizeHandles() {
           y: 0,
           width: -dx,
           height: 0,
-        }
+        },
   );
 
   const right = createHandler(([dx, dy], altKey) =>
@@ -234,7 +232,7 @@ function ResizeHandles() {
           y: 0,
           width: dx,
           height: 0,
-        }
+        },
   );
 
   const topLeft = createHandler(([dx, dy], altKey) =>
@@ -250,7 +248,7 @@ function ResizeHandles() {
           y: dy,
           width: -dx,
           height: -dy,
-        }
+        },
   );
 
   const topRight = createHandler(([dx, dy], altKey) =>
@@ -266,7 +264,7 @@ function ResizeHandles() {
           y: dy,
           width: dx,
           height: -dy,
-        }
+        },
   );
 
   const bottomLeft = createHandler(([dx, dy], altKey) =>
@@ -282,7 +280,7 @@ function ResizeHandles() {
           y: 0,
           width: -dx,
           height: dy,
-        }
+        },
   );
 
   const bottomRight = createHandler(([dx, dy], altKey) =>
@@ -298,7 +296,7 @@ function ResizeHandles() {
           y: 0,
           width: dx,
           height: dy,
-        }
+        },
   );
   return (
     <>
@@ -407,7 +405,7 @@ function ResizeHandles() {
 export function getInitialFrameRect(
   desktopRect: Rect,
   basisWidth: number,
-  basisHeight: number
+  basisHeight: number,
 ): Rect {
   const width = Math.min(desktopRect.width, basisWidth);
   const height = Math.min(desktopRect.height, basisHeight);
@@ -422,7 +420,7 @@ export function getInitialFrameRect(
 function getBoundedDelta(
   rect: Rect,
   delta: Rect,
-  fitsConstraintsFn: (rect: Rect) => boolean
+  fitsConstraintsFn: (rect: Rect) => boolean,
 ): Rect {
   if (!fitsConstraintsFn(rect)) {
     return {
@@ -455,10 +453,5 @@ function getBoundedDelta(
 }
 
 function getAbsoluteMaxValue(rect: Rect) {
-  return Math.max(
-    Math.abs(rect.width),
-    Math.abs(rect.height),
-    Math.abs(rect.x),
-    Math.abs(rect.y)
-  );
+  return Math.max(Math.abs(rect.width), Math.abs(rect.height), Math.abs(rect.x), Math.abs(rect.y));
 }
