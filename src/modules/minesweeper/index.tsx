@@ -1,4 +1,10 @@
-import { createEffect, createMemo, createSignal, For, onCleanup } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+} from "solid-js";
 import { fonts } from "~/theme.styles";
 import {
   benchmarkGenerator,
@@ -15,12 +21,6 @@ import {
 } from "./backend/solver";
 import { CellClue, Minefield, Position } from "./backend/types";
 import { LevelSelect } from "./level-select";
-
-function getMineCount(width: number, height: number) {
-  const area = width * height;
-  const mines = Math.round(area * 0.4);
-  return mines;
-}
 
 const t = true;
 const f = false;
@@ -65,12 +65,18 @@ function cloneMinefield(minefield: Minefield): Minefield {
   };
 }
 
-export function MinesweeperGame(props: { initialMinefield: Minefield }) {
+export function MinesweeperGame() {
+  return <MinesweeperGameLevel initialMinefield={exampleMinefield} />;
+}
+
+function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [failure, setFailure] = createSignal<Minefield | undefined>();
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const [difficulty, setDifficulty] = createSignal(3);
-  const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(undefined);
+  const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(
+    undefined,
+  );
   const [drawMode, setDrawMode] = createSignal(false);
   createEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -84,7 +90,10 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
     });
   });
   const visible = createMemo(() =>
-    getVisibleUnsolvedPositions(minefield(), hoveredPosition() ? [hoveredPosition()!] : []),
+    getVisibleUnsolvedPositions(
+      minefield(),
+      hoveredPosition() ? [hoveredPosition()!] : [],
+    ),
   );
 
   function updateSolveState(x: number, y: number, state: boolean) {
@@ -227,8 +236,8 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       }}
     >
       <LevelSelect
-        onLevelSelect={(opts) => {
-          const minefield = generateSatisfyingMinefield(opts);
+        onLevelSelect={async (opts) => {
+          const minefield = await generateSatisfyingMinefield(opts);
           if (minefield) {
             setMinefield(minefield);
             setHint(undefined);
@@ -239,7 +248,8 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
         }}
       />
       <div>
-        {minefield().mines} mines ({minefield().mines - minefield().flags} remaining)
+        {minefield().mines} mines ({minefield().mines - minefield().flags}{" "}
+        remaining)
       </div>
       <div
         style={{
@@ -255,7 +265,9 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
           {(row, y) => (
             <For each={row}>
               {(cell, x) => {
-                const clue = createMemo(() => getCellClue(minefield(), x(), y()));
+                const clue = createMemo(() =>
+                  getCellClue(minefield(), x(), y()),
+                );
                 const failed = () => failure()?.solveState[y()][x()] === true;
                 const hidden = () => minefield().mask[y()][x()] === false;
                 return (
@@ -269,7 +281,7 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                       height: 64,
                       fontScale: 6,
                       textAlign: "center",
-                      fontFamily: fonts.mono,
+                      fontFamily: fonts.sans,
                       "&[data-grid=hex]": {
                         "--s": "64px",
                         height: "var(--s)",
@@ -336,13 +348,19 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                         if (hint) {
                           let next = cloneMinefield(minefield());
                           for (let [flagX, flagY] of hint.mustBeFlag) {
-                            if (Math.abs(flagX - x()) <= 1 && Math.abs(flagY - y()) <= 1) {
+                            if (
+                              Math.abs(flagX - x()) <= 1 &&
+                              Math.abs(flagY - y()) <= 1
+                            ) {
                               next.solveState[flagY][flagX] = true;
                               next.flags++;
                             }
                           }
                           for (let [safeX, safeY] of hint.mustBeSafe) {
-                            if (Math.abs(safeX - x()) <= 1 && Math.abs(safeY - y()) <= 1) {
+                            if (
+                              Math.abs(safeX - x()) <= 1 &&
+                              Math.abs(safeY - y()) <= 1
+                            ) {
                               next.solveState[safeY][safeX] = false;
                             }
                           }
@@ -355,7 +373,8 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                       oppositeTest.solveState[y()][x()] = true;
                       oppositeTest.flags++;
 
-                      const badSolve = createHypotheticalSolveForEntireBoard(oppositeTest);
+                      const badSolve =
+                        createHypotheticalSolveForEntireBoard(oppositeTest);
                       if (badSolve) {
                         setFailure(badSolve);
                       } else {
@@ -370,7 +389,8 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
                       const oppositeTest = cloneMinefield(minefield());
                       oppositeTest.solveState[y()][x()] = false;
 
-                      const badSolve = createHypotheticalSolveForEntireBoard(oppositeTest);
+                      const badSolve =
+                        createHypotheticalSolveForEntireBoard(oppositeTest);
                       if (badSolve) {
                         oppositeTest.solveState[y()][x()] = undefined;
                         setFailure(badSolve);
@@ -419,193 +439,6 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
       >
         GET HINT
       </button>
-      DIFFICULTY
-      <table>
-        <tbody>
-          <tr>
-            <For each={[3, 5, 7]}>
-              {(width) => (
-                <td
-                  css={{
-                    width: 32,
-                    height: 32,
-                    border: "1px solid black",
-                    fontScale: 0,
-                    textAlign: "center",
-                  }}
-                  style={{
-                    "background-color": difficulty() === width ? "lightgrey" : "white",
-                  }}
-                  onClick={() => {
-                    setDifficulty(width);
-                  }}
-                >
-                  {width === 7 ? "!!" : width === 5 ? "!" : "."}
-                </td>
-              )}
-            </For>
-          </tr>
-        </tbody>
-      </table>
-      NEW SQUARE GAME
-      <table>
-        <tbody>
-          <tr>
-            <For each={[4, 5, 6, 7, 8]}>
-              {(width) => (
-                <td
-                  css={{
-                    width: 32,
-                    height: 32,
-                    border: "1px solid black",
-                    fontScale: 0,
-                    textAlign: "center",
-                    color: "transparent",
-                    "&:hover": {
-                      color: "black",
-                    },
-                  }}
-                  style={{
-                    "background-color": getMineCount(width, width) ? "white" : "lightgrey",
-                  }}
-                  onClick={async () => {
-                    const mines = getMineCount(width, width);
-                    if (mines) {
-                      const minefield = generateSatisfyingMinefield({
-                        difficulty: difficulty(),
-                        width: width,
-                        height: width,
-                        mines: mines,
-                        grid: "square",
-                      });
-                      if (minefield) {
-                        setMinefield(minefield);
-                        setHint(undefined);
-                        setFailure(undefined);
-                      } else {
-                        alert("fail, womp womp :(");
-                      }
-                    }
-                  }}
-                >
-                  {width}x{width}
-                </td>
-              )}
-            </For>
-          </tr>
-        </tbody>
-      </table>
-      NEW HEX GAME
-      <table>
-        <tbody>
-          <tr>
-            <For each={[3, 4, 5, 6, 7, 8]}>
-              {(sideLength) => (
-                <td
-                  css={{
-                    width: 32,
-                    height: 32,
-                    border: "1px solid black",
-                    fontScale: 0,
-                    textAlign: "center",
-                    color: "transparent",
-                    "&:hover": {
-                      color: "black",
-                    },
-                  }}
-                  style={{
-                    "background-color": getMineCount(sideLength, sideLength)
-                      ? "white"
-                      : "lightgrey",
-                  }}
-                  onClick={async () => {
-                    let mines = getMineCount(sideLength, sideLength) || 2;
-                    mines = mines * 2;
-
-                    // const mines = 5;
-                    const width = sideLength * 2 - 1;
-                    const height = sideLength * 2 - 1;
-                    if (mines) {
-                      const minefield = generateSatisfyingMinefield({
-                        difficulty: difficulty(),
-                        width: width,
-                        height: height,
-                        mines: mines,
-                        grid: "hex",
-                      });
-                      if (minefield) {
-                        setMinefield(minefield);
-                        setHint(undefined);
-                        setFailure(undefined);
-                      } else {
-                        alert("fail, womp womp :(");
-                      }
-                    }
-                  }}
-                >
-                  {sideLength}
-                </td>
-              )}
-            </For>
-          </tr>
-        </tbody>
-      </table>
-      NEW TRI GAME
-      <table>
-        <tbody>
-          <tr>
-            <For each={[3, 4, 5, 6, 7, 8]}>
-              {(sideLength) => (
-                <td
-                  css={{
-                    width: 32,
-                    height: 32,
-                    border: "1px solid black",
-                    fontScale: 0,
-                    textAlign: "center",
-                    color: "transparent",
-                    "&:hover": {
-                      color: "black",
-                    },
-                  }}
-                  style={{
-                    "background-color": getMineCount(sideLength, sideLength)
-                      ? "white"
-                      : "lightgrey",
-                  }}
-                  onClick={async () => {
-                    const height = sideLength;
-                    let width = sideLength * 2 - 1;
-                    if (sideLength % 2 === 0) {
-                      width++;
-                    }
-                    let mines = getMineCount(width, height) || 2;
-                    mines = mines / 2;
-                    if (mines) {
-                      const minefield = generateMinefield({
-                        difficulty: difficulty(),
-                        width: width,
-                        height: height,
-                        mines: mines,
-                        grid: "triangle",
-                      });
-                      if (minefield) {
-                        setMinefield(minefield);
-                        setHint(undefined);
-                        setFailure(undefined);
-                      } else {
-                        alert("fail, womp womp :(");
-                      }
-                    }
-                  }}
-                >
-                  {sideLength}
-                </td>
-              )}
-            </For>
-          </tr>
-        </tbody>
-      </table>
       <button
         onClick={() => {
           const solve = solveMinefield(minefield(), difficulty());
@@ -625,9 +458,9 @@ export function MinesweeperGame(props: { initialMinefield: Minefield }) {
         onClick={() => {
           getSatisfactionRate({
             difficulty: difficulty(),
-            width: 4,
+            width: 5,
             height: 5,
-            mines: 7,
+            mines: 10,
             grid: "square",
           });
         }}
@@ -648,12 +481,17 @@ async function getSatisfactionRate(opts: GenerateMinefieldOptions) {
   const minMines = 4;
   const maxMines = Math.min((opts.height * opts.width) / 2);
 
-  const satisfyCountByMineCount = Array.from({ length: maxMines + 1 }).fill(0) as number[];
+  const satisfyCountByMineCount = Array.from({ length: maxMines + 1 }).fill(
+    0,
+  ) as number[];
 
   for (let n = 1; n <= 400; n++) {
     for (let mines = minMines; mines <= maxMines; mines++) {
       const randomMinefield = await generateMinefield({ ...opts, mines });
-      const simpleAttempt = await solveMinefield(randomMinefield, simpleSolverDifficulty);
+      const simpleAttempt = await solveMinefield(
+        randomMinefield,
+        simpleSolverDifficulty,
+      );
       if (!isSolved(simpleAttempt)) {
         satisfyCountByMineCount[mines]++;
       }
@@ -665,14 +503,20 @@ async function getSatisfactionRate(opts: GenerateMinefieldOptions) {
   console.log("END");
 }
 
-function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
+async function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
   const simpleSolverDifficulty = opts.difficulty - 2;
 
   for (let n = 1; n <= 50; n++) {
     const randomMinefield = generateMinefield(opts);
-    const simpleAttempt = solveMinefield(cloneMinefield(randomMinefield), simpleSolverDifficulty);
+    const simpleAttempt = solveMinefield(
+      cloneMinefield(randomMinefield),
+      simpleSolverDifficulty,
+    );
     if (!isSolved(simpleAttempt)) {
       return randomMinefield;
     }
+    await waitMicrotask();
   }
 }
+
+const waitMicrotask = () => new Promise<void>((res) => queueMicrotask(res));
