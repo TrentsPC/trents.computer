@@ -1,4 +1,4 @@
-import { solveMinefield } from "./solver-2";
+import { solveMinefield } from "./solver";
 import { CellClue, Grid, GridType, Minefield } from "./types";
 import { getAllRevealedClues } from "./utils";
 

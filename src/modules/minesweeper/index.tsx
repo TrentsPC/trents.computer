@@ -10,7 +10,7 @@ import {
   benchmarkGenerator,
   generateMinefield,
   GenerateMinefieldOptions,
-} from "./generator";
+} from "./backend/generator";
 import {
   createHypotheticalSolveForEntireBoard,
   getCellClue,
@@ -18,8 +18,8 @@ import {
   getVisibleUnsolvedPositions,
   HintResult,
   solveMinefield,
-} from "./solver-2";
-import { CellClue, Minefield, Position } from "./types";
+} from "./backend/solver";
+import { CellClue, Minefield, Position } from "./backend/types";
 
 // 5x5: 10 - 40%
 // 6x6: 14 - 38%
