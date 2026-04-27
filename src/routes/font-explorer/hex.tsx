@@ -16,7 +16,7 @@ function getAsciiChar(charCode: number) {
   return String.fromCharCode(charCode);
 }
 
-export default function HexViewer() {
+function HexViewer() {
   const fontBuffer = useFontBuffer();
 
   const dataView = () => {
@@ -25,7 +25,7 @@ export default function HexViewer() {
     return new DataView(
       new ArrayBuffer(ROW_COUNT * BYTES_PER_ROW),
       0,
-      ROW_COUNT * BYTES_PER_ROW
+      ROW_COUNT * BYTES_PER_ROW,
     );
   };
 
@@ -92,12 +92,12 @@ export default function HexViewer() {
                         .toString(16)
                         .padStart(2, "0")}
                     </td>
-                  )
+                  ),
                 )}
                 <td />
                 <td>
                   {range(0, BYTES_PER_ROW).map((n) =>
-                    getAsciiChar(dataView().getUint8(row * BYTES_PER_ROW + n))
+                    getAsciiChar(dataView().getUint8(row * BYTES_PER_ROW + n)),
                   )}
                 </td>
               </tr>
