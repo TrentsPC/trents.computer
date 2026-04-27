@@ -328,7 +328,7 @@ function FontSection(props: {
   return (
     <div
       style={{
-        width: "220px",
+        width: "200px",
         background: colors.background,
         "border-right": `2px solid ${colors.border}`,
         display: "flex",
@@ -1168,12 +1168,14 @@ function PreviewSection(props: { font: FontData }) {
     ctx.scale(dpr, dpr);
 
     ctx.clearRect(0, 0, w, h);
-    ctx.strokeStyle = colors.border;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, baselineY);
-    ctx.lineTo(w, baselineY);
-    ctx.stroke();
+
+    // ctx.strokeStyle = colors.border;
+    // ctx.lineWidth = 2;
+    // ctx.beginPath();
+    // ctx.moveTo(0, baselineY);
+    // ctx.lineTo(w, baselineY);
+    // ctx.stroke();
+
     let x = 0;
     for (const ch of previewText()) {
       const glyph = font().glyphs[cpKey(ch.codePointAt(0)!)];

@@ -1,21 +1,5 @@
 import { createEffect, JSX } from "solid-js";
 
-const GAMEBOY = ["#a3b334", "#6B882E", "#3A6122", "#0f3810"];
-const colors = {
-  background: GAMEBOY[0],
-  text: GAMEBOY[3],
-  text2: GAMEBOY[2],
-  border: GAMEBOY[1],
-
-  canvas: {
-    bg1: GAMEBOY[0],
-    bg2: GAMEBOY[0],
-    border: GAMEBOY[1],
-    guideline: GAMEBOY[3],
-    fill: GAMEBOY[3],
-  },
-};
-
 type Matrix = number[][];
 
 const BAYER_2: Matrix = [
@@ -39,10 +23,28 @@ const BAYER_8: Matrix = [
   [63, 31, 55, 23, 61, 29, 53, 21],
 ];
 
+function getRGBFromCSSVar(element: HTMLElement, cssVar: string) {
+  const el = element; // or whatever element has the var
+  const raw = getComputedStyle(el).getPropertyValue(cssVar).trim();
+
+  // Create a temporary element to let the browser normalize any color format
+  const ctx = document.createElement("canvas").getContext("2d")!;
+  ctx.fillStyle = raw;
+  ctx.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1, {
+    colorSpace: "srgb",
+    pixelFormat: "rgba-unorm8",
+  }).data;
+
+  return [r, g, b] as const;
+}
+
 export function Dialog(props: { children?: JSX.Element }) {
   let canvasRef = null! as HTMLCanvasElement;
 
   createEffect(() => {
+    const shadowColor = getRGBFromCSSVar(canvasRef, "--color-2");
+
     const canvas = canvasRef;
     let ctx = canvas.getContext("2d")!;
 
@@ -58,8 +60,9 @@ export function Dialog(props: { children?: JSX.Element }) {
     canvas.style.width = rawW + "px";
     canvas.style.height = rawH + "px";
 
-    ctx.fillStyle = "#bebebe";
-    ctx.fillStyle = "#808080";
+    ctx.fillStyle = "#c0c0c0";
+    // ctx.fillStyle = "#808080";
+    // ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, width, height);
 
     const midPointX = Math.floor(width / 2);
@@ -69,7 +72,7 @@ export function Dialog(props: { children?: JSX.Element }) {
 
     ctx.shadowBlur = 48 / 2;
     ctx.shadowColor = "rgba(0,0,0,1)";
-    ctx.shadowOffsetY = 16 / 2;
+    ctx.shadowOffsetY = 16;
     ctx.fillStyle = "white";
     ctx.fillRect(
       midPointX - dialogContentWidth / 2,
@@ -97,7 +100,7 @@ export function Dialog(props: { children?: JSX.Element }) {
       const columns = thresholdMatrix[0].length;
       const total = rows * columns;
 
-      const value = data / 256;
+      const value = data / 255;
       // const threshold = thresholdMatrix[y % rows][x % columns];
       // const threshold = Math.random() * total;
       // https://matejlou.blog/2023/12/06/ordered-dithering-for-arbitrary-or-irregular-palettes/
@@ -116,20 +119,20 @@ export function Dialog(props: { children?: JSX.Element }) {
       colorSpace: "srgb",
       pixelFormat: "rgba-unorm8",
     });
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const position = (y * width + x) * 4;
-        const red = imageData.data.at(position);
+    for (let y = 0; y < imageData.height; y++) {
+      for (let x = 0; x < imageData.width; x++) {
+        const position = (y * imageData.width + x) * 4;
+        let red = imageData.data.at(position);
         const dither = ditherPixel(x, y, red || 0);
-        if (dither) {
-          imageData.data.set([15, 56, 16, 255], position);
-        } else {
-          imageData.data.set([200, 200, 200, 0], position);
-        }
+        try {
+          if (dither) {
+            imageData.data.set([...shadowColor, 255], position);
+          } else {
+            imageData.data.set([...shadowColor, 0], position);
+          }
+        } catch {}
       }
     }
-
-    // ctx.clearRect(0, 0, width, height);
 
     ctx.putImageData(imageData, 0, 0);
   });
@@ -143,7 +146,7 @@ export function Dialog(props: { children?: JSX.Element }) {
         alignItems: "center",
         // justifyContent: "center",
         paddingTop: 128 * 2,
-        pointerEvents: "none",
+        // pointerEvents: "none",
         flexDirection: "column",
       }}
       style={{
@@ -165,10 +168,10 @@ export function Dialog(props: { children?: JSX.Element }) {
       <div
         css={{ width: 512 * 2, height: 256 * 2, padding: 16 }}
         style={{
-          "background-color": colors.background,
+          "background-color": "var(--color-0)",
           // border: `2px solid ${colors.text2}`,
           position: "relative",
-          "box-shadow": `0 0 0 2px ${colors.text2}`,
+          "box-shadow": `0 0 0 2px var(--color-2)`,
         }}
       >
         {props.children}
