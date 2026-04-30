@@ -4,10 +4,10 @@ import {
   createSignal,
   For,
   onCleanup,
+  Show,
 } from "solid-js";
 import { fonts } from "~/theme.styles";
 import {
-  benchmarkGenerator,
   generateMinefield,
   GenerateMinefieldOptions,
 } from "./backend/generator";
@@ -66,14 +66,72 @@ function cloneMinefield(minefield: Minefield): Minefield {
 }
 
 export function MinesweeperGame() {
-  return <MinesweeperGameLevel initialMinefield={exampleMinefield} />;
+  const [selectedVariant, setSelectedVariant] = createSignal<
+    GenerateMinefieldOptions | undefined
+  >();
+  const [initialMinefield, setInitialMinefield] = createSignal<
+    Minefield | undefined
+  >();
+
+  return (
+    <Show
+      when={selectedVariant() && initialMinefield()}
+      fallback={
+        <LevelSelect
+          onLevelSelect={async (opts) => {
+            const minefield = await generateSatisfyingMinefield(opts);
+            if (minefield) {
+              setInitialMinefield(minefield);
+              setSelectedVariant(opts);
+            } else {
+              alert("fail, womp womp :(");
+            }
+          }}
+        />
+      }
+    >
+      <MinesweeperGameLevel
+        initialMinefield={initialMinefield()!}
+        minesweeperVariant={selectedVariant()!}
+        onClose={() => {
+          setSelectedVariant(undefined);
+          setInitialMinefield(undefined);
+        }}
+      />
+
+      {/* <button
+        onClick={() => {
+          benchmarkGenerator();
+        }}
+      >
+        BENCHMARK
+      </button>
+      <button
+        onClick={() => {
+          getSatisfactionRate({
+            difficulty: difficulty(),
+            width: 5,
+            height: 5,
+            mines: 10,
+            grid: "square",
+          });
+        }}
+      >
+        SATISFY
+      </button> */}
+    </Show>
+  );
 }
 
-function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
+function MinesweeperGameLevel(props: {
+  initialMinefield: Minefield;
+  minesweeperVariant: GenerateMinefieldOptions;
+  onClose: () => void;
+}) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [failure, setFailure] = createSignal<Minefield | undefined>();
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
-  const [difficulty, setDifficulty] = createSignal(3);
+  const difficulty = () => props.minesweeperVariant.difficulty;
   const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(
     undefined,
   );
@@ -233,249 +291,263 @@ function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
       css={{
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        // height: "100%",
+        width: "100%",
+        height: "100%",
       }}
     >
-      <LevelSelect
-        onLevelSelect={async (opts) => {
-          const minefield = await generateSatisfyingMinefield(opts);
-          if (minefield) {
-            setMinefield(minefield);
-            setHint(undefined);
-            setFailure(undefined);
-          } else {
-            alert("fail, womp womp :(");
-          }
+      <div
+        css={{
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          height: 52,
+          padding: "0px 20px",
         }}
-      />
-      <div>
-        {minefield().mines} mines ({minefield().mines - minefield().flags}{" "}
-        remaining)
+      >
+        <div css={{ flex: "1 0 0px" }}>
+          {minefield().mines} mines ({minefield().mines - minefield().flags}{" "}
+          remaining)
+        </div>
+        <button
+          onClick={() => {
+            setDrawMode((p) => !p);
+          }}
+        >
+          {drawMode() ? "UNDRAW" : "DRAW"}
+        </button>
+        <button
+          onClick={() => {
+            const hint = getHint(minefield(), difficulty());
+            setHint(hint);
+          }}
+        >
+          GET HINT
+        </button>
+        <button
+          onClick={async () => {
+            const minefield = await generateSatisfyingMinefield(
+              props.minesweeperVariant,
+            );
+            if (minefield) {
+              setMinefield(minefield);
+            } else {
+              alert("fail, womp womp :(");
+            }
+          }}
+        >
+          NEXT LEVEL
+        </button>
+        {/* <button
+          onClick={() => {
+            props.onClose();
+          }}
+        >
+          RESTART
+        </button> */}
+        <button
+          onClick={() => {
+            props.onClose();
+          }}
+        >
+          CLOSE
+        </button>
       </div>
       <div
-        style={{
-          display: "grid",
-          // border: `1px solid black`,
-          "row-gap": "2px",
-          "column-gap": "2px",
-          "grid-template-columns": `repeat(${minefield().width}, 1fr)`,
-          position: "relative",
+        css={{
+          flex: "1 0 0px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <For each={minefield().solveState}>
-          {(row, y) => (
-            <For each={row}>
-              {(cell, x) => {
-                const clue = createMemo(() =>
-                  getCellClue(minefield(), x(), y()),
-                );
-                const failed = () => failure()?.solveState[y()][x()] === true;
-                const hidden = () => minefield().mask[y()][x()] === false;
-                return (
-                  <div
-                    css={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      // border: "1px solid black",
-                      width: 64,
-                      height: 64,
-                      fontScale: 6,
-                      textAlign: "center",
-                      fontFamily: fonts.sans,
-                      "&[data-grid=hex]": {
-                        "--s": "64px",
-                        height: "var(--s)",
-                        width: "calc(var(--s) * 1.1547)",
-                        "clip-path":
-                          "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-                        marginRight: "calc(var(--s) * -0.11547 * 2 - 4px)",
-                      },
-                      "&[data-grid=triangle]": {
-                        "--s": "64px",
-                        width: "var(--s)",
-                        height: "calc(var(--s) / 1.1547)",
-                        "clip-path": "polygon(50% 0%, 100% 100%, 0% 100%)",
-                        marginRight: "calc(var(--s) * -0.250 * 2)",
-                        "&[data-even-row=false]": {
-                          "clip-path": "polygon(0% 0%, 100% 0%, 50% 100%)",
+        <div
+          style={{
+            display: "grid",
+            // border: `1px solid black`,
+            "row-gap": "2px",
+            "column-gap": "2px",
+            "grid-template-columns": `repeat(${minefield().width}, 1fr)`,
+            position: "relative",
+          }}
+        >
+          <For each={minefield().solveState}>
+            {(row, y) => (
+              <For each={row}>
+                {(cell, x) => {
+                  const clue = createMemo(() =>
+                    getCellClue(minefield(), x(), y()),
+                  );
+                  const failed = () => failure()?.solveState[y()][x()] === true;
+                  const hidden = () => minefield().mask[y()][x()] === false;
+                  return (
+                    <div
+                      css={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        // border: "1px solid black",
+                        width: 64,
+                        height: 64,
+                        fontScale: 6,
+                        textAlign: "center",
+                        fontFamily: fonts.sans,
+                        "&[data-grid=hex]": {
+                          "--s": "64px",
+                          height: "var(--s)",
+                          width: "calc(var(--s) * 1.1547)",
+                          "clip-path":
+                            "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+                          marginRight: "calc(var(--s) * -0.11547 * 2 - 4px)",
                         },
-                        "&[data-even-col=false]": {
-                          "clip-path": "polygon(0% 0%, 100% 0%, 50% 100%)",
+                        "&[data-grid=triangle]": {
+                          "--s": "64px",
+                          width: "var(--s)",
+                          height: "calc(var(--s) / 1.1547)",
+                          "clip-path": "polygon(50% 0%, 100% 100%, 0% 100%)",
+                          marginRight: "calc(var(--s) * -0.250 * 2)",
                           "&[data-even-row=false]": {
-                            "clip-path": "polygon(50% 0%, 100% 100%, 0% 100%)",
+                            "clip-path": "polygon(0% 0%, 100% 0%, 50% 100%)",
+                          },
+                          "&[data-even-col=false]": {
+                            "clip-path": "polygon(0% 0%, 100% 0%, 50% 100%)",
+                            "&[data-even-row=false]": {
+                              "clip-path":
+                                "polygon(50% 0%, 100% 100%, 0% 100%)",
+                            },
                           },
                         },
-                      },
-                    }}
-                    data-grid={minefield().grid}
-                    data-even-col={x() % 2 === 0 ? "true" : "false"}
-                    data-even-row={y() % 2 === 0 ? "true" : "false"}
-                    style={{
-                      opacity: hidden() ? 0 : 1,
-                      transform:
-                        minefield().grid === "hex"
-                          ? x() % 2 === 1
-                            ? `translateY(50%)`
-                            : undefined
-                          : undefined,
-                      // ...(minefield().grid === "hex"
-                      //   ? {
-                      //   }
-                      //   : {}),
+                      }}
+                      data-grid={minefield().grid}
+                      data-even-col={x() % 2 === 0 ? "true" : "false"}
+                      data-even-row={y() % 2 === 0 ? "true" : "false"}
+                      style={{
+                        opacity: hidden() ? 0 : 1,
+                        transform:
+                          minefield().grid === "hex"
+                            ? x() % 2 === 1
+                              ? `translateY(50%)`
+                              : undefined
+                            : undefined,
+                        // ...(minefield().grid === "hex"
+                        //   ? {
+                        //   }
+                        //   : {}),
 
-                      "background-color":
-                        isInvolvedInHint(x(), y()) === "clue"
-                          ? "gold"
-                          : isInvolvedInHint(x(), y())
-                            ? "lightseagreen"
-                            : isVisible(x(), y())
-                              ? "silver"
-                              : "rgba(0,0,0,0.05)",
-                    }}
-                    onMouseEnter={() => {
-                      setHoveredClue([x(), y()]);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredClue(undefined);
-                    }}
-                    onClick={() => {
-                      setHint(undefined);
-                      if (cell === false) {
-                        // Try Auto-complete
-                        const hint = getHint(minefield(), 1, [x(), y()]);
-                        const clueType = minefield().cellClues[y()][x()];
-                        const visible = getVisiblePositionsFromCell(
-                          clueType,
-                          x(),
-                          y(),
-                        );
-                        if (hint) {
-                          let next = cloneMinefield(minefield());
-                          for (let [flagX, flagY] of hint.mustBeFlag) {
-                            if (
-                              visible.some(
-                                ([x, y]) => flagX === x && flagY === y,
-                              )
-                            ) {
-                              next.solveState[flagY][flagX] = true;
-                              next.flags++;
+                        "background-color":
+                          isInvolvedInHint(x(), y()) === "clue"
+                            ? "gold"
+                            : isInvolvedInHint(x(), y())
+                              ? "lightseagreen"
+                              : isVisible(x(), y())
+                                ? "silver"
+                                : "rgba(0,0,0,0.05)",
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredClue([x(), y()]);
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredClue(undefined);
+                      }}
+                      onClick={() => {
+                        setHint(undefined);
+                        if (cell === false) {
+                          // Try Auto-complete
+                          const hint = getHint(minefield(), 1, [x(), y()]);
+                          const clueType = minefield().cellClues[y()][x()];
+                          const visible = getVisiblePositionsFromCell(
+                            clueType,
+                            x(),
+                            y(),
+                          );
+                          if (hint) {
+                            let next = cloneMinefield(minefield());
+                            for (let [flagX, flagY] of hint.mustBeFlag) {
+                              if (
+                                visible.some(
+                                  ([x, y]) => flagX === x && flagY === y,
+                                )
+                              ) {
+                                next.solveState[flagY][flagX] = true;
+                                next.flags++;
+                              }
                             }
-                          }
-                          for (let [safeX, safeY] of hint.mustBeSafe) {
-                            if (
-                              visible.some(
-                                ([x, y]) => safeX === x && safeY === y,
-                              )
-                            ) {
-                              next.solveState[safeY][safeX] = false;
+                            for (let [safeX, safeY] of hint.mustBeSafe) {
+                              if (
+                                visible.some(
+                                  ([x, y]) => safeX === x && safeY === y,
+                                )
+                              ) {
+                                next.solveState[safeY][safeX] = false;
+                              }
                             }
+                            setMinefield(next);
                           }
-                          setMinefield(next);
+                          return;
                         }
-                        return;
-                      }
-                      if (cell !== undefined) return;
-                      const oppositeTest = cloneMinefield(minefield());
-                      oppositeTest.solveState[y()][x()] = true;
-                      oppositeTest.flags++;
+                        if (cell !== undefined) return;
+                        const oppositeTest = cloneMinefield(minefield());
+                        oppositeTest.solveState[y()][x()] = true;
+                        oppositeTest.flags++;
 
-                      const badSolve =
-                        createHypotheticalSolveForEntireBoard(oppositeTest);
-                      if (badSolve) {
-                        setFailure(badSolve);
-                      } else {
-                        updateSolveState(x(), y(), false);
-                      }
-                    }}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      setHint(undefined);
-                      if (cell !== undefined) return;
+                        const badSolve =
+                          createHypotheticalSolveForEntireBoard(oppositeTest);
+                        if (badSolve) {
+                          setFailure(badSolve);
+                        } else {
+                          updateSolveState(x(), y(), false);
+                        }
+                      }}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setHint(undefined);
+                        if (cell !== undefined) return;
 
-                      const oppositeTest = cloneMinefield(minefield());
-                      oppositeTest.solveState[y()][x()] = false;
+                        const oppositeTest = cloneMinefield(minefield());
+                        oppositeTest.solveState[y()][x()] = false;
 
-                      const badSolve =
-                        createHypotheticalSolveForEntireBoard(oppositeTest);
-                      if (badSolve) {
-                        oppositeTest.solveState[y()][x()] = undefined;
-                        setFailure(badSolve);
-                      } else {
-                        updateSolveState(x(), y(), true);
-                      }
-                    }}
-                  >
-                    {failed()
-                      ? "💣"
-                      : cell === undefined
-                        ? ""
-                        : cell
-                          ? "⛳️"
-                          : clue() === -1
-                            ? "?"
-                            : clue()}
-                  </div>
-                );
-              }}
-            </For>
-          )}
-        </For>
-        <canvas
-          ref={canvasRef}
-          css={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            // backgroundColor: "red",
-          }}
-          style={{
-            opacity: drawMode() ? 1 : 0.333,
-            "pointer-events": drawMode() ? "auto" : "none",
-          }}
-        />
+                        const badSolve =
+                          createHypotheticalSolveForEntireBoard(oppositeTest);
+                        if (badSolve) {
+                          oppositeTest.solveState[y()][x()] = undefined;
+                          setFailure(badSolve);
+                        } else {
+                          updateSolveState(x(), y(), true);
+                        }
+                      }}
+                    >
+                      {failed()
+                        ? "💣"
+                        : cell === undefined
+                          ? ""
+                          : cell
+                            ? "⛳️"
+                            : clue() === -1
+                              ? "?"
+                              : clue()}
+                    </div>
+                  );
+                }}
+              </For>
+            )}
+          </For>
+          <canvas
+            ref={canvasRef}
+            css={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              // backgroundColor: "red",
+            }}
+            style={{
+              opacity: drawMode() ? 1 : 0.333,
+              "pointer-events": drawMode() ? "auto" : "none",
+            }}
+          />
+        </div>
       </div>
-      <button
-        css={{ mt: 32 }}
-        onClick={() => {
-          const hint = getHint(minefield(), difficulty());
-          setHint(hint);
-        }}
-      >
-        GET HINT
-      </button>
-      <button
-        onClick={() => {
-          const solve = solveMinefield(minefield(), difficulty());
-          setMinefield(solve);
-        }}
-      >
-        SOLVE
-      </button>
-      <button
-        onClick={() => {
-          benchmarkGenerator();
-        }}
-      >
-        BENCHMARK
-      </button>
-      <button
-        onClick={() => {
-          getSatisfactionRate({
-            difficulty: difficulty(),
-            width: 5,
-            height: 5,
-            mines: 10,
-            grid: "square",
-          });
-        }}
-      >
-        SATISFY
-      </button>
+      <div css={{ height: 52 }} />
     </div>
   );
 }
