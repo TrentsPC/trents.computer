@@ -1,62 +1,26 @@
 import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  onCleanup,
-  Show,
+    createEffect,
+    createMemo,
+    createSignal,
+    For,
+    onCleanup,
+    Show,
 } from "solid-js";
 import { fonts } from "~/theme.styles";
 import {
-  generateMinefield,
-  GenerateMinefieldOptions,
+    generateMinefield,
+    GenerateMinefieldOptions,
 } from "./backend/generator";
 import {
-  createHypotheticalSolveForEntireBoard,
-  getCellClue,
-  getHint,
-  getVisiblePositionsFromCell,
-  HintResult,
-  solveMinefield,
+    createHypotheticalSolveForEntireBoard,
+    getCellClue,
+    getHint,
+    getVisiblePositionsFromCell,
+    HintResult,
+    solveMinefield,
 } from "./backend/solver";
-import { CellClue, Minefield, Position } from "./backend/types";
+import { Minefield, Position } from "./backend/types";
 import { LevelSelect } from "./level-select";
-
-const t = true;
-const f = false;
-const u = undefined;
-const m = CellClue.Mine;
-const v = CellClue.Vanilla;
-const a = CellClue.Any;
-export const exampleMinefield: Minefield = {
-  width: 5,
-  height: 5,
-  grid: "square",
-  mines: 10,
-  flags: 0,
-  fieldClue: "vanilla",
-  cellClues: [
-    [m, m, v, v, v],
-    [a, a, v, m, m],
-    [v, v, m, m, m],
-    [m, a, m, v, a],
-    [m, v, v, v, a],
-  ],
-  solveState: [
-    [u, u, u, f, f],
-    [u, u, u, u, u],
-    [u, u, u, u, u],
-    [u, u, u, u, u],
-    [u, f, f, u, u],
-  ],
-  mask: [
-    [t, t, t, t, t],
-    [t, t, t, t, t],
-    [t, t, t, t, t],
-    [t, t, t, t, t],
-    [t, t, t, t, t],
-  ],
-};
 
 function cloneMinefield(minefield: Minefield): Minefield {
   return {
@@ -330,6 +294,10 @@ function MinesweeperGameLevel(props: {
             );
             if (minefield) {
               setMinefield(minefield);
+              setFailure(undefined);
+              setHint(undefined);
+              setHoveredClue(undefined);
+              setDrawMode(false);
             } else {
               alert("fail, womp womp :(");
             }
