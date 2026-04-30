@@ -15,7 +15,7 @@ import {
   createHypotheticalSolveForEntireBoard,
   getCellClue,
   getHint,
-  getVisibleUnsolvedPositions,
+  getVisiblePositionsFromCell,
   HintResult,
   solveMinefield,
 } from "./backend/solver";
@@ -89,12 +89,15 @@ function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
       window.removeEventListener("keydown", handleKeyDown);
     });
   });
-  const visible = createMemo(() =>
-    getVisibleUnsolvedPositions(
-      minefield(),
-      hoveredPosition() ? [hoveredPosition()!] : [],
-    ),
-  );
+  const visible = createMemo(() => {
+    if (!hoveredPosition()) return [];
+    const [x, y] = hoveredPosition()!;
+    const cellType = minefield().cellClues[y][x];
+    if (minefield().solveState[y][x] === undefined) {
+      return [[x, y]] as Position[];
+    }
+    return getVisiblePositionsFromCell(cellType, x, y);
+  });
 
   function updateSolveState(x: number, y: number, state: boolean) {
     const next = cloneMinefield(minefield());
@@ -333,9 +336,7 @@ function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
                               : "rgba(0,0,0,0.05)",
                     }}
                     onMouseEnter={() => {
-                      if (cell === false) {
-                        setHoveredClue([x(), y()]);
-                      }
+                      setHoveredClue([x(), y()]);
                     }}
                     onMouseLeave={() => {
                       setHoveredClue(undefined);
@@ -345,12 +346,19 @@ function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
                       if (cell === false) {
                         // Try Auto-complete
                         const hint = getHint(minefield(), 1, [x(), y()]);
+                        const clueType = minefield().cellClues[y()][x()];
+                        const visible = getVisiblePositionsFromCell(
+                          clueType,
+                          x(),
+                          y(),
+                        );
                         if (hint) {
                           let next = cloneMinefield(minefield());
                           for (let [flagX, flagY] of hint.mustBeFlag) {
                             if (
-                              Math.abs(flagX - x()) <= 1 &&
-                              Math.abs(flagY - y()) <= 1
+                              visible.some(
+                                ([x, y]) => flagX === x && flagY === y,
+                              )
                             ) {
                               next.solveState[flagY][flagX] = true;
                               next.flags++;
@@ -358,8 +366,9 @@ function MinesweeperGameLevel(props: { initialMinefield: Minefield }) {
                           }
                           for (let [safeX, safeY] of hint.mustBeSafe) {
                             if (
-                              Math.abs(safeX - x()) <= 1 &&
-                              Math.abs(safeY - y()) <= 1
+                              visible.some(
+                                ([x, y]) => safeX === x && safeY === y,
+                              )
                             ) {
                               next.solveState[safeY][safeX] = false;
                             }
