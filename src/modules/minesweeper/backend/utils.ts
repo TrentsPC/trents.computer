@@ -1,6 +1,9 @@
 import { Minefield, Position } from "./types";
 
-export function getAllUnsolvedPositions(minefield: Minefield, after?: Position) {
+export function getAllUnsolvedPositions(
+  minefield: Minefield,
+  after?: Position,
+) {
   let positions: Position[] = [];
   const [startX, startY] = after || [0, 0];
   for (let y = startY; y < minefield.height; y++) {
@@ -35,7 +38,10 @@ export function shuffle<T>(array: T[]) {
     currentIndex--;
 
     // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
   }
 }
 

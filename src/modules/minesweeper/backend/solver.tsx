@@ -416,13 +416,30 @@ function getCombinations<T>(sourceArray: T[], k: number) {
   return result;
 }
 
+export function positionIsIncomplete(minefield: Minefield, [x, y]: Position) {
+  const ruleType = minefield.cellClues[y][x];
+  const visiblePositions = getVisiblePositionsFromCell(ruleType, x, y);
+
+  for (let [px, py] of visiblePositions) {
+    if (px >= 0 && py >= 0 && px < minefield.width && py < minefield.height) {
+      if (minefield.solveState[py][px] === undefined) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function* getRevealedClueCombinations(
   minefield: Minefield,
   maxSize: number,
 ): Generator<Position[], void, unknown> {
   const positions = getAllRevealedClues(minefield);
+  const incompletePositions = positions.filter((p) =>
+    positionIsIncomplete(minefield, p),
+  );
   for (let size = 1; size <= maxSize; size++) {
-    const combinations = getCombinations(positions, size);
+    const combinations = getCombinations(incompletePositions, size);
 
     for (const combination of combinations) {
       yield combination;
