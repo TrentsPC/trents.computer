@@ -59,3 +59,7 @@ Colorings:
 - [E'] Eyesight': The clue indicates the difference of non-mines it can see vertically and horizontally. A mine in the way blocks the sight. An arrow indicates the direction of the longer length.
 
 - [#'] Hashtag: Clues may have different rules; the rule of each clue is annotated individually. {7 rules + vanilla + [N][X] + [M][X] + [M][N] + [L][M] + [X'] + [E'] + [W'] + [K]}
+
+
+## 14 Minesweeper Variants 2
+

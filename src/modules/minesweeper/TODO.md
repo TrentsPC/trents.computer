@@ -1,2 +1,4 @@
 - Add cache for clue values
+- Fade out completed clues (clues with no visible unsolved positions)
+- Limit set of positions to find hints for to only combinations of incomplete cells
 - Add support for non-number clue values (e.g. "?", "[1,1,3]", etc)

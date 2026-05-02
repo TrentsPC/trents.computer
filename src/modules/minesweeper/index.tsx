@@ -1,26 +1,26 @@
 import {
-    createEffect,
-    createMemo,
-    createSignal,
-    For,
-    onCleanup,
-    Show,
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  Show,
 } from "solid-js";
 import { fonts } from "~/theme.styles";
 import {
-    generateMinefield,
-    GenerateMinefieldOptions,
+  generateMinefield,
+  GenerateMinefieldOptions,
 } from "./backend/generator";
 import {
-    createHypotheticalSolveForEntireBoard,
-    getCellClue,
-    getHint,
-    getVisiblePositionsFromCell,
-    HintResult,
-    solveMinefield,
+  createHypotheticalSolveForEntireBoard,
+  getCellClue,
+  getHint,
+  getVisiblePositionsFromCell,
+  HintResult,
+  solveMinefield,
 } from "./backend/solver";
 import { Minefield, Position } from "./backend/types";
-import { LevelSelect } from "./level-select";
+import { LevelSelect, LevelSet } from "./level-select";
 
 function cloneMinefield(minefield: Minefield): Minefield {
   return {
@@ -36,12 +36,15 @@ export function MinesweeperGame() {
   const [initialMinefield, setInitialMinefield] = createSignal<
     Minefield | undefined
   >();
+  const [levelSet, setLevelSet] = createSignal<LevelSet>("square");
 
   return (
     <Show
       when={selectedVariant() && initialMinefield()}
       fallback={
         <LevelSelect
+          levelSet={levelSet()}
+          onLevelSetChange={setLevelSet}
           onLevelSelect={async (opts) => {
             const minefield = await generateSatisfyingMinefield(opts);
             if (minefield) {
@@ -524,7 +527,7 @@ function isSolved(minefield: Minefield) {
   return minefield.flags === minefield.mines;
 }
 
-async function getSatisfactionRate(opts: GenerateMinefieldOptions) {
+function getSatisfactionRate(opts: GenerateMinefieldOptions) {
   const simpleSolverDifficulty = opts.difficulty - 1;
 
   const minMines = 4;
@@ -536,8 +539,8 @@ async function getSatisfactionRate(opts: GenerateMinefieldOptions) {
 
   for (let n = 1; n <= 400; n++) {
     for (let mines = minMines; mines <= maxMines; mines++) {
-      const randomMinefield = await generateMinefield({ ...opts, mines });
-      const simpleAttempt = await solveMinefield(
+      const randomMinefield = generateMinefield({ ...opts, mines });
+      const simpleAttempt = solveMinefield(
         randomMinefield,
         simpleSolverDifficulty,
       );

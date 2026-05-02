@@ -9,11 +9,15 @@ function cloneMinefield(minefield: Minefield): Minefield {
   };
 }
 
-function hideCluesUntilBarelySolvable(minefield: Minefield, difficulty: number) {
+function hideCluesUntilBarelySolvable(
+  minefield: Minefield,
+  difficulty: number,
+) {
   let unsolvable = false;
   let loops = 0;
 
-  const knownClues = getAllRevealedClues(minefield);
+  let knownClues = getAllRevealedClues(minefield);
+  knownClues = knownClues.filter(([x, y]) => !!minefield.mask[y][x]);
 
   while (!unsolvable && loops < 100) {
     const clueIndex = Math.floor(Math.random() * knownClues.length);
@@ -34,16 +38,19 @@ function hideCluesUntilBarelySolvable(minefield: Minefield, difficulty: number) 
   return minefield;
 }
 
-function removeCluesUntilBarelySolvable(minefield: Minefield, difficulty: number) {
+function removeCluesUntilBarelySolvable(
+  minefield: Minefield,
+  difficulty: number,
+) {
   let unsolvable = false;
   const { width, height } = minefield;
   let loops = 0;
 
-  while (!unsolvable && loops < 15) {
+  while (!unsolvable && loops < 100) {
     const x = Math.floor(Math.random() * width);
     const y = Math.floor(Math.random() * height);
     const clueType = minefield.cellClues[y][x];
-    if (clueType === CellClue.Mine) {
+    if (clueType === CellClue.Mine || clueType === CellClue.Any) {
       continue;
     }
 
@@ -64,6 +71,7 @@ export type GenerateMinefieldOptions = {
   height: number;
   mines: number;
   grid: GridType;
+  cellRules: CellClue[];
 };
 
 export function createHexMask(width = 5, height = 5): Grid<boolean> {
@@ -114,12 +122,15 @@ export function generateMinefield({
   height = 5,
   mines = 10,
   grid: gridType = "square",
+  cellRules,
 }: GenerateMinefieldOptions): Minefield {
-  const defaultClue = {
-    hex: CellClue.VanillaHex,
-    square: CellClue.Vanilla,
-    triangle: CellClue.VanillaTri,
-  }[gridType];
+  const defaultClue =
+    cellRules[0] ||
+    {
+      hex: CellClue.VanillaHex,
+      square: CellClue.Vanilla,
+      triangle: CellClue.VanillaTri,
+    }[gridType];
   const mask = getMask(gridType, width, height);
 
   const grid: Grid<CellClue> = mask.map((row) =>
@@ -135,7 +146,9 @@ export function generateMinefield({
     grid[y][x] = CellClue.Mine;
     minesSoFar++;
   }
-  const solveState = grid.map((row) => row.map((v) => (v === CellClue.Mine ? undefined : false)));
+  const solveState = grid.map((row) =>
+    row.map((v) => (v === CellClue.Mine ? undefined : false)),
+  );
   let baseMinefield: Minefield = {
     cellClues: grid,
     grid: gridType,
@@ -177,7 +190,10 @@ export function generateSatisfyingMinefield(opts: GenerateMinefieldOptions) {
 
   for (let n = 1; n <= 10; n++) {
     const randomMinefield = generateMinefield(opts);
-    const simpleAttempt = solveMinefield(cloneMinefield(randomMinefield), simpleSolverDifficulty);
+    const simpleAttempt = solveMinefield(
+      cloneMinefield(randomMinefield),
+      simpleSolverDifficulty,
+    );
     if (!isSolved(simpleAttempt)) {
       return randomMinefield;
     }
@@ -193,6 +209,7 @@ export function benchmarkGenerator() {
       mines: 5,
       width: 4,
       grid: "square",
+      cellRules: [CellClue.Vanilla],
     });
     if (n % 20 === 0) {
       const end = performance.now();

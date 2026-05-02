@@ -15,29 +15,17 @@ export function getCellClue(
   if (!clueType) return -1;
   if (clueType === CellClue.Any) return -1;
 
-  if (clueType === CellClue.Vanilla) {
-    let mineCount = 0;
-    for (let dx of [-1, 0, 1]) {
-      for (let dy of [-1, 0, 1]) {
-        if (mineAt(x + dx, y + dy)) {
-          mineCount++;
-        }
-      }
-    }
-    return mineCount;
-  }
-
-  if (clueType === CellClue.VanillaHex) {
-    let mineCount = 0;
-    const visible = getVisiblePositionsFromCell(clueType, x, y);
-    for (let [px, py] of visible) {
-      if (mineAt(px, py)) {
-        mineCount++;
-      }
-    }
-    return mineCount;
-  }
-  if (clueType === CellClue.VanillaTri) {
+  if (
+    clueType === CellClue.Vanilla ||
+    clueType === CellClue.VanillaHex ||
+    clueType === CellClue.VanillaTri ||
+    clueType === CellClue.Knight ||
+    clueType === CellClue.Cross ||
+    clueType === CellClue.MiniCross ||
+    clueType === CellClue.Deviation ||
+    clueType === CellClue.Outline ||
+    clueType === CellClue.Big
+  ) {
     let mineCount = 0;
     const visible = getVisiblePositionsFromCell(clueType, x, y);
     for (let [px, py] of visible) {
@@ -68,51 +56,17 @@ function cellClueHasContradiction(
   if (clueType === undefined) return false;
   if (clueType === CellClue.Any) return false;
 
-  if (clueType === CellClue.Vanilla) {
-    const clue = getCellClue(minefield, x, y);
-    let flagCount = 0;
-    let unsolvedCount = 0;
-
-    for (let dx of [-1, 0, 1]) {
-      for (let dy of [-1, 0, 1]) {
-        if (dx === 0 && dy === 0) continue;
-        let val = solveStateAt(x + dx, y + dy);
-        if (val) {
-          flagCount++;
-        } else if (val === undefined) {
-          unsolvedCount++;
-        }
-      }
-    }
-    if (flagCount > clue) return true;
-    if (flagCount + unsolvedCount < clue) return true;
-    // const remainingMines = minefield.mines - minefield.flags;
-    // if (remainingMines + flagCount < clue) return true;
-    return false;
-  }
-
-  if (clueType === CellClue.VanillaHex) {
-    const clue = getCellClue(minefield, x, y);
-    let flagCount = 0;
-    let unsolvedCount = 0;
-
-    const visible = getVisiblePositionsFromCell(clueType, x, y);
-    for (let [px, py] of visible) {
-      let val = solveStateAt(px, py);
-      if (val) {
-        flagCount++;
-      } else if (val === undefined) {
-        unsolvedCount++;
-      }
-    }
-
-    if (flagCount > clue) return true;
-    if (flagCount + unsolvedCount < clue) return true;
-    // const remainingMines = minefield.mines - minefield.flags;
-    // if (remainingMines + flagCount < clue) return true;
-    return false;
-  }
-  if (clueType === CellClue.VanillaTri) {
+  if (
+    clueType === CellClue.Vanilla ||
+    clueType === CellClue.VanillaHex ||
+    clueType === CellClue.VanillaTri ||
+    clueType === CellClue.Knight ||
+    clueType === CellClue.Cross ||
+    clueType === CellClue.MiniCross ||
+    clueType === CellClue.Deviation ||
+    clueType === CellClue.Outline ||
+    clueType === CellClue.Big
+  ) {
     const clue = getCellClue(minefield, x, y);
     let flagCount = 0;
     let unsolvedCount = 0;
@@ -261,6 +215,113 @@ export function getVisiblePositionsFromCell(
       [x + 2, y + shift + 1],
     ];
   }
+
+  if (type === CellClue.Knight) {
+    return [
+      [x, y],
+
+      [x - 2, y - 1],
+      [x - 2, y + 1],
+
+      [x - 1, y + 2],
+      [x + 1, y + 2],
+
+      [x + 2, y - 1],
+      [x + 2, y + 1],
+
+      [x - 1, y - 2],
+      [x + 1, y - 2],
+    ];
+  }
+  if (type === CellClue.Cross) {
+    return [
+      [x, y],
+
+      [x, y + 1],
+      [x, y + 2],
+
+      [x, y - 1],
+      [x, y - 2],
+
+      [x + 1, y],
+      [x + 2, y],
+
+      [x - 1, y],
+      [x - 2, y],
+    ];
+  }
+  if (type === CellClue.MiniCross) {
+    return [
+      [x, y],
+
+      [x, y + 1],
+      [x, y - 1],
+      [x + 1, y],
+      [x - 1, y],
+    ];
+  }
+  if (type === CellClue.Deviation) {
+    return getVisiblePositionsFromCell(CellClue.Vanilla, x, y - 1);
+  }
+  if (type === CellClue.Big) {
+    return [
+      [x - 2, y - 2],
+      [x - 1, y - 2],
+      [x, y - 2],
+      [x + 1, y - 2],
+      [x + 2, y - 2],
+
+      [x - 2, y - 1],
+      [x - 1, y - 1],
+      [x, y - 1],
+      [x + 1, y - 1],
+      [x + 2, y - 1],
+
+      [x - 2, y],
+      [x - 1, y],
+      [x, y],
+      [x + 1, y],
+      [x + 2, y],
+
+      [x - 2, y + 1],
+      [x - 1, y + 1],
+      [x, y + 1],
+      [x + 1, y + 1],
+      [x + 2, y + 1],
+
+      [x - 2, y + 2],
+      [x - 1, y + 2],
+      [x, y + 2],
+      [x + 1, y + 2],
+      [x + 2, y + 2],
+    ];
+  }
+  if (type === CellClue.Outline) {
+    return [
+      [x - 2, y - 2],
+      [x - 1, y - 2],
+      [x, y - 2],
+      [x + 1, y - 2],
+      [x + 2, y - 2],
+
+      [x - 2, y - 1],
+      [x + 2, y - 1],
+
+      [x - 2, y],
+      [x, y],
+      [x + 2, y],
+
+      [x - 2, y + 1],
+      [x + 2, y + 1],
+
+      [x - 2, y + 2],
+      [x - 1, y + 2],
+      [x, y + 2],
+      [x + 1, y + 2],
+      [x + 2, y + 2],
+    ];
+  }
+
   return [[x, y]];
 }
 
