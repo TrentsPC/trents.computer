@@ -101,9 +101,9 @@ function MinesweeperGameLevel(props: {
   const [mistakenMine, setMistakenMine] = createSignal<Position | undefined>();
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const difficulty = () => props.minesweeperVariant.difficulty;
-  const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(
-    undefined,
-  );
+  const [hoveredPosition, setHoveredPosition] = createSignal<
+    Position | undefined
+  >(undefined);
   const [drawMode, setDrawMode] = createSignal(false);
   createEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -255,6 +255,107 @@ function MinesweeperGameLevel(props: {
     });
   });
 
+  function attemptMarkAsSafe([x, y]: Position) {
+    const cell = minefield().solveState[y][x];
+    setHint(undefined);
+    if (failure()) return;
+    if (cell !== undefined) return;
+    const oppositeTest = cloneMinefield(minefield());
+    oppositeTest.solveState[y][x] = true;
+    oppositeTest.flags++;
+
+    const badSolve = createHypotheticalSolveForEntireBoard(oppositeTest);
+    if (badSolve) {
+      setFailure(badSolve);
+    } else {
+      updateSolveState(x, y, false);
+    }
+  }
+
+  function autoCompleteCell([x, y]: Position) {
+    const hint = getHint(minefield(), 1, [x, y]);
+    const clueType = minefield().cellClues[y][x];
+    const visible = getVisiblePositionsFromCell(clueType, x, y);
+    if (hint) {
+      let next = cloneMinefield(minefield());
+      for (let [flagX, flagY] of hint.mustBeFlag) {
+        if (visible.some(([x, y]) => flagX === x && flagY === y)) {
+          next.solveState[flagY][flagX] = true;
+          next.flags++;
+        }
+      }
+      for (let [safeX, safeY] of hint.mustBeSafe) {
+        if (visible.some(([x, y]) => safeX === x && safeY === y)) {
+          next.solveState[safeY][safeX] = false;
+        }
+      }
+      setMinefield(next);
+    }
+  }
+
+  function attemptMarkAsMine([x, y]: Position) {
+    const oppositeTest = cloneMinefield(minefield());
+    oppositeTest.solveState[y][x] = false;
+
+    const badSolve = createHypotheticalSolveForEntireBoard(oppositeTest);
+    if (badSolve) {
+      oppositeTest.solveState[y][x] = undefined;
+      setFailure(badSolve);
+      setMistakenMine([x, y]);
+    } else {
+      updateSolveState(x, y, true);
+    }
+  }
+
+  function handleLeftClick([x, y]: Position) {
+    setHint(undefined);
+    if (failure()) return;
+    const cell = minefield().solveState[y][x];
+    if (cell === false) {
+      autoCompleteCell([x, y]);
+      return;
+    }
+    attemptMarkAsSafe([x, y]);
+  }
+
+  function handleRightClick([x, y]: Position) {
+    setHint(undefined);
+    const cell = minefield().solveState[y][x];
+    if (cell !== undefined) return;
+    if (failure()) return;
+
+    attemptMarkAsMine([x, y]);
+  }
+
+  const cellClue = ([x, y]: Position) => getCellClue(minefield(), x, y);
+
+  const cellFailed = ([x, y]: Position) => failure()?.solveState[y][x] === true;
+  const cellHidden = ([x, y]: Position) => minefield().mask[y][x] === false;
+  const cellIncomplete = ([x, y]: Position) =>
+    positionIsIncomplete(minefield(), [x, y]);
+
+  const cellBackgroundColor = ([x, y]: Position) => {
+    if (cellFailed([x, y])) return "rgba(255,0,0,0.8)";
+    const mistake = mistakenMine();
+    if (mistake && mistake![0] === x && mistake![1] === y)
+      return "rgba(255,0,0,0.8)";
+    const inHint = isInvolvedInHint(x, y);
+    if (inHint === "clue") return "gold";
+    if (inHint) return "lightseagreen";
+    return isVisible(x, y) ? "rgba(0,0,0,0.17)" : "rgba(0,0,0,0.05)";
+  };
+
+  const cellValue = ([x, y]: Position) => {
+    if (cellFailed([x, y])) return "💣";
+    const mistake = mistakenMine();
+    if (mistake && mistake![0] === x && mistake![1] === y) return "❌";
+    const cell = minefield().solveState[y][x];
+    if (cell === undefined) return "";
+    if (cell === true) return "🚩"; // 🚩 🏳️
+    const clueValue = cellClue([x, y]);
+    return clueValue === -1 ? "?" : clueValue;
+  };
+
   return (
     <div
       css={{
@@ -302,7 +403,7 @@ function MinesweeperGameLevel(props: {
               setFailure(undefined);
               setMistakenMine(undefined);
               setHint(undefined);
-              setHoveredClue(undefined);
+              setHoveredPosition(undefined);
               setDrawMode(false);
             } else {
               alert("fail, womp womp :(");
@@ -340,46 +441,14 @@ function MinesweeperGameLevel(props: {
             // border: `1px solid black`,
             "row-gap": "2px",
             "column-gap": "2px",
-            "grid-template-columns": `repeat(${minefield().width}, 1fr)`,
             position: "relative",
+            "grid-template-columns": `repeat(${minefield().width}, auto)`,
           }}
         >
           <For each={minefield().solveState}>
             {(row, y) => (
               <For each={row}>
                 {(cell, x) => {
-                  const clue = createMemo(() =>
-                    getCellClue(minefield(), x(), y()),
-                  );
-                  const failed = () => failure()?.solveState[y()][x()] === true;
-                  const hidden = () => minefield().mask[y()][x()] === false;
-                  const incomplete = createMemo(() =>
-                    positionIsIncomplete(minefield(), [x(), y()]),
-                  );
-
-                  const backgroundColor = () => {
-                    if (failed()) return "rgba(255,0,0,0.8)";
-                    const mistake = mistakenMine();
-                    if (mistake && mistake![0] === x() && mistake![1] === y())
-                      return "rgba(255,0,0,0.8)";
-                    const inHint = isInvolvedInHint(x(), y());
-                    if (inHint === "clue") return "gold";
-                    if (inHint) return "lightseagreen";
-                    return isVisible(x(), y())
-                      ? "rgba(0,0,0,0.17)"
-                      : "rgba(0,0,0,0.05)";
-                  };
-
-                  const cellValue = () => {
-                    if (failed()) return "💣";
-                    const mistake = mistakenMine();
-                    if (mistake && mistake![0] === x() && mistake![1] === y())
-                      return "❌";
-                    if (cell === undefined) return "";
-                    if (cell === true) return "🚩"; // 🚩 🏳️
-                    const clueValue = clue();
-                    return clueValue === -1 ? "?" : clueValue;
-                  };
                   return (
                     <div
                       css={{
@@ -421,102 +490,38 @@ function MinesweeperGameLevel(props: {
                           },
                         },
                       }}
-                      data-incomplete={incomplete() ? true : undefined}
+                      data-incomplete={
+                        cellIncomplete([x(), y()]) ? true : undefined
+                      }
                       data-grid={minefield().grid}
                       data-even-col={x() % 2 === 0 ? "true" : "false"}
                       data-even-row={y() % 2 === 0 ? "true" : "false"}
                       style={{
-                        opacity: hidden() ? 0 : 1,
+                        opacity: cellHidden([x(), y()]) ? 0 : 1,
                         transform:
                           minefield().grid === "hex"
                             ? x() % 2 === 1
                               ? `translateY(50%)`
                               : undefined
                             : undefined,
-                        // ...(minefield().grid === "hex"
-                        //   ? {
-                        //   }
-                        //   : {}),
 
-                        "background-color": backgroundColor(),
+                        "background-color": cellBackgroundColor([x(), y()]),
                       }}
                       onMouseEnter={() => {
-                        setHoveredClue([x(), y()]);
+                        setHoveredPosition([x(), y()]);
                       }}
                       onMouseLeave={() => {
-                        setHoveredClue(undefined);
+                        setHoveredPosition(undefined);
                       }}
                       onClick={() => {
-                        setHint(undefined);
-                        if (failure()) return;
-                        if (cell === false) {
-                          // Try Auto-complete
-                          const hint = getHint(minefield(), 1, [x(), y()]);
-                          const clueType = minefield().cellClues[y()][x()];
-                          const visible = getVisiblePositionsFromCell(
-                            clueType,
-                            x(),
-                            y(),
-                          );
-                          if (hint) {
-                            let next = cloneMinefield(minefield());
-                            for (let [flagX, flagY] of hint.mustBeFlag) {
-                              if (
-                                visible.some(
-                                  ([x, y]) => flagX === x && flagY === y,
-                                )
-                              ) {
-                                next.solveState[flagY][flagX] = true;
-                                next.flags++;
-                              }
-                            }
-                            for (let [safeX, safeY] of hint.mustBeSafe) {
-                              if (
-                                visible.some(
-                                  ([x, y]) => safeX === x && safeY === y,
-                                )
-                              ) {
-                                next.solveState[safeY][safeX] = false;
-                              }
-                            }
-                            setMinefield(next);
-                          }
-                          return;
-                        }
-                        if (cell !== undefined) return;
-                        const oppositeTest = cloneMinefield(minefield());
-                        oppositeTest.solveState[y()][x()] = true;
-                        oppositeTest.flags++;
-
-                        const badSolve =
-                          createHypotheticalSolveForEntireBoard(oppositeTest);
-                        if (badSolve) {
-                          setFailure(badSolve);
-                        } else {
-                          updateSolveState(x(), y(), false);
-                        }
+                        handleLeftClick([x(), y()]);
                       }}
                       onContextMenu={(e) => {
                         e.preventDefault();
-                        setHint(undefined);
-                        if (cell !== undefined) return;
-                        if (failure()) return;
-
-                        const oppositeTest = cloneMinefield(minefield());
-                        oppositeTest.solveState[y()][x()] = false;
-
-                        const badSolve =
-                          createHypotheticalSolveForEntireBoard(oppositeTest);
-                        if (badSolve) {
-                          oppositeTest.solveState[y()][x()] = undefined;
-                          setFailure(badSolve);
-                          setMistakenMine([x(), y()]);
-                        } else {
-                          updateSolveState(x(), y(), true);
-                        }
+                        handleRightClick([x(), y()]);
                       }}
                     >
-                      {cellValue()}
+                      {cellValue([x(), y()])}
                     </div>
                   );
                 }}
