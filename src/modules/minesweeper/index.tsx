@@ -17,6 +17,7 @@ import {
   getHint,
   getVisiblePositionsFromCell,
   HintResult,
+  positionIsIncomplete,
   solveMinefield,
 } from "./backend/solver";
 import { Minefield, Position } from "./backend/types";
@@ -97,6 +98,7 @@ function MinesweeperGameLevel(props: {
 }) {
   const [minefield, setMinefield] = createSignal(props.initialMinefield);
   const [failure, setFailure] = createSignal<Minefield | undefined>();
+  const [mistakenMine, setMistakenMine] = createSignal<Position | undefined>();
   const [hint, setHint] = createSignal<HintResult | undefined>(undefined);
   const difficulty = () => props.minesweeperVariant.difficulty;
   const [hoveredPosition, setHoveredClue] = createSignal<Position | undefined>(
@@ -298,6 +300,7 @@ function MinesweeperGameLevel(props: {
             if (minefield) {
               setMinefield(minefield);
               setFailure(undefined);
+              setMistakenMine(undefined);
               setHint(undefined);
               setHoveredClue(undefined);
               setDrawMode(false);
@@ -350,18 +353,48 @@ function MinesweeperGameLevel(props: {
                   );
                   const failed = () => failure()?.solveState[y()][x()] === true;
                   const hidden = () => minefield().mask[y()][x()] === false;
+                  const incomplete = createMemo(() =>
+                    positionIsIncomplete(minefield(), [x(), y()]),
+                  );
+
+                  const backgroundColor = () => {
+                    if (failed()) return "rgba(255,0,0,0.8)";
+                    const mistake = mistakenMine();
+                    if (mistake && mistake![0] === x() && mistake![1] === y())
+                      return "rgba(255,0,0,0.8)";
+                    const inHint = isInvolvedInHint(x(), y());
+                    if (inHint === "clue") return "gold";
+                    if (inHint) return "lightseagreen";
+                    return isVisible(x(), y())
+                      ? "rgba(0,0,0,0.17)"
+                      : "rgba(0,0,0,0.05)";
+                  };
+
+                  const cellValue = () => {
+                    if (failed()) return "💣";
+                    const mistake = mistakenMine();
+                    if (mistake && mistake![0] === x() && mistake![1] === y())
+                      return "❌";
+                    if (cell === undefined) return "";
+                    if (cell === true) return "⛳️";
+                    const clueValue = clue();
+                    return clueValue === -1 ? "?" : clueValue;
+                  };
                   return (
                     <div
                       css={{
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        // border: "1px solid black",
                         width: 64,
                         height: 64,
                         fontScale: 6,
                         textAlign: "center",
                         fontFamily: fonts.sans,
+                        color: "rgba(0,0,0,0.4)",
+                        "&[data-incomplete]": {
+                          color: "rgba(0,0,0,1)",
+                        },
                         "&[data-grid=hex]": {
                           "--s": "64px",
                           height: "var(--s)",
@@ -388,6 +421,7 @@ function MinesweeperGameLevel(props: {
                           },
                         },
                       }}
+                      data-incomplete={incomplete() ? true : undefined}
                       data-grid={minefield().grid}
                       data-even-col={x() % 2 === 0 ? "true" : "false"}
                       data-even-row={y() % 2 === 0 ? "true" : "false"}
@@ -404,14 +438,7 @@ function MinesweeperGameLevel(props: {
                         //   }
                         //   : {}),
 
-                        "background-color":
-                          isInvolvedInHint(x(), y()) === "clue"
-                            ? "gold"
-                            : isInvolvedInHint(x(), y())
-                              ? "lightseagreen"
-                              : isVisible(x(), y())
-                                ? "silver"
-                                : "rgba(0,0,0,0.05)",
+                        "background-color": backgroundColor(),
                       }}
                       onMouseEnter={() => {
                         setHoveredClue([x(), y()]);
@@ -421,6 +448,7 @@ function MinesweeperGameLevel(props: {
                       }}
                       onClick={() => {
                         setHint(undefined);
+                        if (failure()) return;
                         if (cell === false) {
                           // Try Auto-complete
                           const hint = getHint(minefield(), 1, [x(), y()]);
@@ -472,6 +500,7 @@ function MinesweeperGameLevel(props: {
                         e.preventDefault();
                         setHint(undefined);
                         if (cell !== undefined) return;
+                        if (failure()) return;
 
                         const oppositeTest = cloneMinefield(minefield());
                         oppositeTest.solveState[y()][x()] = false;
@@ -481,20 +510,13 @@ function MinesweeperGameLevel(props: {
                         if (badSolve) {
                           oppositeTest.solveState[y()][x()] = undefined;
                           setFailure(badSolve);
+                          setMistakenMine([x(), y()]);
                         } else {
                           updateSolveState(x(), y(), true);
                         }
                       }}
                     >
-                      {failed()
-                        ? "💣"
-                        : cell === undefined
-                          ? ""
-                          : cell
-                            ? "⛳️"
-                            : clue() === -1
-                              ? "?"
-                              : clue()}
+                      {cellValue()}
                     </div>
                   );
                 }}
