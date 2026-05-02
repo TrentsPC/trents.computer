@@ -1,6 +1,6 @@
 import { solveMinefield } from "./solver";
-import { CellClue, Grid, GridType, Minefield } from "./types";
-import { getAllRevealedClues } from "./utils";
+import { CellClue, Grid, GridType, Minefield, Position } from "./types";
+import { getAllRevealedClues, shuffle } from "./utils";
 
 function cloneMinefield(minefield: Minefield): Minefield {
   return {
@@ -13,15 +13,12 @@ function hideCluesUntilBarelySolvable(
   minefield: Minefield,
   difficulty: number,
 ) {
-  let unsolvable = false;
-  let loops = 0;
-
   let knownClues = getAllRevealedClues(minefield);
   knownClues = knownClues.filter(([x, y]) => !!minefield.mask[y][x]);
 
-  while (!unsolvable && loops < 100) {
-    const clueIndex = Math.floor(Math.random() * knownClues.length);
-    const [clue] = knownClues.splice(clueIndex, 1);
+  shuffle(knownClues);
+
+  for (const clue of knownClues) {
     const [x, y] = clue;
     if (minefield.solveState[y][x] !== false) {
       continue;
@@ -29,39 +26,56 @@ function hideCluesUntilBarelySolvable(
 
     minefield.solveState[y][x] = undefined;
     const attempt = solveMinefield(cloneMinefield(minefield), difficulty);
-    unsolvable = attempt.flags !== attempt.mines;
+    let unsolvable = attempt.flags !== attempt.mines;
     if (unsolvable) {
       minefield.solveState[y][x] = false;
+    } else {
+      return hideCluesUntilBarelySolvable(minefield, difficulty);
     }
-    loops++;
   }
+
   return minefield;
+}
+
+function getAllSpecificClues(minefield: Minefield): Position[] {
+  let pos: Position[] = [];
+  for (let y = 0; y < minefield.height; y++) {
+    for (let x = 0; x < minefield.width; x++) {
+      const clue = minefield.cellClues[y][x];
+      if (clue !== CellClue.Mine && clue !== CellClue.Any) {
+        pos.push([x, y]);
+      }
+    }
+  }
+  return pos;
 }
 
 function removeCluesUntilBarelySolvable(
   minefield: Minefield,
   difficulty: number,
 ) {
-  let unsolvable = false;
-  const { width, height } = minefield;
-  let loops = 0;
+  let specificClues = getAllSpecificClues(minefield);
+  specificClues = specificClues.filter(([x, y]) => !!minefield.mask[y][x]);
 
-  while (!unsolvable && loops < 100) {
-    const x = Math.floor(Math.random() * width);
-    const y = Math.floor(Math.random() * height);
-    const clueType = minefield.cellClues[y][x];
-    if (clueType === CellClue.Mine || clueType === CellClue.Any) {
+  shuffle(specificClues);
+
+  for (const clue of specificClues) {
+    const [x, y] = clue;
+    if (minefield.solveState[y][x] !== false) {
       continue;
     }
 
+    const clueType = minefield.cellClues[y][x];
     minefield.cellClues[y][x] = CellClue.Any;
     const attempt = solveMinefield(cloneMinefield(minefield), difficulty);
-    unsolvable = attempt.flags !== attempt.mines;
+    const unsolvable = attempt.flags !== attempt.mines;
     if (unsolvable) {
       minefield.cellClues[y][x] = clueType;
+    } else {
+      return hideCluesUntilBarelySolvable(minefield, difficulty);
     }
-    loops++;
   }
+
   return minefield;
 }
 
@@ -162,12 +176,12 @@ export function generateMinefield({
   };
 
   baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
-  baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
-  baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
+  // baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
+  // baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
 
   baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
-  baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
-  baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
+  // baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
+  // baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
 
   if (gridType === "hex") {
     for (let y = 0; y < height; y++) {

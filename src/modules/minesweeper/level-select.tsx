@@ -239,7 +239,7 @@ function SquareVariants(props: VariantSetProps) {
           {/* <LevelButton minefield={vanilla(9)} onClick={props.onSelect} /> */}
           {/* <LevelButton minefield={vanilla(10)} onClick={props.onSelect} /> */}
           {/* <LevelButton minefield={vanilla(11)} onClick={props.onSelect} /> */}
-          <LevelButton minefield={vanilla(12)} onClick={props.onSelect} />
+          {/* <LevelButton minefield={vanilla(12)} onClick={props.onSelect} /> */}
         </tr>
         <tr>
           {/* <LevelButton minefield={knight(3)} onClick={props.onSelect} /> */}
