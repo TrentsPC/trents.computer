@@ -376,7 +376,7 @@ function MinesweeperGameLevel(props: {
                     if (mistake && mistake![0] === x() && mistake![1] === y())
                       return "❌";
                     if (cell === undefined) return "";
-                    if (cell === true) return "⛳️";
+                    if (cell === true) return "🚩"; // 🚩 🏳️
                     const clueValue = clue();
                     return clueValue === -1 ? "?" : clueValue;
                   };

@@ -176,12 +176,8 @@ export function generateMinefield({
   };
 
   baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
-  // baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
-  // baseMinefield = hideCluesUntilBarelySolvable(baseMinefield, difficulty);
 
   baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
-  // baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
-  // baseMinefield = removeCluesUntilBarelySolvable(baseMinefield, difficulty);
 
   if (gridType === "hex") {
     for (let y = 0; y < height; y++) {
