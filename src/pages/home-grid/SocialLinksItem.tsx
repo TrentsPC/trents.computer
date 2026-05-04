@@ -49,7 +49,9 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     background: "#EB6707",
-    icon: () => <img src={managemyhealth} css={{ width: "100%", height: "100%" }} />,
+    icon: () => (
+      <img src={managemyhealth} css={{ width: "100%", height: "100%" }} />
+    ),
   },
   {
     background: "#24292E",
@@ -152,7 +154,11 @@ export function SocialLinksItem(props: Record<string, unknown>) {
   });
 
   return (
-    <GridItem {...props} component="div" css={{ height: 52, padding: 0, position: "relative" }}>
+    <GridItem
+      {...props}
+      component="div"
+      css={{ height: 52, padding: 0, position: "relative", borderRadius: 0 }}
+    >
       <div
         ref={element}
         css={{
@@ -230,10 +236,10 @@ export function SocialLinksItem(props: Record<string, unknown>) {
 }
 
 const Square = styled("a", {
-  height: 40,
-  width: 40,
-  mr: 20,
-  minW: 40,
+  height: 36,
+  width: 36,
+  mr: 16,
+  minW: 36,
   display: "flex",
   items: "center",
   justify: "center",
@@ -299,8 +305,20 @@ function LetterboxdLogoIcon() {
   return (
     <svg viewBox="0 0 500 500" css={{ width: "100%", height: "100%" }}>
       <defs>
-        <rect id="path-1" x="0" y="0" width="129.847328" height="141.389313"></rect>
-        <rect id="path-3" x="0" y="0" width="129.847328" height="141.389313"></rect>
+        <rect
+          id="path-1"
+          x="0"
+          y="0"
+          width="129.847328"
+          height="141.389313"
+        ></rect>
+        <rect
+          id="path-3"
+          x="0"
+          y="0"
+          width="129.847328"
+          height="141.389313"
+        ></rect>
       </defs>
       <g
         id="letterboxd-decal-dots-pos-rgb"
@@ -431,7 +449,7 @@ function ProgressiveBlur() {
         top: 0,
         left: 0,
         height: "100%",
-        width: 200,
+        width: 100,
       }}
     >
       <BlurSlice
@@ -439,7 +457,7 @@ function ProgressiveBlur() {
           "backdrop-filter": "blur(1px)",
           mask: `linear-gradient(
           to right,
-          rgba(0, 0, 0, 1) 87.5%,
+          rgba(0, 0, 0, 1) 75%,
           rgba(0, 0, 0, 0) 100%
         )`,
         }}
@@ -449,8 +467,8 @@ function ProgressiveBlur() {
           "backdrop-filter": "blur(2px)",
           mask: `linear-gradient(
           to right,
-          rgba(0, 0, 0, 1) 75%,
-          rgba(0, 0, 0, 0) 87.5%
+          rgba(0, 0, 0, 1) 50%,
+          rgba(0, 0, 0, 0) 75%
         )`,
         }}
       />
@@ -459,8 +477,8 @@ function ProgressiveBlur() {
           "backdrop-filter": "blur(3px)",
           mask: `linear-gradient(
           to right,
-          rgba(0, 0, 0, 1) 62.5%,
-          rgba(0, 0, 0, 0) 75%
+          rgba(0, 0, 0, 1) 25%,
+          rgba(0, 0, 0, 0) 50%
         )`,
         }}
       />
@@ -469,37 +487,7 @@ function ProgressiveBlur() {
           "backdrop-filter": "blur(4px)",
           mask: `linear-gradient(
           to right,
-          rgba(0, 0, 0, 1) 50%,
-          rgba(0, 0, 0, 0) 62.5%
-        )`,
-        }}
-      />
-      <BlurSlice
-        style={{
-          "backdrop-filter": "blur(5px)",
-          mask: `linear-gradient(
-          to right,
-          rgba(0, 0, 0, 1) 37.5%,
-          rgba(0, 0, 0, 0) 50%
-        )`,
-        }}
-      />
-      <BlurSlice
-        style={{
-          "backdrop-filter": "blur(6px)",
-          mask: `linear-gradient(
-          to right,
-          rgba(0, 0, 0, 1) 25%,
-          rgba(0, 0, 0, 0) 37.5%
-        )`,
-        }}
-      />
-      <BlurSlice
-        style={{
-          "backdrop-filter": "blur(7px)",
-          mask: `linear-gradient(
-          to right,
-          rgba(0, 0, 0, 1) 12.5%,
+          rgba(0, 0, 0, 1) 0%,
           rgba(0, 0, 0, 0) 25%
         )`,
         }}
@@ -510,7 +498,7 @@ function ProgressiveBlur() {
           mask: `linear-gradient(
           to right,
           rgba(0, 0, 0, 1) 0%,
-          rgba(0, 0, 0, 0) 50%
+          rgba(0, 0, 0, 0) 100%
         )`,
         }}
       />
@@ -526,7 +514,7 @@ function ProgressiveBlur2() {
         top: 0,
         right: 0,
         height: "100%",
-        width: 200,
+        width: 100,
       }}
     >
       <BlurSlice
@@ -534,7 +522,7 @@ function ProgressiveBlur2() {
           "backdrop-filter": "blur(1px)",
           mask: `linear-gradient(
           to left,
-          rgba(0, 0, 0, 1) 87.5%,
+          rgba(0, 0, 0, 1) 75%,
           rgba(0, 0, 0, 0) 100%
         )`,
         }}
@@ -544,8 +532,8 @@ function ProgressiveBlur2() {
           "backdrop-filter": "blur(2px)",
           mask: `linear-gradient(
           to left,
-          rgba(0, 0, 0, 1) 75%,
-          rgba(0, 0, 0, 0) 87.5%
+          rgba(0, 0, 0, 1) 50%,
+          rgba(0, 0, 0, 0) 75%
         )`,
         }}
       />
@@ -554,8 +542,8 @@ function ProgressiveBlur2() {
           "backdrop-filter": "blur(3px)",
           mask: `linear-gradient(
           to left,
-          rgba(0, 0, 0, 1) 62.5%,
-          rgba(0, 0, 0, 0) 75%
+          rgba(0, 0, 0, 1) 25%,
+          rgba(0, 0, 0, 0) 50%
         )`,
         }}
       />
@@ -564,37 +552,7 @@ function ProgressiveBlur2() {
           "backdrop-filter": "blur(4px)",
           mask: `linear-gradient(
           to left,
-          rgba(0, 0, 0, 1) 50%,
-          rgba(0, 0, 0, 0) 62.5%
-        )`,
-        }}
-      />
-      <BlurSlice
-        style={{
-          "backdrop-filter": "blur(5px)",
-          mask: `linear-gradient(
-          to left,
-          rgba(0, 0, 0, 1) 37.5%,
-          rgba(0, 0, 0, 0) 50%
-        )`,
-        }}
-      />
-      <BlurSlice
-        style={{
-          "backdrop-filter": "blur(6px)",
-          mask: `linear-gradient(
-          to left,
-          rgba(0, 0, 0, 1) 25%,
-          rgba(0, 0, 0, 0) 37.5%
-        )`,
-        }}
-      />
-      <BlurSlice
-        style={{
-          "backdrop-filter": "blur(7px)",
-          mask: `linear-gradient(
-          to left,
-          rgba(0, 0, 0, 1) 12.5%,
+          rgba(0, 0, 0, 1) 0%,
           rgba(0, 0, 0, 0) 25%
         )`,
         }}
@@ -605,7 +563,7 @@ function ProgressiveBlur2() {
           mask: `linear-gradient(
           to left,
           rgba(0, 0, 0, 1) 0%,
-          rgba(0, 0, 0, 0) 50%
+          rgba(0, 0, 0, 0) 100%
         )`,
         }}
       />
@@ -618,6 +576,6 @@ const BlurSlice = styled("div", {
   top: 0,
   left: 0,
   height: "100%",
-  width: 200,
+  width: 100,
   zIndex: 1,
 });

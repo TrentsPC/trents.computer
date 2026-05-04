@@ -2,7 +2,6 @@ import { styled } from "@hypergood/css";
 import { getRouteApi } from "@tanstack/solid-router";
 import { onMount } from "solid-js";
 import { useSquircle } from "~/utils/squircle";
-import { GridItem } from "./home-grid/components";
 import { FooterTextItem } from "./home-grid/FooterTextItem";
 import { MinimizeItem } from "./home-grid/MinimizeItem";
 import { SocialLinksItem } from "./home-grid/SocialLinksItem";
@@ -22,39 +21,16 @@ export function HomePageGrid() {
     <div
       css={{
         width: "100%",
-        height: "100lvh",
-        minH: "100lvh",
-        maxH: "100lvh",
+        // height: "100lvh",
+        // minH: "100lvh",
+        // maxH: "100lvh",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#E9E9E9",
+        // backgroundColor: "#E9E9E9",
       }}
     >
-      <div css={{ minH: 12 }} />
-      <Grid ref={ref!}>
-        {/* <GridItem
-          component="div"
-          css={{
-            position: "relative",
-          }}
-          style={{
-            "grid-area": FACE,
-          }}
-        >
-          <img
-            css={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-            src={image}
-            alt=""
-          />
-        </GridItem> */}
-
+      {/* <div css={{ minH: 12 }} /> */}
+      {/* <Grid ref={ref!}>
         <GridItem
           css={{
             backgroundColor: "#F8F4EF",
@@ -75,21 +51,15 @@ export function HomePageGrid() {
         <GridItem href="/tic-tac-toe">Tic-tac-tock</GridItem>
         <GridItem href="/secret-word">Secret Word</GridItem>
         <GridItem href="/words">Yummy Words</GridItem>
-        {/* <GridItem style={{ "grid-area": NAMING }} href="/two-hard-things">
-          Two Hard Things
-          </GridItem> */}
         <GridItem href="/#">Trents.Computer</GridItem>
         <GridItem href="/cv">Curriculum Vitae (Old, lol)</GridItem>
-        {/* <GridItem style={{ "grid-area": FONTEXPLORER }} href="/font-explorer">
-          Font Explorer
-        </GridItem> */}
-      </Grid>
-      <div css={{ p: 12 }}>
+      </Grid> */}
+      <div css={{ p: 0 }}>
         <div
           css={{
             display: "grid",
             flexShrink: 0,
-            gap: 12,
+            // gap: 12,
             gridTemplateColumns: "1fr auto",
             "@md": {
               height: 52,
@@ -155,7 +125,12 @@ const Grid = styled("div", {
 
 function BlueskyLogoIcon() {
   return (
-    <svg fill="none" viewBox="0 0 64 57" width="64" style="width: 64px; height: 64px;">
+    <svg
+      fill="none"
+      viewBox="0 0 64 57"
+      width="64"
+      style="width: 64px; height: 64px;"
+    >
       <path
         fill="#0085ff"
         d="M13.873 3.805C21.21 9.332 29.103 20.537 32 26.55v15.882c0-.338-.13.044-.41.867-1.512 4.456-7.418 21.847-20.923 7.944-7.111-7.32-3.819-14.64 9.125-16.85-7.405 1.264-15.73-.825-18.014-9.015C1.12 23.022 0 8.51 0 6.55 0-3.268 8.579-.182 13.873 3.805ZM50.127 3.805C42.79 9.332 34.897 20.537 32 26.55v15.882c0-.338.13.044.41.867 1.512 4.456 7.418 21.847 20.923 7.944 7.111-7.32 3.819-14.64-9.125-16.85 7.405 1.264 15.73-.825 18.014-9.015C62.88 23.022 64 8.51 64 6.55c0-9.818-8.578-6.732-13.873-2.745Z"
@@ -166,7 +141,12 @@ function BlueskyLogoIcon() {
 
 function GithubLogoIcon() {
   return (
-    <svg width="60" height="60" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="60"
+      height="60"
+      viewBox="0 0 98 96"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
@@ -188,7 +168,9 @@ function GivenwellLogoIcon() {
     >
       <defs>
         <style>
-          {".cls-1{fill:#5cc1bf;}.cls-1,.cls-2{stroke-width:0px;}.cls-2{fill:#2e2d75;}"}
+          {
+            ".cls-1{fill:#5cc1bf;}.cls-1,.cls-2{stroke-width:0px;}.cls-2{fill:#2e2d75;}"
+          }
         </style>
       </defs>
       <path
@@ -213,8 +195,20 @@ function LetterboxdLogoIcon() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <rect id="path-1" x="0" y="0" width="129.847328" height="141.389313"></rect>
-        <rect id="path-3" x="0" y="0" width="129.847328" height="141.389313"></rect>
+        <rect
+          id="path-1"
+          x="0"
+          y="0"
+          width="129.847328"
+          height="141.389313"
+        ></rect>
+        <rect
+          id="path-3"
+          x="0"
+          y="0"
+          width="129.847328"
+          height="141.389313"
+        ></rect>
       </defs>
       <g
         id="letterboxd-decal-dots-pos-rgb"
@@ -281,7 +275,12 @@ function LetterboxdLogoIcon() {
 
 function TwitterLogoIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 248 204">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="60"
+      height="60"
+      viewBox="0 0 248 204"
+    >
       <path
         fill="#1DA1F2"
         // fill="#ffffff"

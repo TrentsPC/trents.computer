@@ -464,7 +464,7 @@ function SquareBangVariants(props: VariantSetProps) {
 }
 
 function HexagonVariants(props: VariantSetProps) {
-  const getVariant = (sideLength: number) =>
+  const vanilla = (sideLength: number) =>
     ({
       difficulty: easyDifficulty,
       grid: "hex",
@@ -476,16 +476,76 @@ function HexagonVariants(props: VariantSetProps) {
       height: getHexHeight(sideLength),
       cellRules: [CellClue.VanillaHex],
     }) satisfies GenerateMinefieldOptions;
+  const cross = (sideLength: number) =>
+    ({
+      difficulty: easyDifficulty,
+      grid: "hex",
+      mines: getMineCount(
+        getHexWidth(sideLength),
+        getHexHeight(sideLength) * 0.75,
+      ),
+      width: getHexWidth(sideLength),
+      height: getHexHeight(sideLength),
+      cellRules: [CellClue.CrossHex],
+    }) satisfies GenerateMinefieldOptions;
+  const knight = (sideLength: number) =>
+    ({
+      difficulty: easyDifficulty,
+      grid: "hex",
+      mines: getMineCount(
+        getHexWidth(sideLength),
+        getHexHeight(sideLength) * 0.75,
+      ),
+      width: getHexWidth(sideLength),
+      height: getHexHeight(sideLength),
+      cellRules: [CellClue.KnightHex],
+    }) satisfies GenerateMinefieldOptions;
+  const deviation = (sideLength: number) =>
+    ({
+      difficulty: easyDifficulty,
+      grid: "hex",
+      mines: getMineCount(
+        getHexWidth(sideLength),
+        getHexHeight(sideLength) * 0.75,
+      ),
+      width: getHexWidth(sideLength),
+      height: getHexHeight(sideLength),
+      cellRules: [CellClue.DeviationHex],
+    }) satisfies GenerateMinefieldOptions;
   return (
     <table>
       <tbody>
         <tr>
-          <LevelButton minefield={getVariant(3)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(4)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(5)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(6)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(7)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(8)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(3)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(4)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(5)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(6)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(7)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(8)} onClick={props.onSelect} />
+        </tr>
+        <tr>
+          <LevelButton minefield={cross(3)} onClick={props.onSelect} />
+          <LevelButton minefield={cross(4)} onClick={props.onSelect} />
+          <LevelButton minefield={cross(5)} onClick={props.onSelect} />
+          <LevelButton minefield={cross(6)} onClick={props.onSelect} />
+          <LevelButton minefield={cross(7)} onClick={props.onSelect} />
+          <LevelButton minefield={cross(8)} onClick={props.onSelect} />
+        </tr>
+        <tr>
+          <LevelButton minefield={knight(3)} onClick={props.onSelect} />
+          <LevelButton minefield={knight(4)} onClick={props.onSelect} />
+          <LevelButton minefield={knight(5)} onClick={props.onSelect} />
+          <LevelButton minefield={knight(6)} onClick={props.onSelect} />
+          <LevelButton minefield={knight(7)} onClick={props.onSelect} />
+          <LevelButton minefield={knight(8)} onClick={props.onSelect} />
+        </tr>
+        <tr>
+          <LevelButton minefield={deviation(3)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(4)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(5)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(6)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(7)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(8)} onClick={props.onSelect} />
         </tr>
       </tbody>
     </table>
@@ -519,7 +579,7 @@ function HexagonBangVariants(props: VariantSetProps) {
   );
 }
 function TriangleVariants(props: VariantSetProps) {
-  const getVariant = (sideLength: number) =>
+  const vanilla = (sideLength: number) =>
     ({
       difficulty: easyDifficulty,
       grid: "triangle",
@@ -532,15 +592,35 @@ function TriangleVariants(props: VariantSetProps) {
       height: getTriHeight(sideLength),
       cellRules: [CellClue.VanillaTri],
     }) satisfies GenerateMinefieldOptions;
+  const deviation = (sideLength: number) =>
+    ({
+      difficulty: easyDifficulty,
+      grid: "triangle",
+      mines: getMineCount(
+        getTriWidth(sideLength),
+        // getTriHeight(sideLength) / 2,
+        getTriHeight(sideLength),
+      ),
+      width: getTriWidth(sideLength),
+      height: getTriHeight(sideLength),
+      cellRules: [CellClue.DeviationTri],
+    }) satisfies GenerateMinefieldOptions;
   return (
     <table>
       <tbody>
         <tr>
-          <LevelButton minefield={getVariant(4)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(5)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(6)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(7)} onClick={props.onSelect} />
-          <LevelButton minefield={getVariant(8)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(4)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(5)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(6)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(7)} onClick={props.onSelect} />
+          <LevelButton minefield={vanilla(8)} onClick={props.onSelect} />
+        </tr>
+        <tr>
+          <LevelButton minefield={deviation(4)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(5)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(6)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(7)} onClick={props.onSelect} />
+          <LevelButton minefield={deviation(8)} onClick={props.onSelect} />
         </tr>
       </tbody>
     </table>
@@ -567,8 +647,10 @@ const cellRuleToLetter = (rule: CellClue) => {
     case CellClue.VanillaTri:
       return "V";
     case CellClue.Knight:
+    case CellClue.KnightHex:
       return "K";
     case CellClue.Cross:
+    case CellClue.CrossHex:
       return "X";
     case CellClue.MiniCross:
       return "X'";
@@ -577,6 +659,8 @@ const cellRuleToLetter = (rule: CellClue) => {
     case CellClue.Outline:
       return "O";
     case CellClue.Deviation:
+    case CellClue.DeviationHex:
+    case CellClue.DeviationTri:
       return "D";
     case CellClue.Any:
     default:

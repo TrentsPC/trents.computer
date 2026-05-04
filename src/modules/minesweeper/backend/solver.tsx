@@ -20,9 +20,13 @@ export function getCellClue(
     clueType === CellClue.VanillaHex ||
     clueType === CellClue.VanillaTri ||
     clueType === CellClue.Knight ||
+    clueType === CellClue.KnightHex ||
     clueType === CellClue.Cross ||
+    clueType === CellClue.CrossHex ||
     clueType === CellClue.MiniCross ||
     clueType === CellClue.Deviation ||
+    clueType === CellClue.DeviationHex ||
+    clueType === CellClue.DeviationTri ||
     clueType === CellClue.Outline ||
     clueType === CellClue.Big
   ) {
@@ -61,9 +65,13 @@ function cellClueHasContradiction(
     clueType === CellClue.VanillaHex ||
     clueType === CellClue.VanillaTri ||
     clueType === CellClue.Knight ||
+    clueType === CellClue.KnightHex ||
     clueType === CellClue.Cross ||
+    clueType === CellClue.CrossHex ||
     clueType === CellClue.MiniCross ||
     clueType === CellClue.Deviation ||
+    clueType === CellClue.DeviationHex ||
+    clueType === CellClue.DeviationTri ||
     clueType === CellClue.Outline ||
     clueType === CellClue.Big
   ) {
@@ -194,6 +202,39 @@ export function getVisiblePositionsFromCell(
       [x + 1, y + shift + 1],
     ];
   }
+  if (type === CellClue.KnightHex) {
+    const shift = x % 2 === 0 ? -1 : 0;
+    return [
+      [x - 2, y],
+      [x, y],
+      [x + 2, y],
+
+      [x - 1, y + shift - 1],
+      [x - 1, y + shift + 2],
+      [x + 1, y + shift - 1],
+      [x + 1, y + shift + 2],
+    ];
+  }
+  if (type === CellClue.CrossHex) {
+    const shift = x % 2 === 0 ? -1 : 0;
+    return [
+      [x, y - 2],
+      [x, y - 1],
+      [x, y],
+      [x, y + 1],
+      [x, y + 2],
+
+      [x - 1, y + shift],
+      [x - 1, y + shift + 1],
+      [x - 2, y - 1],
+      [x - 2, y + 1],
+
+      [x + 1, y + shift],
+      [x + 1, y + shift + 1],
+      [x + 2, y - 1],
+      [x + 2, y + 1],
+    ];
+  }
   if (type === CellClue.VanillaTri) {
     const shift = (x + y) % 2 === 0 ? 0 : -1;
     return [
@@ -262,6 +303,12 @@ export function getVisiblePositionsFromCell(
   }
   if (type === CellClue.Deviation) {
     return getVisiblePositionsFromCell(CellClue.Vanilla, x, y - 1);
+  }
+  if (type === CellClue.DeviationHex) {
+    return getVisiblePositionsFromCell(CellClue.VanillaHex, x, y - 1);
+  }
+  if (type === CellClue.DeviationTri) {
+    return getVisiblePositionsFromCell(CellClue.VanillaTri, x, y - 1);
   }
   if (type === CellClue.Big) {
     return [

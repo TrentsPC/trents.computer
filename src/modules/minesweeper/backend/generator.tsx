@@ -12,8 +12,9 @@ function cloneMinefield(minefield: Minefield): Minefield {
 function hideCluesUntilBarelySolvable(
   minefield: Minefield,
   difficulty: number,
+  remainingClues?: Position[],
 ) {
-  let knownClues = getAllRevealedClues(minefield);
+  let knownClues = remainingClues ?? getAllRevealedClues(minefield);
   knownClues = knownClues.filter(([x, y]) => !!minefield.mask[y][x]);
 
   shuffle(knownClues);
@@ -30,7 +31,11 @@ function hideCluesUntilBarelySolvable(
     if (unsolvable) {
       minefield.solveState[y][x] = false;
     } else {
-      return hideCluesUntilBarelySolvable(minefield, difficulty);
+      return hideCluesUntilBarelySolvable(
+        minefield,
+        difficulty,
+        knownClues.slice(knownClues.indexOf(clue) + 1),
+      );
     }
   }
 
@@ -53,8 +58,9 @@ function getAllSpecificClues(minefield: Minefield): Position[] {
 function removeCluesUntilBarelySolvable(
   minefield: Minefield,
   difficulty: number,
+  remainingClues?: Position[],
 ) {
-  let specificClues = getAllSpecificClues(minefield);
+  let specificClues = remainingClues ?? getAllSpecificClues(minefield);
   specificClues = specificClues.filter(([x, y]) => !!minefield.mask[y][x]);
 
   shuffle(specificClues);
@@ -72,7 +78,11 @@ function removeCluesUntilBarelySolvable(
     if (unsolvable) {
       minefield.cellClues[y][x] = clueType;
     } else {
-      return hideCluesUntilBarelySolvable(minefield, difficulty);
+      return hideCluesUntilBarelySolvable(
+        minefield,
+        difficulty,
+        specificClues.slice(specificClues.indexOf(clue) + 1),
+      );
     }
   }
 

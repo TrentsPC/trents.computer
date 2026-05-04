@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/solid-router";
 import { HistoryRacer } from "~/modules/history-racer";
 import { colors, fonts } from "~/theme.styles";
 import { HomePageGrid } from "./HomePageGrid";
@@ -6,9 +7,8 @@ export function HomePage() {
   return (
     <>
       {/* <Title>Trents PC</Title> */}
-      <div
+      {/* <div
         css={{
-          // position: "fixed",
           top: 0,
           left: 0,
           right: 0,
@@ -18,14 +18,14 @@ export function HomePage() {
           backdropFilter: "saturate(180%) blur(20px)",
           display: "flex",
         }}
-      >
-        <div css={{ flex: 1 }} />
-        {/* <SignUpDialog /> */}
-      </div>
+      > */}
+      {/* <div css={{ flex: 1 }} /> */}
+      {/* <SignUpDialog /> */}
+      {/* </div> */}
       <HistoryRacer />
       <main
         css={{
-          minH: "90vh",
+          minH: "calc(100vh - 52px)",
           d: "flex",
           flexDir: "column",
           alignItems: "center",
@@ -36,7 +36,7 @@ export function HomePage() {
         <div
           css={{
             w: "max-content",
-            maxW: "38ch",
+            maxW: "60ch",
             mx: "auto",
             fontFamily: fonts.mono,
             fontWeight: 400,
@@ -44,10 +44,20 @@ export function HomePage() {
             "& h1": {
               fontWeight: 600,
             },
+            "& li": {
+              "&::before": {
+                content: "'- '",
+                color: colors.secondaryLabel,
+              },
+            },
             "& a": {
               fontWeight: 500,
               color: colors.secondaryLabel,
-              textDecoration: "underline",
+
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.08)",
+              },
+              // textDecoration: "underline",
             },
           }}
         >
@@ -55,31 +65,51 @@ export function HomePage() {
             <Clicker />
           </h1> */}
           <br />
-          <p>Trent was released in late 2002 and software has been better ever since.</p>
+          <p
+            css={{
+              maxW: "38ch",
+            }}
+          >
+            Trent was released in late 2002 and software has been better ever
+            since.
+          </p>
           <br />
-          {/* <ul css={{ pl: "2ch", listStyleType: "'- '", spaceY: "0.25lh" }}>
-            <li>
-              <A href="/boggle">Boogle</A>
-            </li>
-            <li>
-              <A href="/sokoban">Sokoban</A>
-            </li>
-            <li>
-              <A href="/font-explorer">Font Explorer</A>
-            </li>
-            <li>
-              <A href="/calendar">Calendar</A>
-            </li>
-            <li>
-              <A href="/words">Good words</A>
-            </li>
-            <li>
-              <A href="/secret-word">Secret Word</A>
-            </li>
-            <li>
-              <A href="/tic-tac-toe">Tic-Tac-Toc</A>
-            </li>
-          </ul> */}
+          <div css={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+            <div>
+              <h2>For humans:</h2>
+              <ul>
+                <li>
+                  <Link to="/boggle">Boogle</Link>
+                </li>
+                <li>
+                  <Link to="/sokoban">Sokoban</Link>
+                </li>
+                <li>
+                  <Link to="/chadgdp">ChadGDP</Link>
+                </li>
+                <li>
+                  <Link to="/gb">Game Boy</Link>
+                </li>
+                <li>
+                  <Link to="/minesweeper">Minesweeper</Link>
+                </li>
+                <li>
+                  <Link to="/tic-tac-toe">Tic-tac-tok</Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h2>For developers:</h2>
+              <ul>
+                <li>
+                  <a href="https://hypergood.app/css">Weave CSS</a>
+                </li>
+                <li>
+                  <a href="https://hypergood.app/spring">Spring Physics</a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
         <div css={{ flex: "50 0 0px" }} />
       </main>
