@@ -1,6 +1,7 @@
 {
   "name": "trents.computer",
   "type": "module",
+  "packageManager": "pnpm@11.0.8",
   "scripts": {
     "dev": "vinxi dev --remote",
     "build": "vinxi build",
