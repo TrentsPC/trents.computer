@@ -9,7 +9,11 @@
     "serve": "vite serve ./.vite-inspect",
     "start": "wrangler dev .output/server/index.mjs --site .output/public --local",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@hypergood/css": "^0.0.6",
@@ -33,6 +37,7 @@
     "ofetch": "^1.5.1",
     "otpauth": "^9.5.0",
     "pixi.js": "^8.18.1",
+    "postgres": "^3.4.9",
     "qrcode": "^1.5.4",
     "solid-js": "1.9.12",
     "solid-radix-icons": "^1.0.0",

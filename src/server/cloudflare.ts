@@ -1,7 +1,12 @@
-import { D1Database, R2Bucket } from "@cloudflare/workers-types";
+import { D1Database, Hyperdrive, R2Bucket } from "@cloudflare/workers-types";
 import { getRequestEvent } from "solid-js/web";
 
-export type Env = { DB: D1Database; IMAGES: R2Bucket };
+export type Env = {
+  DB: D1Database;
+  IMAGES: R2Bucket;
+  HYPERDRIVE: Hyperdrive;
+  TMDB_API_KEY?: string;
+};
 
 export async function getCloudflareEnv() {
   let env: Env;

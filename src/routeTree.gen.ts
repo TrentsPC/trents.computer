@@ -22,12 +22,12 @@ import { Route as FakerRouteImport } from './routes/faker'
 import { Route as CvRouteImport } from './routes/cv'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as BoggleRouteImport } from './routes/boggle'
+import { Route as AbsoluteCinemaRouteImport } from './routes/absolute-cinema'
 import { Route as NestedRouteRouteImport } from './routes/nested/route'
 import { Route as FontExplorerRouteRouteImport } from './routes/font-explorer/route'
 import { Route as ChadgdpRouteRouteImport } from './routes/chadgdp/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PixelFontIndexRouteImport } from './routes/pixel-font/index'
-import { Route as PantryIndexRouteImport } from './routes/pantry/index'
 import { Route as FontExplorerIndexRouteImport } from './routes/font-explorer/index'
 import { Route as PixelFontVibeCodedRouteImport } from './routes/pixel-font/vibe-coded'
 import { Route as OsWin98RouteImport } from './routes/os/win98'
@@ -35,13 +35,9 @@ import { Route as OsSonomaRouteImport } from './routes/os/sonoma'
 import { Route as OsIos3RouteImport } from './routes/os/ios3'
 import { Route as OsIosRouteImport } from './routes/os/ios'
 import { Route as FontExplorerHexRouteImport } from './routes/font-explorer/hex'
-import { Route as PantryBooksIndexRouteImport } from './routes/pantry/books/index'
 import { Route as FontExplorerTablesIndexRouteImport } from './routes/font-explorer/tables/index'
 import { Route as FontExplorerTablesFFTMRouteImport } from './routes/font-explorer/tables/FFTM'
 import { Route as FontExplorerTablesUnknownTableRouteImport } from './routes/font-explorer/tables/$unknownTable'
-import { Route as PantryRecipesRecipeIdIndexRouteImport } from './routes/pantry/recipes/$recipeId/index'
-import { Route as PantryBooksBookIdIndexRouteImport } from './routes/pantry/books/$bookId/index'
-import { Route as PantryRecipesRecipeIdEditRouteRouteImport } from './routes/pantry/recipes/$recipeId/edit/route'
 
 const WordsRoute = WordsRouteImport.update({
   id: '/words',
@@ -108,6 +104,11 @@ const BoggleRoute = BoggleRouteImport.update({
   path: '/boggle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AbsoluteCinemaRoute = AbsoluteCinemaRouteImport.update({
+  id: '/absolute-cinema',
+  path: '/absolute-cinema',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NestedRouteRoute = NestedRouteRouteImport.update({
   id: '/nested',
   path: '/nested',
@@ -131,11 +132,6 @@ const IndexRoute = IndexRouteImport.update({
 const PixelFontIndexRoute = PixelFontIndexRouteImport.update({
   id: '/pixel-font/',
   path: '/pixel-font/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PantryIndexRoute = PantryIndexRouteImport.update({
-  id: '/pantry/',
-  path: '/pantry/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FontExplorerIndexRoute = FontExplorerIndexRouteImport.update({
@@ -173,11 +169,6 @@ const FontExplorerHexRoute = FontExplorerHexRouteImport.update({
   path: '/hex',
   getParentRoute: () => FontExplorerRouteRoute,
 } as any)
-const PantryBooksIndexRoute = PantryBooksIndexRouteImport.update({
-  id: '/pantry/books/',
-  path: '/pantry/books/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FontExplorerTablesIndexRoute = FontExplorerTablesIndexRouteImport.update({
   id: '/tables/',
   path: '/tables/',
@@ -194,29 +185,13 @@ const FontExplorerTablesUnknownTableRoute =
     path: '/tables/$unknownTable',
     getParentRoute: () => FontExplorerRouteRoute,
   } as any)
-const PantryRecipesRecipeIdIndexRoute =
-  PantryRecipesRecipeIdIndexRouteImport.update({
-    id: '/pantry/recipes/$recipeId/',
-    path: '/pantry/recipes/$recipeId/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const PantryBooksBookIdIndexRoute = PantryBooksBookIdIndexRouteImport.update({
-  id: '/pantry/books/$bookId/',
-  path: '/pantry/books/$bookId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PantryRecipesRecipeIdEditRouteRoute =
-  PantryRecipesRecipeIdEditRouteRouteImport.update({
-    id: '/pantry/recipes/$recipeId/edit',
-    path: '/pantry/recipes/$recipeId/edit',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chadgdp': typeof ChadgdpRouteRoute
   '/font-explorer': typeof FontExplorerRouteRouteWithChildren
   '/nested': typeof NestedRouteRoute
+  '/absolute-cinema': typeof AbsoluteCinemaRoute
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
   '/cv': typeof CvRoute
@@ -237,20 +212,16 @@ export interface FileRoutesByFullPath {
   '/os/win98': typeof OsWin98Route
   '/pixel-font/vibe-coded': typeof PixelFontVibeCodedRoute
   '/font-explorer/': typeof FontExplorerIndexRoute
-  '/pantry/': typeof PantryIndexRoute
   '/pixel-font/': typeof PixelFontIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
   '/font-explorer/tables/FFTM': typeof FontExplorerTablesFFTMRoute
   '/font-explorer/tables/': typeof FontExplorerTablesIndexRoute
-  '/pantry/books/': typeof PantryBooksIndexRoute
-  '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
-  '/pantry/books/$bookId/': typeof PantryBooksBookIdIndexRoute
-  '/pantry/recipes/$recipeId/': typeof PantryRecipesRecipeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chadgdp': typeof ChadgdpRouteRoute
   '/nested': typeof NestedRouteRoute
+  '/absolute-cinema': typeof AbsoluteCinemaRoute
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
   '/cv': typeof CvRoute
@@ -271,15 +242,10 @@ export interface FileRoutesByTo {
   '/os/win98': typeof OsWin98Route
   '/pixel-font/vibe-coded': typeof PixelFontVibeCodedRoute
   '/font-explorer': typeof FontExplorerIndexRoute
-  '/pantry': typeof PantryIndexRoute
   '/pixel-font': typeof PixelFontIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
   '/font-explorer/tables/FFTM': typeof FontExplorerTablesFFTMRoute
   '/font-explorer/tables': typeof FontExplorerTablesIndexRoute
-  '/pantry/books': typeof PantryBooksIndexRoute
-  '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
-  '/pantry/books/$bookId': typeof PantryBooksBookIdIndexRoute
-  '/pantry/recipes/$recipeId': typeof PantryRecipesRecipeIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -287,6 +253,7 @@ export interface FileRoutesById {
   '/chadgdp': typeof ChadgdpRouteRoute
   '/font-explorer': typeof FontExplorerRouteRouteWithChildren
   '/nested': typeof NestedRouteRoute
+  '/absolute-cinema': typeof AbsoluteCinemaRoute
   '/boggle': typeof BoggleRoute
   '/calendar': typeof CalendarRoute
   '/cv': typeof CvRoute
@@ -307,15 +274,10 @@ export interface FileRoutesById {
   '/os/win98': typeof OsWin98Route
   '/pixel-font/vibe-coded': typeof PixelFontVibeCodedRoute
   '/font-explorer/': typeof FontExplorerIndexRoute
-  '/pantry/': typeof PantryIndexRoute
   '/pixel-font/': typeof PixelFontIndexRoute
   '/font-explorer/tables/$unknownTable': typeof FontExplorerTablesUnknownTableRoute
   '/font-explorer/tables/FFTM': typeof FontExplorerTablesFFTMRoute
   '/font-explorer/tables/': typeof FontExplorerTablesIndexRoute
-  '/pantry/books/': typeof PantryBooksIndexRoute
-  '/pantry/recipes/$recipeId/edit': typeof PantryRecipesRecipeIdEditRouteRoute
-  '/pantry/books/$bookId/': typeof PantryBooksBookIdIndexRoute
-  '/pantry/recipes/$recipeId/': typeof PantryRecipesRecipeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -324,6 +286,7 @@ export interface FileRouteTypes {
     | '/chadgdp'
     | '/font-explorer'
     | '/nested'
+    | '/absolute-cinema'
     | '/boggle'
     | '/calendar'
     | '/cv'
@@ -344,20 +307,16 @@ export interface FileRouteTypes {
     | '/os/win98'
     | '/pixel-font/vibe-coded'
     | '/font-explorer/'
-    | '/pantry/'
     | '/pixel-font/'
     | '/font-explorer/tables/$unknownTable'
     | '/font-explorer/tables/FFTM'
     | '/font-explorer/tables/'
-    | '/pantry/books/'
-    | '/pantry/recipes/$recipeId/edit'
-    | '/pantry/books/$bookId/'
-    | '/pantry/recipes/$recipeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/chadgdp'
     | '/nested'
+    | '/absolute-cinema'
     | '/boggle'
     | '/calendar'
     | '/cv'
@@ -378,21 +337,17 @@ export interface FileRouteTypes {
     | '/os/win98'
     | '/pixel-font/vibe-coded'
     | '/font-explorer'
-    | '/pantry'
     | '/pixel-font'
     | '/font-explorer/tables/$unknownTable'
     | '/font-explorer/tables/FFTM'
     | '/font-explorer/tables'
-    | '/pantry/books'
-    | '/pantry/recipes/$recipeId/edit'
-    | '/pantry/books/$bookId'
-    | '/pantry/recipes/$recipeId'
   id:
     | '__root__'
     | '/'
     | '/chadgdp'
     | '/font-explorer'
     | '/nested'
+    | '/absolute-cinema'
     | '/boggle'
     | '/calendar'
     | '/cv'
@@ -413,15 +368,10 @@ export interface FileRouteTypes {
     | '/os/win98'
     | '/pixel-font/vibe-coded'
     | '/font-explorer/'
-    | '/pantry/'
     | '/pixel-font/'
     | '/font-explorer/tables/$unknownTable'
     | '/font-explorer/tables/FFTM'
     | '/font-explorer/tables/'
-    | '/pantry/books/'
-    | '/pantry/recipes/$recipeId/edit'
-    | '/pantry/books/$bookId/'
-    | '/pantry/recipes/$recipeId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -429,6 +379,7 @@ export interface RootRouteChildren {
   ChadgdpRouteRoute: typeof ChadgdpRouteRoute
   FontExplorerRouteRoute: typeof FontExplorerRouteRouteWithChildren
   NestedRouteRoute: typeof NestedRouteRoute
+  AbsoluteCinemaRoute: typeof AbsoluteCinemaRoute
   BoggleRoute: typeof BoggleRoute
   CalendarRoute: typeof CalendarRoute
   CvRoute: typeof CvRoute
@@ -447,12 +398,7 @@ export interface RootRouteChildren {
   OsSonomaRoute: typeof OsSonomaRoute
   OsWin98Route: typeof OsWin98Route
   PixelFontVibeCodedRoute: typeof PixelFontVibeCodedRoute
-  PantryIndexRoute: typeof PantryIndexRoute
   PixelFontIndexRoute: typeof PixelFontIndexRoute
-  PantryBooksIndexRoute: typeof PantryBooksIndexRoute
-  PantryRecipesRecipeIdEditRouteRoute: typeof PantryRecipesRecipeIdEditRouteRoute
-  PantryBooksBookIdIndexRoute: typeof PantryBooksBookIdIndexRoute
-  PantryRecipesRecipeIdIndexRoute: typeof PantryRecipesRecipeIdIndexRoute
 }
 
 declare module '@tanstack/solid-router' {
@@ -548,6 +494,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof BoggleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/absolute-cinema': {
+      id: '/absolute-cinema'
+      path: '/absolute-cinema'
+      fullPath: '/absolute-cinema'
+      preLoaderRoute: typeof AbsoluteCinemaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nested': {
       id: '/nested'
       path: '/nested'
@@ -581,13 +534,6 @@ declare module '@tanstack/solid-router' {
       path: '/pixel-font'
       fullPath: '/pixel-font/'
       preLoaderRoute: typeof PixelFontIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pantry/': {
-      id: '/pantry/'
-      path: '/pantry'
-      fullPath: '/pantry/'
-      preLoaderRoute: typeof PantryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/font-explorer/': {
@@ -639,13 +585,6 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof FontExplorerHexRouteImport
       parentRoute: typeof FontExplorerRouteRoute
     }
-    '/pantry/books/': {
-      id: '/pantry/books/'
-      path: '/pantry/books'
-      fullPath: '/pantry/books/'
-      preLoaderRoute: typeof PantryBooksIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/font-explorer/tables/': {
       id: '/font-explorer/tables/'
       path: '/tables'
@@ -666,27 +605,6 @@ declare module '@tanstack/solid-router' {
       fullPath: '/font-explorer/tables/$unknownTable'
       preLoaderRoute: typeof FontExplorerTablesUnknownTableRouteImport
       parentRoute: typeof FontExplorerRouteRoute
-    }
-    '/pantry/recipes/$recipeId/': {
-      id: '/pantry/recipes/$recipeId/'
-      path: '/pantry/recipes/$recipeId'
-      fullPath: '/pantry/recipes/$recipeId/'
-      preLoaderRoute: typeof PantryRecipesRecipeIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pantry/books/$bookId/': {
-      id: '/pantry/books/$bookId/'
-      path: '/pantry/books/$bookId'
-      fullPath: '/pantry/books/$bookId/'
-      preLoaderRoute: typeof PantryBooksBookIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pantry/recipes/$recipeId/edit': {
-      id: '/pantry/recipes/$recipeId/edit'
-      path: '/pantry/recipes/$recipeId/edit'
-      fullPath: '/pantry/recipes/$recipeId/edit'
-      preLoaderRoute: typeof PantryRecipesRecipeIdEditRouteRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -715,6 +633,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChadgdpRouteRoute: ChadgdpRouteRoute,
   FontExplorerRouteRoute: FontExplorerRouteRouteWithChildren,
   NestedRouteRoute: NestedRouteRoute,
+  AbsoluteCinemaRoute: AbsoluteCinemaRoute,
   BoggleRoute: BoggleRoute,
   CalendarRoute: CalendarRoute,
   CvRoute: CvRoute,
@@ -733,12 +652,7 @@ const rootRouteChildren: RootRouteChildren = {
   OsSonomaRoute: OsSonomaRoute,
   OsWin98Route: OsWin98Route,
   PixelFontVibeCodedRoute: PixelFontVibeCodedRoute,
-  PantryIndexRoute: PantryIndexRoute,
   PixelFontIndexRoute: PixelFontIndexRoute,
-  PantryBooksIndexRoute: PantryBooksIndexRoute,
-  PantryRecipesRecipeIdEditRouteRoute: PantryRecipesRecipeIdEditRouteRoute,
-  PantryBooksBookIdIndexRoute: PantryBooksBookIdIndexRoute,
-  PantryRecipesRecipeIdIndexRoute: PantryRecipesRecipeIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

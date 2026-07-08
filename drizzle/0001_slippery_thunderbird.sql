@@ -1,0 +1,1 @@
+ALTER TABLE "cinema_items" ADD COLUMN "raw" jsonb;

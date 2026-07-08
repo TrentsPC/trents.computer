@@ -14,10 +14,17 @@ directory = "./.output/public"
 binding = "ASSETS"
 
 [[d1_databases]]
-binding = "DB" # i.e. available in your Worker on env.DB
+binding = "DB"                                       # i.e. available in your Worker on env.DB
 database_name = "prod-db-recipes"
 database_id = "84530114-0f50-4881-9648-07597d355917"
 
 [[r2_buckets]]
-binding = 'IMAGES' # <~ valid JavaScript variable name
+binding = 'IMAGES'     # <~ valid JavaScript variable name
 bucket_name = 'images'
+
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "9e634d7568ec46d5831d3b2c3ee53c17"
+# For local dev, wrangler needs a direct Postgres connection string. Set it via
+# the env var WRANGLER_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE, or add a
+# `localConnectionString = "postgres://..."` line here (keep it out of git).
