@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, For, Match, onCleanup, onMount, Show, Switch } from "solid-js";
+import {
+  createSignal,
+  For,
+  Match,
+  onCleanup,
+  onMount,
+  Show,
+  Switch,
+} from "solid-js";
 import {
   addToWatchlist,
   getWatchlist,
@@ -14,17 +22,6 @@ export const Route = createFileRoute("/absolute-cinema")({
 });
 
 const NAME_KEY = "absolute-cinema-name";
-
-const colors = {
-  bg: "#0b0b0f",
-  panel: "#15151d",
-  panelHi: "#1e1e29",
-  border: "#2a2a38",
-  text: "#f3f3f7",
-  muted: "#9a9aae",
-  accent: "#e5b769",
-  accentText: "#0b0b0f",
-};
 
 function Page() {
   const [name, setName] = createSignal<string | null>(null);
@@ -54,29 +51,13 @@ function Page() {
     <div
       css={{
         minHeight: "100vh",
-        background: "#0b0b0f",
-        color: "#f3f3f7",
-        fontFamily: "'Soehne', system-ui, sans-serif",
+        background: "#ffb8e8",
+        color: "#5c357c",
+        fontFamily: "'Times New Roman', sans-serif",
         padding: 24,
       }}
     >
       <div css={{ maxWidth: 1080, margin: "0 auto" }}>
-        <header css={{ marginBottom: 28 }}>
-          <h1
-            css={{
-              fontSize: 40,
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              margin: 0,
-            }}
-          >
-            🎬 Absolute Cinema
-          </h1>
-          <p css={{ color: "#9a9aae", marginTop: 6, fontSize: 15 }}>
-            A shared, public watchlist. Add anything you want the group to see.
-          </p>
-        </header>
-
         <Show when={name()} fallback={<NameGate onSubmit={saveName} />}>
           {(currentName) => (
             <Watchlist
@@ -162,6 +143,8 @@ function Watchlist(props: { name: string; onChangeName: () => void }) {
   const watchlist = useQuery(() => ({
     queryKey: ["watchlist"],
     queryFn: () => getWatchlist(),
+    // Shared list — poll so additions from other visitors show up on their own.
+    refetchInterval: 30_000,
   }));
 
   const addMutation = useMutation(() => ({
@@ -173,7 +156,10 @@ function Watchlist(props: { name: string; onChangeName: () => void }) {
   }));
 
   const add = (media: TmdbSearchResult) =>
-    addMutation.mutateAsync({ tmdbId: media.tmdbId, mediaType: media.mediaType });
+    addMutation.mutateAsync({
+      tmdbId: media.tmdbId,
+      mediaType: media.mediaType,
+    });
 
   return (
     <>
