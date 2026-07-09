@@ -377,7 +377,7 @@ function SearchResultRow(props: {
         disabled={props.pending}
         onClick={() => props.onAdd(props.media)}
         css={{
-          background: "blue",
+          background: "rebeccapurple",
           color: "white",
           border: "none",
           borderRadius: 8,
@@ -419,8 +419,8 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
     <div
       css={{
         overflowX: "auto",
-        border: `1px solid ${"#2a2a38"}`,
-        borderRadius: 12,
+        // border: `1px solid ${"#2a2a38"}`,
+        // borderRadius: 12,
       }}
     >
       <table css={{ width: "100%", borderCollapse: "collapse", minWidth: 760 }}>
@@ -443,8 +443,8 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
                     fallback={
                       <div
                         css={{
-                          width: 48,
-                          height: 72,
+                          width: 125,
+                          height: 125*1.5,
                           background: "#1e1e29",
                           borderRadius: 6,
                         }}
@@ -455,10 +455,10 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
                       src={item.posterUrl!}
                       alt={`${item.title} poster`}
                       css={{
-                        width: 48,
-                        height: 72,
+                          width: 125,
+                          height: 125*1.5,
                         objectFit: "cover",
-                        borderRadius: 6,
+                        borderRadius: 3,
                         display: "block",
                       }}
                     />
@@ -468,17 +468,17 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
                   <div css={{ fontWeight: 600 }}>
                     {item.title}
                     <Show when={item.year}>
-                      <span css={{ color: "#9a9aae", fontWeight: 400 }}>
+                      <span css={{  fontWeight: 400 }}>
                         {" "}
                         ({item.year})
                       </span>
                     </Show>
                   </div>
-                  <div css={{ color: "#9a9aae", fontSize: 12, marginTop: 2 }}>
+                  <div css={{ fontSize: 12, marginTop: 2 }}>
                     {item.mediaType === "movie" ? "Movie" : "TV Show"}
                   </div>
                 </td>
-                <td style={{ ...td, color: "#9a9aae" }}>
+                <td style={{ ...td,  }}>
                   <Show when={item.genres.length} fallback={<span>—</span>}>
                     {item.genres.join(", ")}
                   </Show>
@@ -486,7 +486,7 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
                 <td style={td}>
                   <Show
                     when={item.contentRating}
-                    fallback={<span css={{ color: "#9a9aae" }}>NR</span>}
+                    fallback={<span css={{  }}>NR</span>}
                   >
                     <span
                       css={{
@@ -500,18 +500,6 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
                     >
                       {item.contentRating}
                     </span>
-                    <Show when={item.contentRatingDetail}>
-                      <div
-                        css={{
-                          color: "#9a9aae",
-                          fontSize: 12,
-                          marginTop: 4,
-                          maxWidth: 220,
-                        }}
-                      >
-                        {item.contentRatingDetail}
-                      </div>
-                    </Show>
                   </Show>
                 </td>
                 <td style={td}>
