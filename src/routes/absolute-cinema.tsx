@@ -77,19 +77,15 @@ function NameGate(props: { onSubmit: (name: string) => void }) {
   return (
     <div
       css={{
-        background: "#15151d",
-        border: `1px solid ${"#2a2a38"}`,
+        // background: "#15151d",
+        // border: `1px solid ${"#2a2a38"}`,
         borderRadius: 16,
         padding: 32,
         maxWidth: 440,
         margin: "48px auto",
       }}
     >
-      <h2 css={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Who are you?</h2>
-      <p css={{ color: "#9a9aae", marginTop: 8, fontSize: 14 }}>
-        Enter your name to see the watchlist. It'll be recorded next to anything
-        you add.
-      </p>
+      <h2 css={{ fontSize: 22, fontWeight: 600, margin: 0 }}>What's ur gay ass name?</h2>
       <form
         css={{ display: "flex", gap: 8, marginTop: 20 }}
         onSubmit={(e) => {
@@ -99,16 +95,16 @@ function NameGate(props: { onSubmit: (name: string) => void }) {
       >
         <input
           autofocus
-          placeholder="e.g. Trent"
+          placeholder="e.g. Jonkler"
           value={value()}
           onInput={(e) => setValue(e.currentTarget.value)}
           css={{
             flex: 1,
-            background: "#0b0b0f",
+            // background: "#0b0b0f",
             border: `1px solid ${"#2a2a38"}`,
             borderRadius: 10,
             padding: "12px 14px",
-            color: "#f3f3f7",
+            // color: "#f3f3f7",
             fontSize: 15,
             outline: "none",
           }}
@@ -117,8 +113,8 @@ function NameGate(props: { onSubmit: (name: string) => void }) {
           type="submit"
           disabled={!value().trim()}
           css={{
-            background: "#e5b769",
-            color: "#0b0b0f",
+            // background: "#e5b769",
+            // color: "#0b0b0f",
             border: "none",
             borderRadius: 10,
             padding: "0 18px",
@@ -173,15 +169,15 @@ function Watchlist(props: { name: string; onChangeName: () => void }) {
           flexWrap: "wrap",
         }}
       >
-        <span css={{ color: "#9a9aae", fontSize: 14 }}>
-          Watching as <strong css={{ color: "#f3f3f7" }}>{props.name}</strong>
+        <span css={{  fontSize: 16 }}>
+          Watching as <strong css={{ color: "black" }}>{props.name}</strong>
         </span>
         <button
           onClick={props.onChangeName}
           css={{
             background: "transparent",
             border: `1px solid ${"#2a2a38"}`,
-            color: "#9a9aae",
+            // color: "#9a9aae",
             borderRadius: 8,
             padding: "6px 12px",
             fontSize: 13,
@@ -265,11 +261,11 @@ function SearchBar(props: {
         onInput={(e) => onInput(e.currentTarget.value)}
         css={{
           width: "100%",
-          background: "#15151d",
+          // background: "#15151d",
           border: `1px solid ${"#2a2a38"}`,
           borderRadius: 12,
           padding: "14px 16px",
-          color: "#f3f3f7",
+          // color: "#f3f3f7",
           fontSize: 16,
           outline: "none",
           boxSizing: "border-box",
@@ -280,7 +276,7 @@ function SearchBar(props: {
         <div
           css={{
             marginTop: 8,
-            background: "#15151d",
+            // background: "#15151d",
             border: `1px solid ${"#2a2a38"}`,
             borderRadius: 12,
             overflow: "hidden",
@@ -288,12 +284,12 @@ function SearchBar(props: {
         >
           <Switch>
             <Match when={results.isPending}>
-              <p css={{ color: "#9a9aae", padding: 16, margin: 0 }}>
+              <p css={{  padding: 16, margin: 0 }}>
                 Searching…
               </p>
             </Match>
             <Match when={results.data && results.data.length === 0}>
-              <p css={{ color: "#9a9aae", padding: 16, margin: 0 }}>
+              <p css={{  padding: 16, margin: 0 }}>
                 No matches.
               </p>
             </Match>
@@ -360,7 +356,7 @@ function SearchResultRow(props: {
         <div css={{ fontSize: 15, fontWeight: 500 }}>
           {props.media.title}
           <Show when={props.media.year}>
-            <span css={{ color: "#9a9aae", fontWeight: 400 }}>
+            <span css={{  fontWeight: 400 }}>
               {" "}
               ({props.media.year})
             </span>
@@ -368,7 +364,7 @@ function SearchResultRow(props: {
         </div>
         <div
           css={{
-            color: "#9a9aae",
+            // color: "#9a9aae",
             fontSize: 12,
             textTransform: "uppercase",
             letterSpacing: "0.04em",
@@ -381,8 +377,8 @@ function SearchResultRow(props: {
         disabled={props.pending}
         onClick={() => props.onAdd(props.media)}
         css={{
-          background: "#e5b769",
-          color: "#0b0b0f",
+          background: "blue",
+          color: "white",
           border: "none",
           borderRadius: 8,
           padding: "8px 14px",
@@ -409,7 +405,7 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
     fontWeight: 600,
     textTransform: "uppercase" as const,
     letterSpacing: "0.05em",
-    color: "#9a9aae",
+    // color: "#9a9aae",
     borderBottom: `1px solid ${"#2a2a38"}`,
   };
   const td = {
@@ -524,8 +520,8 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
                       {(person) => (
                         <span
                           css={{
-                            background: "#1e1e29",
-                            border: `1px solid ${"#2a2a38"}`,
+                            // background: "#1e1e29", 
+                            // border: `1px solid ${"#2a2a38"}`,
                             borderRadius: 999,
                             padding: "3px 10px",
                             fontSize: 13,
