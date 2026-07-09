@@ -426,7 +426,7 @@ function WatchlistTable(props: { items: WatchlistItem[] }) {
       <table css={{ width: "100%", borderCollapse: "collapse", minWidth: 760 }}>
         <thead>
           <tr>
-            <th style={{ ...th, width: "125px" }}>Art</th>
+            <th style={{ ...th, width: "125px", "min-width": "125px" }}>Art</th>
             <th style={th}>Title</th>
             <th style={th}>Genre</th>
             <th style={th}>Rating</th>
