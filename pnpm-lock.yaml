@@ -59,6 +59,9 @@ importers:
       is-hotkey:
         specifier: ^0.2.0
         version: 0.2.0
+      justif:
+        specifier: 0.9.2
+        version: 0.9.2
       marked:
         specifier: ^15.0.12
         version: 15.0.12
@@ -4004,6 +4007,9 @@ packages:
   junk@4.0.1:
     resolution: {integrity: sha512-Qush0uP+G8ZScpGMZvHUiRfI0YBWuB3gVBYlI0v0vvOJt5FLicco+IkP0a50LqTTQhmts/m6tP5SWE+USyIvcQ==}
     engines: {node: '>=12.20'}
+
+  justif@0.9.2:
+    resolution: {integrity: sha512-fs2BBnovpOSVOe4ik7Hbsl37ql2c1Nvd6g+z9uTXUGoLK0eGkXvTJP4qqqmtfhFAK092H2aW6uSg2wbv8+W6Cg==}
 
   jwt-decode@4.0.0:
     resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
@@ -9099,6 +9105,8 @@ snapshots:
   json5@2.2.3: {}
 
   junk@4.0.1: {}
+
+  justif@0.9.2: {}
 
   jwt-decode@4.0.0: {}
 
