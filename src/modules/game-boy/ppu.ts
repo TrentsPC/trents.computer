@@ -42,7 +42,10 @@ export function createPPU(
         );
         // If the LYC=LY coincidence interrupt is enabled
         if (gameBoy.addressBus.readByte(Address.STAT) & 0x40) {
-          gameBoy.addressBus.writeByte(Address.IF, gameBoy.addressBus.readByte(Address.IF) | 0x02);
+          gameBoy.addressBus.writeByte(
+            Address.IF,
+            gameBoy.addressBus.readByte(Address.IF) | 0x02,
+          );
         }
       } else {
         gameBoy.addressBus.writeByte(
@@ -53,7 +56,10 @@ export function createPPU(
       if (lcdY === 144) {
         // renderScreen(gameBoy, getCanvas());
         commitFrame();
-        gameBoy.addressBus.writeByte(0xff0f, gameBoy.addressBus.readByte(0xff0f) | 0x01);
+        gameBoy.addressBus.writeByte(
+          0xff0f,
+          gameBoy.addressBus.readByte(0xff0f) | 0x01,
+        );
       }
     }
   }
@@ -84,7 +90,11 @@ export function createPPU(
     tileDataCache.delete(startingAddress);
   }
 
-  function renderTile(gameBoy: GameBoy, startingAddress: number, transparent?: boolean) {
+  function renderTile(
+    gameBoy: GameBoy,
+    startingAddress: number,
+    transparent?: boolean,
+  ) {
     const canvas = new OffscreenCanvas(8, 8);
     const ctx = canvas.getContext("2d")!;
     for (let y = 0; y < 8; y++) {
@@ -152,11 +162,13 @@ export function createPPU(
     return canvas;
   }
 
-  function drawObject(gameBoy: GameBoy, address: number) {
-    // const canvas = new OffscreenCanvas(160, 144);
-    // const ctx = canvas.getContext("2d")!;
-    const y = gameBoy.addressBus.readByte(address);
-    const x = gameBoy.addressBus.readByte(address + 1);
+  function drawObject(
+    gameBoy: GameBoy,
+    ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+    address: number,
+  ) {
+    const y = gameBoy.addressBus.readByte(address) - 16;
+    const x = gameBoy.addressBus.readByte(address + 1) - 8;
     const tileNumber = gameBoy.addressBus.readByte(address + 2);
     const tileAddress = 0x8000 + tileNumber * 16;
 
@@ -164,26 +176,18 @@ export function createPPU(
     const flipX = (attributes & 0x20) !== 0;
     const flipY = (attributes & 0x40) !== 0;
 
-    const sourceTile = getTile(tileAddress);
-    // const tileCanvas = new OffscreenCanvas(8, 8);
-    // const tileCtx = tileCanvas.getContext("2d")!;
-    // if (flipX) {
-    //   tileCtx.scale(-1, 1);
-    //   tileCtx.translate(0 - tileCanvas.width, 0);
-    // }
-    // if (flipY) {
-    //   tileCtx.scale(1, -1);
-    //   tileCtx.translate(0, 0 - tileCanvas.height);
-    // }
+    const tile = getTile(tileAddress);
 
-    // tileCtx.drawImage(sourceTile, 0, 0);
+    if (!flipX && !flipY) {
+      ctx.drawImage(tile, x, y);
+      return;
+    }
 
-    // ctx.drawImage(tileCanvas, x - 8, y - 16);
-    return {
-      tile: sourceTile,
-      x: x - 8,
-      y: y - 16,
-    };
+    ctx.save();
+    ctx.translate(flipX ? x + 8 : x, flipY ? y + 8 : y);
+    ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+    ctx.drawImage(tile, 0, 0);
+    ctx.restore();
   }
 
   let tempScreen = new OffscreenCanvas(160, 144);
@@ -196,8 +200,7 @@ export function createPPU(
     const SCX = gameBoy.addressBus.readByte(0xff43);
     ctx.drawImage(tileMap, -SCX, -SCY);
     for (let addr = 0xfe00; addr < 0xfea0; addr += 4) {
-      const { tile, x, y } = drawObject(gameBoy, addr);
-      ctx.drawImage(tile, x, y);
+      drawObject(gameBoy, ctx, addr);
     }
     return canvas;
   }
@@ -213,8 +216,7 @@ export function createPPU(
     ctx.drawImage(tileMap, -SCX, -SCY);
 
     for (let addr = 0xfe00; addr < 0xfea0; addr += 4) {
-      const { tile, x, y } = drawObject(gameBoy, addr);
-      ctx.drawImage(tile, x, y);
+      drawObject(gameBoy, ctx, addr);
     }
   }
 
@@ -222,7 +224,12 @@ export function createPPU(
   const inProgressCtx = inProgressCanvas.getContext("2d")!;
 
   function clearFrame() {
-    inProgressCtx.clearRect(0, 0, inProgressCtx.canvas.width, inProgressCtx.canvas.height);
+    inProgressCtx.clearRect(
+      0,
+      0,
+      inProgressCtx.canvas.width,
+      inProgressCtx.canvas.height,
+    );
   }
 
   function drawScanline() {
