@@ -256,26 +256,29 @@ function Subsection(props: {
     <div>
       {props.squircle}
       <div css={{ display: "flex" }}>
-        <h3 css={{ fontWeight: 600, mb: 4, flex: "1 0 0px" }}>
+        <h3 css={{ fontWeight: 600, flex: "1 0 0px" }}>
           <a href={props.href}>{props.title}</a>
         </h3>
         <p css={{ fontStyle: "italic" }}>{props.titleAccessory}</p>
       </div>
-      <div
-        css={{
-          textAlign: "justify",
-          spaceY: 12,
-          "& a": {
-            textDecoration: "underline",
-            // textDecorationThickness: "1px",
-            textDecorationColor: colors.secondaryLabel,
-            // textDecorationColor: "var(--color-brand)",
-            // textDecorationThickness: "1px",
-          },
-        }}
-      >
-        {props.description}
-      </div>
+      <Show when={!!props.description}>
+        <div
+          css={{
+            textAlign: "justify",
+            spaceY: 12,
+            mt: 4,
+            "& a": {
+              textDecoration: "underline",
+              // textDecorationThickness: "1px",
+              textDecorationColor: colors.secondaryLabel,
+              // textDecorationColor: "var(--color-brand)",
+              // textDecorationThickness: "1px",
+            },
+          }}
+        >
+          {props.description}
+        </div>
+      </Show>
       <Show when={!!props.list}>
         <div
           css={{
