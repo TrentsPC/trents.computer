@@ -70,7 +70,7 @@ function Page() {
           <p
             css={{
               fontWeight: 400,
-              color: colors.secondaryLabel,
+              // color: colors.secondaryLabel,
               align: "center",
             }}
           >
@@ -83,7 +83,7 @@ function Page() {
                 <p>
                   I have {yearsOfExperience} years of full-stack web and mobile
                   app development experience and am addicted to building big
-                  projects with tiny teams.
+                  things with tiny teams.
                 </p>
               </div>
             </section>
@@ -131,9 +131,10 @@ function Page() {
                   description={
                     <>
                       <p>
-                        I was the first hire of Berry Hill, a Mosgiel-based
-                        consultancy and software company that primarily worked
-                        in web and mobile app development.
+                        I was the first hire of{" "}
+                        <a href="https://berryhill.co.nz">Berry Hill</a>, a
+                        Mosgiel-based consultancy and software company that
+                        primarily worked in web and mobile app development.
                       </p>
                     </>
                   }
@@ -145,9 +146,11 @@ function Page() {
                         drag-and-drop editors with rich-text editors on them.
                       </li>
                       <li>
-                        Migrated the internal election system for Hato Hone St
-                        John from a PHP monolith to a Solid frontend & PHP JSON
-                        API.
+                        Migrated the internal election system for{" "}
+                        <a href="https://www.stjohn.org.nz/">
+                          Hato Hone St John
+                        </a>{" "}
+                        from a PHP monolith to a Solid frontend & PHP JSON API.
                       </li>
                       <li>
                         Ported MJML from Node.js to runtime agnostic TypeScript.
@@ -155,13 +158,12 @@ function Page() {
                       {/* <li>CI/CD something something</li> */}
                       {/* <li>Design system something something</li> */}
                       <li>
-                        Turn a 100k line single-file React Native proof of
-                        concept into a performant production app for the
-                        Anglican Church in Aotearoa, New Zealand and Polynesia.
-                      </li>
-                      <li>
-                        Advocated for GitHub Copilot as soon as beta was
-                        available.
+                        Turned a 100k-LOC single-file React Native proof of
+                        concept into a performant production app for the{" "}
+                        <a href="https://www.anglican.org.nz/">
+                          Anglican Church in Aotearoa, New Zealand and Polynesia
+                        </a>
+                        .
                       </li>
                     </ul>
                   }
@@ -187,8 +189,8 @@ function Page() {
                     <>
                       <p>
                         What if <a href="https://tailwindcss.com/">Tailwind</a>{" "}
-                        had good syntax and didn’t break the second you start
-                        applying conditional styles? What if{" "}
+                        had good syntax and didn’t break when you apply
+                        conditional styles? What if{" "}
                         <a href="https://stitches.dev/">Stitches</a> didn’t do
                         everything at run time? What if Facebook didn’t take 6
                         years to release{" "}
@@ -272,6 +274,7 @@ function Subsection(props: {
         <div
           css={{
             pt: 12,
+            "& a": { textDecoration: "underline" },
             "& ul": {
               textAlign: "justify",
               listStyle: "disc",
