@@ -80,7 +80,7 @@ function Page() {
             <section>
               <div>
                 <h2 css={{ fontWeight: 600, fontScale: 3, mb: 12 }}>Summary</h2>
-                <p>
+                <p css={{ textAlign: "justify" }}>
                   I have {yearsOfExperience} years of full-stack web and mobile
                   app development experience and am addicted to building big
                   things with tiny teams.
@@ -101,20 +101,26 @@ function Page() {
                   }
                   title="Givenwell"
                   titleAccessory="Oct 2023 – Present"
-                  // description={<>I was brought on September 2024 release.</>}
-                  description={<></>}
+                  description={
+                    <>
+                      I was brought on as a senior software developer to
+                      architect and develop multiple React web apps ahead of our
+                      September 2024 public release, and to contribute to our C#
+                      backend systems.
+                    </>
+                  }
                   list={
                     <ul>
                       <li>
-                        Turned a proof-of-concept desktop-only website into a
-                        production-ready responsive PWA.
+                        Turned an unstyled proof-of-concept desktop-only website
+                        into a production-ready responsive PWA.
                       </li>
                       <li>
                         Developed fool-proof (read: agent-proof) design systems.
                       </li>
                       <li>
                         Designed and developed internal tooling for design
-                        review, feature flag comparison, analytics.
+                        review, analytics, documentation, and support.
                       </li>
                     </ul>
                   }
@@ -144,6 +150,8 @@ function Page() {
                         Built a fully-featured Website builder, with
                         drag-and-drop editors, rich-text editors, and
                         drag-and-drop editors with rich-text editors on them.
+                        (And an email builder, and a CMS, and a form builder,
+                        and so on...)
                       </li>
                       <li>
                         Migrated the internal election system for{" "}
@@ -153,13 +161,9 @@ function Page() {
                         from a PHP monolith to a Solid frontend & PHP JSON API.
                       </li>
                       <li>
-                        Ported MJML from Node.js to runtime agnostic TypeScript.
-                      </li>
-                      {/* <li>CI/CD something something</li> */}
-                      {/* <li>Design system something something</li> */}
-                      <li>
-                        Turned a 100k-LOC single-file React Native proof of
-                        concept into a performant production app for the{" "}
+                        Turned a 100k-LOC React Native
+                        single-spaghetti-code-file proof of concept into a
+                        performant mini-social-media app for the{" "}
                         <a href="https://www.anglican.org.nz/">
                           Anglican Church in Aotearoa, New Zealand and Polynesia
                         </a>
@@ -195,8 +199,8 @@ function Page() {
                         everything at run time? What if Facebook didn’t take 6
                         years to release{" "}
                         <a href="https://stylexjs.com/">StyleX</a>? The answer
-                        to all of these questions is Hyper CSS, my bastard child
-                        of the three. This CV was built with it.
+                        to all of these questions is Hyper CSS, my Frankenstein
+                        child of the three. This CV was built with it.
                       </p>
                     </>
                   }
@@ -323,6 +327,10 @@ function Squircle(props: { children?: JSX.Element; href: string }) {
         mb: 12,
         float: "left",
         ml: -48 - 16,
+        display: "none",
+        "@sm": {
+          display: "block",
+        },
       }}
     >
       <div
