@@ -16,14 +16,15 @@ function Page() {
   let page: HTMLDivElement;
 
   onMount(() => {
-    console.log(
-      "Word count:",
-      page!.innerText.split(/\s+/).filter(Boolean).length,
-    );
+    // console.log(
+    //   "Word count:",
+    //   page!.innerText.split(/\s+/).filter(Boolean).length,
+    // );
 
-    const paragraphs = [...page!.querySelectorAll("p")].filter(
-      (p) => getComputedStyle(p).textAlign === "justify",
-    );
+    const paragraphs = [
+      ...page!.querySelectorAll("p"),
+      ...page!.querySelectorAll("li"),
+    ].filter((p) => getComputedStyle(p).textAlign === "justify");
     const controller = justify(paragraphs, { hyphenate: hyphenateEnGB });
     onCleanup(() => controller.destroy());
   });
