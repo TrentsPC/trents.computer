@@ -265,7 +265,13 @@ function Subsection(props: {
         css={{
           textAlign: "justify",
           spaceY: 12,
-          "& a": { textDecoration: "underline" },
+          "& a": {
+            textDecoration: "underline",
+            // textDecorationThickness: "1px",
+            textDecorationColor: colors.secondaryLabel,
+            // textDecorationColor: "var(--color-brand)",
+            // textDecorationThickness: "1px",
+          },
         }}
       >
         {props.description}
@@ -274,7 +280,13 @@ function Subsection(props: {
         <div
           css={{
             pt: 12,
-            "& a": { textDecoration: "underline" },
+            "& a": {
+              textDecoration: "underline",
+              // textDecorationThickness: "1px",
+              textDecorationColor: colors.secondaryLabel,
+              // textDecorationColor: "var(--color-brand)",
+              // textDecorationThickness: "1px",
+            },
             "& ul": {
               textAlign: "justify",
               listStyle: "disc",
